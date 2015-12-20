@@ -1,0 +1,12 @@
+/.idea/
+/node_modules
+/_socket
+/.build
+/lib/js
+/lib/css
+/www/_socket
+/cordova/www
+/cordova/platforms/android/assets/www
+/cordova/platforms/android/.gradle
+/cordova/platforms/android/build
+/cordova/platforms/android/CordovaLib/build
