@@ -1,5 +1,5 @@
 {
-  "name": "iobroker.vis.crodova",
+  "name": "iobroker.vis.cordova",
   "description": "Cordova APP for ioBroker.",
   "version": "0.0.1",
   "author": {
@@ -9,15 +9,15 @@
   "contributors": [
     "bluefox <bluefox@ccu.io>"
   ],
-  "homepage": "https://github.com/ioBroker/ioBroker.vis.crodova",
+  "homepage": "https://github.com/ioBroker/ioBroker.vis.cordova",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ioBroker/ioBroker.vis.crodova"
+    "url": "https://github.com/ioBroker/ioBroker.vis.cordova"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/ioBroker/ioBroker.vis.crodova/blob/master/LICENSE"
+      "url": "https://github.com/ioBroker/ioBroker.vis.cordova/blob/master/LICENSE"
     }
   ],
   "keywords": [
@@ -39,13 +39,28 @@
     "grunt-exec": "^0.4.6",
     "iobroker.web": "*",
     "iobroker.vis": "*",
+    "iobroker.vis-metro": "*",
+    "iobroker.vis-keyboard": "*",
+    "iobroker.vis-colorpicker": "*",
+    "iobroker.vis-hqwidgets": "*",
+    "iobroker.vis-plumb": "*",
+    "ioBroker.vis-google-fonts": "*",
+    "iobroker.vis-lcars": "*",
+    "iobroker.vis-bars": "*",
+    "iobroker.vis-fancyswitch": "*",
+    "iobroker.vis-jqui-mfd": "*",
+    "iobroker.vis-rgraph": "*",
+    "iobroker.vis-timeandweather": "*",
     "cordova": "^5.4.1"
   },
   "bugs": {
-    "url": "https://github.com/ioBroker/ioBroker.vis.crodova/issues"
+    "url": "https://github.com/ioBroker/ioBroker.vis.cordova/issues"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test":    "echo \"Error: no test specified\" && exit 1",
+    "build":   "grunt build",
+    "run":     "grunt run",
+    "release": "grunt release"
   },
   "license": "MIT"
 }

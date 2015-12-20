@@ -10,14 +10,13 @@ module.exports = function (grunt) {
     var srcDir    = __dirname + '/';
     var dstDir    = srcDir + '.build/';
     var pkg       = grunt.file.readJSON('package.json');
-    var iopackage = grunt.file.readJSON('io-package.json');
-    var version   = (pkg && pkg.version) ? pkg.version : iopackage.common.version;
+    var version   = pkg.version;
 
     // Project configuration.
     grunt.initConfig({
         pkg: pkg,
         clean: {
-            all: ['cordova/www/**/*']
+            all: ['www/**/*']
         },
         replace: {
             core: {
@@ -26,6 +25,10 @@ module.exports = function (grunt) {
                         {
                             match: /var version = *'[\.0-9]*';/g,
                             replacement: "var version = '" + version + "';"
+                        },
+                        {
+                            match: /version="[\.0-9]*"/g,
+                            replacement: 'version="' + version + '"'
                         },
                         {
                             match: /"version": *"[\.0-9]*",/g,
@@ -57,29 +60,11 @@ module.exports = function (grunt) {
                         expand:  true,
                         flatten: true,
                         src:     [
-                                srcDir + 'controller.js',
+                                srcDir + 'config.xml',
                                 srcDir + 'package.json',
                                 srcDir + 'io-package.json'
                         ],
                         dest:    srcDir
-                    },
-                    {
-                        expand:  true,
-                        flatten: true,
-                        src:     [
-                            srcDir + 'www/cache.manifest',
-                            srcDir + 'www/edit.html',
-                            srcDir + 'www/index.html'
-                        ],
-                        dest:    srcDir + '/www'
-                    },
-                    {
-                        expand:  true,
-                        flatten: true,
-                        src:     [
-                            srcDir + 'www/js/vis.js'
-                        ],
-                        dest:    srcDir + '/www/js'
                     }
                 ]
             },
@@ -97,9 +82,9 @@ module.exports = function (grunt) {
                         expand:  true,
                         flatten: true,
                         src:     [
-                                'cordova/www/index.html'
+                                'www/index.html'
                         ],
-                        dest:    'cordova/www'
+                        dest:    'www'
                     }
                 ]
             }
@@ -109,51 +94,11 @@ module.exports = function (grunt) {
         // Lint
         jshint: require(__dirname + '/tasks/jshint.js'),
         http: {
-            /*get_hjscs: {
-                options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jscs.js'
-                },
-                dest: 'tasks/jscs.js'
-            },
-            get_jshint: {
-                options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jshint.js'
-                },
-                dest: 'tasks/jshint.js'
-            },
-            get_gruntfile: {
-                options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.build/master/adapters/Gruntfile.js'
-                },
-                dest: 'Gruntfile.js'
-            },*/
-            get_utilsfile: {
-                options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.build/master/adapters/utils.js'
-                },
-                dest: 'lib/utils.js'
-            },
             get_jscsRules: {
                 options: {
                     url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jscsRules.js'
                 },
                 dest: 'tasks/jscsRules.js'
-            },
-            get_iconOnline: {
-                options: {
-                    encoding: null,
-                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png'
-                },
-                dest: dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.png'
-
-            },
-            get_iconOffline: {
-                options: {
-                    encoding: null,
-                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png'
-                },
-                dest: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.png'
-
             }
         },
         copy: {
@@ -162,9 +107,9 @@ module.exports = function (grunt) {
                     // includes files within path
                     {
                         expand: true,
-                        cwd: 'www/',
+                        cwd: 'node_modules/iobroker.vis/www/',
                         src: ['**', '!edit.html', '!offline.html', '!cache.manifest', '!cordova.js', '!js/app.js'],
-                        dest: 'cordova/www'
+                        dest: 'www'
                     }
                 ]
             },
@@ -174,7 +119,7 @@ module.exports = function (grunt) {
                         expand: true,
                         cwd: 'node_modules/iobroker.web/www/',
                         src: ['lib/css/themes/**', 'lib/js/jquery-1.11.2.min.*', 'lib/js/jquery-ui-1.11.4.full.min.js', 'lib/js/socket.io.js'],
-                        dest: 'cordova/www'
+                        dest: 'www'
                     }
                 ]
             },
@@ -182,27 +127,26 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
-                        cwd: 'cordova',
+                        cwd: '.',
                         src: ['app.js'],
-                        dest: 'cordova/www/js'
+                        dest: 'www/js'
                     }
                 ]
             }
         },
         exec: {
             build: {
-                cwd: 'cordova',
+                cwd: '.',
                 cmd: 'cordova.cmd build android'
             },
             run: {
-                cwd: 'cordova',
+                cwd: '.',
                 cmd: 'cordova.cmd run android'
             },
             release: {
-                cwd: 'cordova',
+                cwd: '.',
                 cmd: 'cordova.cmd build android --release'
             }
-
         }
     });
 
@@ -243,8 +187,12 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-exec');
     grunt.loadNpmTasks('grunt-contrib-copy');
 
+    grunt.registerTask('build-vis', function () {
+        var syncWidgetSets = require(__dirname + '/node_modules/iobroker.vis/lib/install');
+        syncWidgetSets();
+    });
+
     grunt.registerTask('default', [
-        'http',
         'replace:core',
         'updateReadme',
         'jshint',
@@ -253,7 +201,7 @@ module.exports = function (grunt) {
 	
 	grunt.registerTask('prepublish', ['replace', 'updateReadme']);
 	grunt.registerTask('p', ['prepublish']);
-    grunt.registerTask('build',     ['copy', 'replace:index', 'exec:build']);
-    grunt.registerTask('run',       ['copy', 'replace:index', 'exec:run']);
-    grunt.registerTask('release',   ['copy', 'replace:index', 'exec:release']);
+    grunt.registerTask('build',     ['build-vis', 'copy', 'replace:index', 'exec:build']);
+    grunt.registerTask('run',       ['build-vis', 'copy', 'replace:index', 'exec:run']);
+    grunt.registerTask('release',   ['build-vis', 'copy', 'replace:index', 'exec:release']);
 };

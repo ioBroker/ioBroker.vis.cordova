@@ -10,3 +10,6 @@
 /cordova/platforms/android/.gradle
 /cordova/platforms/android/build
 /cordova/platforms/android/CordovaLib/build
+/www
+/platforms/android/.gradle
+/platforms/android/CordovaLib/build
