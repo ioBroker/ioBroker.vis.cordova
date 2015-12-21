@@ -28,6 +28,8 @@ $.extend(systemDictionary, {
     'Socket':       {'en': 'ioBroker socket',   'de': 'ioBroker socket',    'ru': 'ioBroker сокет'},
     'System':       {'en': 'system',            'de': 'System',             'ru': 'системный'},
     'Reload':       {'en': 'Reload',            'de': 'Neuladen',           'ru': 'Обновить'},
+    'Re-sync':      {'en': 'Re-sync',           'de': 'Re-sync',            'ru': 'Синхр.'},
+    'Instance':     {'en': 'Instance',          'de': 'Instanz',            'ru': 'Идентификатор.'},
     "Prevent from sleep": {
         "en": "Prevent from sleep",
         "de": "Nicht einschlaffen",
@@ -41,7 +43,8 @@ var app = {
         systemLang: navigator.language || navigator.userLanguage || 'en',
         noSleep:    false,
         project:    'main',
-        resync:     false
+        resync:     false,
+        instance:   null
     },
     loaded: false,
     projects: [],
@@ -138,7 +141,14 @@ var app = {
             this.settings = $.extend(this.settings, value);
 
             systemLang   = this.settings.systemLang || navigator.language || navigator.userLanguage;
-            socketUrl = this.settings.socketUrl;
+            socketUrl    = this.settings.socketUrl;
+
+            // generate new Instance
+            if (!this.settings.instance) {
+                this.settings.instance = (Math.random() * 4294967296).toString(16);
+                this.settings.instance = '0000000' + this.settings.instance;
+                this.settings.instance = this.settings.instance.substring(this.settings.instance.length - 8);
+            }
         }
     },
     saveSettings: function () {
@@ -186,6 +196,7 @@ var app = {
                 app.syncVis(app.settings.project, function () {
                     app.settings.resync = false;
                     app.saveSettings();
+                    window.location.reload();
                 });
             }
             app.readProjects();
@@ -272,8 +283,9 @@ var app = {
     installMenu: function () {
         // install menu button
         $('body').append('<div id="cordova_menu"   style="bottom: 0.5em; left: 0.5em; padding-left: 0.5em; padding-right: 0.5em; position: absolute; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 5001" id="cordova_menu">...</div>');
-        $('body').append('<div id="cordova_dialog" style="background: #d3d3d3; top: 1em; left: 1em; bottom: 1em; right: 1em; position: absolute; border-radius: 0.3em; border: 1px solid grey; display: none; z-index: 5002">' +
-            '<h1>' + _('Settings') + '</h1>' +
+        $('body').append('<div id="cordova_dialog_bg" style="top:0; right: 0; left: 0; bottom: 0; background: black; opacitiy: 0.3;display: none; z-index: 5002"></div>' +
+            '<div id="cordova_dialog" style="background: #d3d3d3; top: 1em; left: 1em; bottom: 1em; right: 1em; position: absolute; border-radius: 0.3em; border: 1px solid grey; display: none; z-index: 5003">' +
+            '<h1 style="padding-left: 1em;">' + _('Settings') + '</h1>' +
             '<table style="width: 100%; padding: 1em">' +
             '<tr><td>' + _('Language') + ':</td><td><select data-name="systemLang" class="cordova-setting" style="width: 100%">' +
             '<option value="">' + _('System') + '</option>' +
@@ -284,10 +296,12 @@ var app = {
             '<tr><td>' + _('Socket') + ':</td><td><input data-name="socketUrl"  class="cordova-setting" style="width: 100%"></td></tr>'+
             '<tr><td>' + _('Prevent from sleep') + ':</td><td><input type="checkbox" data-name="noSleep"  class="cordova-setting" style="width: 100%"></td></tr>'+
             '<tr><td>' + _('Project') + ':</td><td><select data-name="project" id="cordova_project" class="cordova-setting" style="width: 100%">' +
+            '<tr><td>' + _('Instance') + ':</td><td><input data-name="instance" class="cordova-setting" style="width: 100%"></td></tr>'+
             '</select></td></tr>'+
             '</table>' +
             '<div style="position: absolute; bottom: 1em; right: 1em; display: inline-block">' +
-            '<button id="cordova_reload">' + _('Reload') + '</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+            '<button id="cordova_reload">' + _('Reload') + '</button>' +
+            '<button id="cordova_resync">' + _('Re-sync') + '</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
             '<button id="cordova_ok">' + _('Ok') + '</button>&nbsp;' +
             '<button id="cordova_cancel">' + _('Cancel') + '</button></div>' +
             '</div>');
@@ -301,14 +315,22 @@ var app = {
                     $(this).val(app.settings[$(this).data('name')]);
                 }
             });
-
+            $('#cordova_dialog_bg').show();
             $('#cordova_dialog').show();
         });
         $('#cordova_cancel').click(function () {
+            $('#cordova_dialog_bg').hide();
             $('#cordova_dialog').hide();
         }).css({height: '2em'});
 
         $('#cordova_reload').click(function () {
+            $('#cordova_dialog_bg').hide();
+            $('#cordova_dialog').hide();
+            window.location.reload();
+        }).css({height: '2em'});
+
+        $('#cordova_resync').click(function () {
+            $('#cordova_dialog_bg').hide();
             $('#cordova_dialog').hide();
             app.settings.resync = true;
             app.saveSettings();
@@ -316,6 +338,7 @@ var app = {
         }).css({height: '2em'});
 
         $('#cordova_ok').click(function () {
+            $('#cordova_dialog_bg').hide();
             $('#cordova_dialog').hide();
             var changed = false;
 
