@@ -231,6 +231,7 @@ android {
         buildTypes {
             release {
                 signingConfig signingConfigs.release
+                zipAlignEnabled true
             }
         }
         addSigningProps(cdvReleaseSigningPropertiesFile, signingConfigs.release)
