@@ -29,7 +29,12 @@ $.extend(systemDictionary, {
     'System':       {'en': 'system',            'de': 'System',             'ru': 'системный'},
     'Reload':       {'en': 'Reload',            'de': 'Neuladen',           'ru': 'Обновить'},
     'Re-sync':      {'en': 'Re-sync',           'de': 'Re-sync',            'ru': 'Синхр.'},
-    'Instance':     {'en': 'Instance',          'de': 'Instanz',            'ru': 'Идентификатор.'},
+    'Instance':     {'en': 'Instance',          'de': 'Instanz',            'ru': 'Идентификатор'},
+    'Not found':    {'en': 'Not found',         'de': 'Nicht gefunden',     'ru': 'не найден'},
+    'Connected':    {'en': 'Connected',         'de': 'Verbunden',          'ru': 'Соединение'},
+    "Project":      {"en": "Project",           "de": "Projekt",            "ru": "Проект"},
+    "yes":          {"en": "yes",               "de": "ja",                 "ru": "есть"},
+    "no":           {"en": "no",                "de": "nein",               "ru": "нет"},
     "Prevent from sleep": {
         "en": "Prevent from sleep",
         "de": "Nicht einschlaffen",
@@ -42,7 +47,7 @@ var app = {
         socketUrl:  'http://localhost:8084',
         systemLang: navigator.language || navigator.userLanguage || 'en',
         noSleep:    false,
-        project:    'main',
+        project:    '',
         resync:     false,
         instance:   null
     },
@@ -75,15 +80,15 @@ var app = {
                 } else {
                     app.getLocalDir(dir, create, cb, index + 1);
                 }
-            }, function (err) {
-                cb(err);
+            }, function (error) {
+                cb(error);
         });
     },
     writeLocalFile: function (fileName, data, cb) {
         var parts = fileName.split('/');
         var fileN = parts.pop();
-        this.getLocalDir(parts.join('/'), true, function (err, dirHandler) {
-            if (err) console.error(err);
+        this.getLocalDir(parts.join('/'), true, function (error, dirHandler) {
+            if (error) console.error(error);
             if (dirHandler) {
                 dirHandler.getFile(fileN, {create: true}, function (fileHandler) {
                     fileHandler.createWriter(function (fileWriter) {
@@ -105,8 +110,7 @@ var app = {
         var parts = fileName.split('/');
         var fileN = parts.pop();
 
-        this.getLocalDir(parts.join('/'), false, function (err, dir) {
-            if (err) console.error(err);
+        this.getLocalDir(parts.join('/'), false, function (error, dir) {
             if (dir) {
                 dir.getFile(fileN, {create: false}, function (fileEntry) {
                     fileEntry.file(function(file) {
@@ -119,9 +123,20 @@ var app = {
                         reader.readAsText(file);
                     });
                 }, function (error) {
+                    if (fileName.indexOf('vis-views.json') !== -1) {
+                        cb(_('Not found'), '', fileName);
+                    } else {
+                        cb(error, null, fileName);
+                        console.error('Cannot read file: ' + error);
+                    }
+                });
+            } else {
+                if (fileName.indexOf('vis-views.json') !== -1) {
+                    cb(_('Not found'), '', fileName);
+                } else {
                     cb(error, null, fileName);
                     console.error('Cannot read file: ' + error);
-                });
+                }
             }
         });
     },
@@ -131,7 +146,7 @@ var app = {
             if (value) {
                 try {
                     value = JSON.parse(value);
-                } catch (err) {
+                } catch (error) {
                     console.error('Cannot parse settings');
                     value = {};
                 }
@@ -190,32 +205,59 @@ var app = {
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
         app.installMenu();
-        app.readLocalFile(app.settings.project + '/vis-views.json', function (err, result) {
-            if (err) console.error(err);
-            if (!result || app.settings.resync) {
-                app.syncVis(app.settings.project, function () {
-                    app.settings.resync = false;
-                    app.saveSettings();
-                    window.location.reload();
-                });
-            }
+        if (app.settings.project) {
+            app.readLocalFile(app.settings.project + '/vis-views.json', function (error, result) {
+                if (error) console.error(error);
+                if (!result || app.settings.resync) {
+                    app.syncVis(app.settings.project, function (viewExists) {
+                        app.settings.resync = false;
+                        app.saveSettings();
+                        if (!viewExists) {
+                            window.alert(_('No views found in %s', app.settings.project));
+                        } else {
+                            window.location.reload();
+                        }
+                    });
+                }
+                app.readProjects();
+            });
+        } else {
             app.readProjects();
+        }
+        if (app.settings.socketUrl == 'http://localhost:8084') {
+            $('#cordova_menu').trigger('click');
+        }
+    },
+    readProjectsHelper: function (project, cb) {
+        vis.conn.readFile(project + '/vis-views.json', function (error, data, filename) {
+            cb && cb(data ? project : null);
         });
     },
     readProjects: function (cb) {
         if (vis.conn.getIsConnected()) {
             app.projects = [];
-            vis.conn.readDir('/vis.0', function (err, files) {
-                var text = '';
+            vis.conn.readDir('/vis.0', function (error, files) {
+                var text  = '';
+                var count = 0;
                 for (var f = 0; f < files.length; f++) {
                     if (files[f].isDir) {
-                        text += '<option value="' + files[f].file + '" ' + (files[f].file == app.settings.project ? 'selected' : '') + '>' + files[f].file + '</option>';
-
-                        app.projects.push(files[f].file);
+                        count++;
+                        app.readProjectsHelper(files[f].file, function (project) {
+                            if (project) {
+                                app.projects.push(project);
+                                text += '<option value="' + project + '" ' + (project == app.settings.project ? 'selected' : '') + '>' + project + '</option>';
+                            }
+                            if (!--count) {
+                                $('#cordova_project').html(text);
+                                cb && cb();
+                            }
+                        });
                     }
                 }
-                $('#cordova_project').html(text);
-                cb && cb();
+                if (!count) {
+                    $('#cordova_project').html(text);
+                    cb && cb();
+                }
             });
         } else {
             setTimeout(function () {
@@ -223,26 +265,26 @@ var app = {
             }.bind(this), 1000);
         }
     },
-    syncVis: function (dir, cb) {
+    syncVis: function (dir, cb, viewExists) {
         dir = dir || '';
+        viewExists = viewExists || false;
 
         if (vis.conn.getIsConnected()) {
-            vis.conn.readDir('/vis.0/' + dir, function (err, files) {
+            vis.conn.readDir('/vis.0/' + dir, function (error, files) {
                 if (files) {
                     var count = 0;
                     for (var f = 0; f < files.length; f++) {
                         if (files[f].isDir) {
                             count++;
-                            app.syncVis(dir + '/' + files[f].file, function () {
-                                if (!--count) {
-                                    cb && cb();
-                                }
-                            });
+                            app.syncVis(dir + '/' + files[f].file, function (_viewExists) {
+                                if (!--count && cb) cb(_viewExists);
+                            }, viewExists);
                         } else {
-                            vis.conn.readFile(dir + '/' + files[f].file, function (err, data, filename) {
-                                if (err) console.error(err);
-                                if (filename && filename.indexOf('views.json') != -1) {
-                                    console.log(filename);
+                            count++;
+                            vis.conn.readFile(dir + '/' + files[f].file, function (error, data, filename) {
+                                if (error) console.error(error);
+                                if (filename && filename.indexOf('vis-views.json') != -1) {
+                                    viewExists = true;
                                     var m = data.match(/"\/vis\.0\/.+"/g);
                                     if (m) {
                                         for (var mm = 0; mm < m.length; mm++) {
@@ -260,33 +302,38 @@ var app = {
                                     }
                                 }
                                 if (data) {
-                                    app.writeLocalFile(filename.replace(/^\/vis\.0\//, ''), data, function (err) {
-                                        if (err) console.error(err);
+                                    app.writeLocalFile(filename.replace(/^\/vis\.0\//, ''), data, function (error) {
+                                        if (error) console.error(error);
+                                        if (!--count && cb) cb(viewExists);
                                     });
+                                } else if (!--count && cb) {
+                                    cb(viewExists);
                                 }
                             }, true);
                         }
                     }
-                    if (!count) {
-                        cb && cb();
-                    }
-                } else {
-                    cb && cb();
+                    if (!count && cb) cb(viewExists);
+                } else if (cb) {
+                    cb(viewExists);
                 }
             });
         } else {
             setTimeout(function () {
-                this.syncVis(dir, cb);
+                this.syncVis(dir, cb, viewExists);
             }.bind(this), 1000);
         }
+    },
+    connectionChange: function (connected) {
+        $('#cordova_connected').html('<span style="color:' + (connected ? 'green">' + _('yes') : 'red">' + _('no')) + '</span>');
     },
     installMenu: function () {
         // install menu button
         $('body').append('<div id="cordova_menu"   style="bottom: 0.5em; left: 0.5em; padding-left: 0.5em; padding-right: 0.5em; position: absolute; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 5001" id="cordova_menu">...</div>');
-        $('body').append('<div id="cordova_dialog_bg" style="top:0; right: 0; left: 0; bottom: 0; background: black; opacitiy: 0.3;display: none; z-index: 5002"></div>' +
+        $('body').append('<div id="cordova_dialog_bg" style="position: absolute; top:0; right: 0; left: 0; bottom: 0; background: black; opacitiy: 0.1;display: none; z-index: 5002"></div>' +
             '<div id="cordova_dialog" style="background: #d3d3d3; top: 1em; left: 1em; bottom: 1em; right: 1em; position: absolute; border-radius: 0.3em; border: 1px solid grey; display: none; z-index: 5003">' +
             '<h1 style="padding-left: 1em;">' + _('Settings') + '</h1>' +
             '<table style="width: 100%; padding: 1em">' +
+            '<tr><td>' + _('Connected') + ':</td><td><div id="cordova_connected"></div></td></tr>'+
             '<tr><td>' + _('Language') + ':</td><td><select data-name="systemLang" class="cordova-setting" style="width: 100%">' +
             '<option value="">' + _('System') + '</option>' +
             '<option value="en">english</option>' +
@@ -294,7 +341,7 @@ var app = {
             '<option value="ru">русский</option>' +
             '</select></td></tr>'+
             '<tr><td>' + _('Socket') + ':</td><td><input data-name="socketUrl"  class="cordova-setting" style="width: 100%"></td></tr>'+
-            '<tr><td>' + _('Prevent from sleep') + ':</td><td><input type="checkbox" data-name="noSleep"  class="cordova-setting" style="width: 100%"></td></tr>'+
+            '<tr><td>' + _('Prevent from sleep') + ':</td><td><input type="checkbox" data-name="noSleep"  class="cordova-setting"></td></tr>'+
             '<tr><td>' + _('Project') + ':</td><td><select data-name="project" id="cordova_project" class="cordova-setting" style="width: 100%">' +
             '<tr><td>' + _('Instance') + ':</td><td><input data-name="instance" class="cordova-setting" style="width: 100%"></td></tr>'+
             '</select></td></tr>'+
@@ -315,6 +362,7 @@ var app = {
                     $(this).val(app.settings[$(this).data('name')]);
                 }
             });
+            app.connectionChange(vis.conn.getIsConnected());
             $('#cordova_dialog_bg').show();
             $('#cordova_dialog').show();
         });
@@ -324,12 +372,49 @@ var app = {
         }).css({height: '2em'});
 
         $('#cordova_reload').click(function () {
+            var changed = false;
+            // save settings
+            $('#cordova_dialog .cordova-setting').each(function() {
+                if ($(this).attr('type') === 'checkbox') {
+                    if (app.settings[$(this).data('name')] != $(this).prop('checked')) {
+                        changed = true;
+                        return false;
+                    }
+                } else {
+                    if (app.settings[$(this).data('name')] != $(this).val()) {
+                        changed = true;
+                        return false;
+                    }
+                }
+            });
+
+            if (changed && !window.confirm(_('Discard changes?'))) return;
+
             $('#cordova_dialog_bg').hide();
             $('#cordova_dialog').hide();
             window.location.reload();
         }).css({height: '2em'});
 
         $('#cordova_resync').click(function () {
+            var changed = false;
+
+            // save settings
+            $('#cordova_dialog .cordova-setting').each(function() {
+                if ($(this).attr('type') === 'checkbox') {
+                    if (app.settings[$(this).data('name')] != $(this).prop('checked')) {
+                        changed = true;
+                        return false;
+                    }
+                } else {
+                    if (app.settings[$(this).data('name')] != $(this).val()) {
+                        changed = true;
+                        return false;
+                    }
+                }
+            });
+
+            if (changed && !window.confirm(_('Discard changes?'))) return;
+
             $('#cordova_dialog_bg').hide();
             $('#cordova_dialog').hide();
             app.settings.resync = true;
@@ -341,6 +426,7 @@ var app = {
             $('#cordova_dialog_bg').hide();
             $('#cordova_dialog').hide();
             var changed = false;
+            var projectChanged = false;
 
             // save settings
             $('#cordova_dialog .cordova-setting').each(function() {
@@ -353,19 +439,33 @@ var app = {
                     if (app.settings[$(this).data('name')] != $(this).val()) {
                         app.settings[$(this).data('name')] = $(this).val();
                         changed = true;
+                        if ($(this).data('name') === 'project') projectChanged = true;
                     }
                 }
             });
 
             if (changed) {
-                app.saveSettings();
-                window.location.reload();
+                // If project name changed
+                if (projectChanged && vis.conn.getIsConnected()) {
+                    // try to load all files
+                    app.syncVis(app.settings.project, function (viewExists) {
+                        app.settings.resync = false;
+                        app.saveSettings();
+                        if (!viewExists) {
+                            window.alert(_('No views found in %s', app.settings.project));
+                        } else {
+                            window.location.reload();
+                        }
+                    });
+                } else {
+                    app.saveSettings();
+                    window.location.reload();
+                }
             }
         }).css({height: '2em'});
     },
     receivedEvent: function(event) {
         console.log('Received Event: ' + event);
-
     }
 };
 

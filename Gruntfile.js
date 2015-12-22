@@ -8,7 +8,6 @@
 module.exports = function (grunt) {
 
     var srcDir    = __dirname + '/';
-    var dstDir    = srcDir + '.build/';
     var pkg       = grunt.file.readJSON('package.json');
     var version   = pkg.version;
 
@@ -60,9 +59,9 @@ module.exports = function (grunt) {
                         expand:  true,
                         flatten: true,
                         src:     [
-                                srcDir + 'config.xml',
-                                srcDir + 'package.json',
-                                srcDir + 'io-package.json'
+                            srcDir + 'config.xml',
+                            srcDir + 'package.json',
+                            srcDir + 'io-package.json'
                         ],
                         dest:    srcDir
                     }
@@ -140,7 +139,6 @@ module.exports = function (grunt) {
                             '!lib/js/jquery-1.11.2.min.map',
                             '!lib/js/jquery-ui-1.10.3.dragdropsort.min.js',
                             '!lib/js/jquery-ui-1.11.4.full.min.js',
-                            '!lib/js/jquery-ui-timepicker-addon-1.2.2.js',
                             '!lib/js/jquery.ba-resize.min.js',
                             '!lib/js/jquery.base64.min.js',
                             '!lib/js/jquery.fancytree-all.min.js',
@@ -245,7 +243,7 @@ module.exports = function (grunt) {
 	
 	grunt.registerTask('prepublish', ['replace', 'updateReadme']);
 	grunt.registerTask('p', ['prepublish']);
-    grunt.registerTask('build',     ['build-vis', 'copy', 'replace:index', 'exec:build']);
-    grunt.registerTask('run',       ['build-vis', 'copy', 'replace:index', 'exec:run']);
-    grunt.registerTask('release',   ['build-vis', 'copy', 'replace:index', 'exec:release']);
+    grunt.registerTask('build',     ['build-vis', 'copy', 'replace', 'exec:build']);
+    grunt.registerTask('run',       ['build-vis', 'copy', 'replace', 'exec:run']);
+    grunt.registerTask('release',   ['build-vis', 'copy', 'replace', 'exec:release']);
 };
