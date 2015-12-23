@@ -224,14 +224,14 @@ var app = {
         } else {
             app.readProjects();
         }
-        if (app.settings.socketUrl == 'http://localhost:8084') {
+        if (!app.settings.project || app.settings.socketUrl == 'http://localhost:8084') {
             $('#cordova_menu').trigger('click');
         }
     },
     readProjectsHelper: function (project, cb) {
         vis.conn.readFile(project + '/vis-views.json', function (error, data, filename) {
             cb && cb(data ? project : null);
-        });
+        }, true);
     },
     readProjects: function (cb) {
         if (vis.conn.getIsConnected()) {
@@ -451,6 +451,7 @@ var app = {
                     app.syncVis(app.settings.project, function (viewExists) {
                         app.settings.resync = false;
                         app.saveSettings();
+                        // TODO
                         if (!viewExists) {
                             window.alert(_('No views found in %s', app.settings.project));
                         } else {

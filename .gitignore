@@ -13,3 +13,4 @@
 /www
 /platforms/android/.gradle
 /platforms/android/CordovaLib/build
+/platforms/android/*.keystore
