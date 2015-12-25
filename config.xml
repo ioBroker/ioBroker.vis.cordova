@@ -12,6 +12,7 @@
 
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <plugin name="cordova-plugin-file" spec="1" />
+    <plugin name="cordova-plugin-network-information" spec="1" />
 
     <access origin="*" />
 

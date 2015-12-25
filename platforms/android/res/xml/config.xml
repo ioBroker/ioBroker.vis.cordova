@@ -12,6 +12,16 @@
         <param name="android-package" value="org.apache.cordova.file.FileUtils" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="NetworkStatus">
+        <param name="android-package" value="org.apache.cordova.networkinformation.NetworkManager" />
+    </feature>
+    <feature name="SpeechRecognition">
+        <param name="android-package" value="org.apache.cordova.speech.SpeechRecognition" />
+    </feature>
+    <feature name="TTS">
+        <param name="android-package" value="com.wordsbaking.cordova.tts.TTS" />
+        <param name="onload" value="true" />
+    </feature>
     <allow-intent href="market:*" />
     <name>ioBroker.vis</name>
     <description>

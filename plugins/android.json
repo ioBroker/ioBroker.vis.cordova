@@ -15,6 +15,15 @@
         },
         "cordova-plugin-file": {
             "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-tts": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "org.apache.cordova.speech.speechrecognition": {
+            "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
     "dependent_plugins": {}
