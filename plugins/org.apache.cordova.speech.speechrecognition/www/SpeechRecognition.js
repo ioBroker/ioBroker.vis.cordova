@@ -1,6 +1,6 @@
 var exec = require("cordova/exec");
 
-/** 
+/**
     attribute SpeechGrammarList grammars;
     attribute DOMString lang;
     attribute boolean continuous;
@@ -15,7 +15,7 @@ var SpeechRecognition = function () {
     this.interimResults = false;
     this.maxAlternatives = 1;
     this.serviceURI = "";
-    
+
     // event methods
     this.onaudiostart = null;
     this.onsoundstart = null;
@@ -28,6 +28,8 @@ var SpeechRecognition = function () {
     this.onerror = null;
     this.onstart = null;
     this.onend = null;
+    this.ondebug = null;
+    this.onpartial = null;
 
     exec(function() {
         console.log("initialized");
@@ -36,10 +38,12 @@ var SpeechRecognition = function () {
     }, "SpeechRecognition", "init", []);
 };
 
-SpeechRecognition.prototype.start = function() {
+SpeechRecognition.prototype.start = function(suppressSound) {
     var that = this;
     var successCallback = function(event) {
-        if (event.type === "audiostart" && typeof that.onaudiostart === "function") {
+        if (event.type === "debug" && typeof that.ondebug === "function") {
+            that.ondebug(event);
+        } else if (event.type === "audiostart" && typeof that.onaudiostart === "function") {
             that.onaudiostart(event);
         } else if (event.type === "soundstart" && typeof that.onsoundstart === "function") {
             that.onsoundstart(event);
@@ -52,6 +56,8 @@ SpeechRecognition.prototype.start = function() {
         } else if (event.type === "audioend" && typeof that.onaudioend === "function") {
             that.onaudioend(event);
         } else if (event.type === "result" && typeof that.onresult === "function") {
+            that.onresult(event);
+        } else if (event.type === "partial" && typeof that.onpartial === "function") {
             that.onresult(event);
         } else if (event.type === "nomatch" && typeof that.onnomatch === "function") {
             that.onnomatch(event);
@@ -67,7 +73,7 @@ SpeechRecognition.prototype.start = function() {
         }
     };
 
-    exec(successCallback, errorCallback, "SpeechRecognition", "start", [this.lang]);
+    exec(successCallback, errorCallback, "SpeechRecognition", "start", [this.lang, (suppressSound || false)]);
 };
 
 SpeechRecognition.prototype.stop = function() {

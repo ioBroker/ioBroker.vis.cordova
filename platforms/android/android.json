@@ -27,6 +27,10 @@
                         {
                             "xml": "<feature name=\"SpeechRecognition\"><param name=\"android-package\" value=\"org.apache.cordova.speech.SpeechRecognition\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"WifiInfo\"><param name=\"android-package\" value=\"org.apache.cordova.wifiinfo.CordovaWifiInfo\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -44,6 +48,14 @@
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.RECORD_AUDIO\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\" />",
                             "count": 1
                         }
                     ]
@@ -82,6 +94,9 @@
             "PACKAGE_NAME": "net.iobroker.vis"
         },
         "org.apache.cordova.speech.speechrecognition": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "org.apache.cordova.wifiinfo": {
             "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
@@ -356,6 +371,14 @@
             "clobbers": [
                 "SpeechGrammarList"
             ]
+        },
+        {
+            "file": "plugins/org.apache.cordova.wifiinfo/www/WifiInfo.js",
+            "id": "org.apache.cordova.wifiinfo.wifi",
+            "pluginId": "org.apache.cordova.wifiinfo",
+            "clobbers": [
+                "navigator.wifi"
+            ]
         }
     ],
     "plugin_metadata": {
@@ -364,6 +387,7 @@
         "cordova-plugin-file": "3.0.0",
         "cordova-plugin-network-information": "1.1.0",
         "cordova-plugin-tts": "0.2.3",
-        "org.apache.cordova.speech.speechrecognition": "0.1.0"
+        "org.apache.cordova.speech.speechrecognition": "0.1.0",
+        "org.apache.cordova.wifiinfo": "0.1.1"
     }
 }

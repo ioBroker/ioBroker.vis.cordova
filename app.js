@@ -35,14 +35,39 @@ $.extend(systemDictionary, {
     "Project":      {"en": "Project",           "de": "Projekt",            "ru": "Проект"},
     "yes":          {"en": "yes",               "de": "ja",                 "ru": "есть"},
     "no":           {"en": "no",                "de": "nein",               "ru": "нет"},
+    "WIFI":         {"en": "WiFi Connection",   "de": "WiFi Verbindung",    "ru": "WiFi соединение"},
+    "WIFI SSID":    {"en": "Network name (SSID)", "de": "SSID Name",        "ru": "Имя сети (SSID)"},
+    "WIFI Socket":  {"en": "Socket URL",        "de": "Socket URL",         "ru": "Socket URL"},
+    "WIFI User":    {"en": "User",              "de": "Anwender",           "ru": "Пользователь"},
+    "WIFI Password": {"en": "Password",         "de": "Kennwort",           "ru": "Пароль"},
+    "WIFI Password repeat": {
+        "en": "Password repeat",
+        "de": "Kennwort-Wiederholung",
+        "ru": "Повтор пароля"
+    },
+    "Actual":       {"en": "<=",                "de": "<=",                 "ru": "<="},
+    "Cell":         {"en": "Cell Connection",   "de": "Mobile Verbindung",  "ru": "Мобильное соединение"},
+    "Cell Socket":  {"en": "Socket URL",        "de": "Socket URL",         "ru": "Socket URL"},
+    "Cell User":    {"en": "Cell User",         "de": "Anwender",           "ru": "Пользователь"},
+    "Cell Password": {"en": "Cell Password",    "de": "Kennwort",           "ru": "Пароль"},
+    "Cell Password repeat": {
+        "en": "Password repeat",
+        "de": "Kennwort-Wiederholung",
+        "ru": "Повтор пароля"
+    },
+    "Speech recognition": {
+        "en": "Speech recognition",
+        "de": "Spracherkennung",
+        "ru": "Распознавание речи"
+    },
     "Allow window move": {
-        "en": "Allow window move",
+            "en": "Allow window move",
         "de": "Erlaube Fensterverschiebung",
         "ru": "Разрешить сдвиг окна"
     },
     "Prevent from sleep": {
         "en": "Prevent from sleep",
-        "de": "Nicht einschlaffen",
+        "de": "Nicht einschlafen",
         "ru": "Не засыпать"
     }
 });
@@ -60,6 +85,7 @@ var app = {
     },
     connection:'',
     projects: [],
+    ssid: null,
     localDir: null,
     getLocalDir: function (dir, create, cb, index) {
         if (typeof create === 'function') {
@@ -163,9 +189,28 @@ var app = {
             this.settings = $.extend(this.settings, value);
 
             systemLang   = this.settings.systemLang || navigator.language || navigator.userLanguage;
-            socketUrl    = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
-            if (navigator.network && navigator.network.connection.type != 'wifi') {
+
+            if (this.settings.socketUrlGSM && navigator.network && navigator.network.connection.type != 'wifi') {
                 socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+            } else {
+                // If WIFI and SSID is set
+                if (navigator.wifi) {
+                    // read SSID info
+                    navigator.wifi.getWifiInfo(function (data) {
+                        app.ssid = data.connection.SSID;
+                        if (this.settings.socketUrlGSM && app.settings.ssid && data.connection.SSID != app.settings.ssid) {
+                            // other wifi network
+                            socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+                        } else {
+                            socketUrl = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                        }
+                    }.bind(this), function (error) {
+                        socketUrl = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                        console.error(error);
+                    }.bind(this));
+                } else {
+                    socketUrl = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                }
             }
 
             // generate new Instance
@@ -219,8 +264,18 @@ var app = {
         if (data.locale == 'de') data.locale = 'de-DE';
         if (data.locale == 'ru') data.locale = 'ru-RU';
 
+        if (app.settings.project && app.settings.recognition) {
+            app.menu.css('background', 'rgba(0, 0, 0, 0.1)');
+            app.recognition.stop();
+        }
+
         TTS.speak(data, function () {
             console.log(JSON.stringify(data));
+
+            if (app.settings.project && app.settings.recognition) {
+                app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                app.recognition.start();
+            }
         }, function (reason) {
             console.error(reason);
         });
@@ -236,8 +291,9 @@ var app = {
             this.settings.systemLang = this.settings.systemLang.split('-')[0];
             systemLang = this.settings.systemLang;
         }
-        app.loadSettings();
+
         app.connection = navigator.network.connection.type;
+        app.loadSettings();
 
         document.addEventListener('online', function () {
             if (navigator.network.connection.type !== app.connection) {
@@ -290,6 +346,7 @@ var app = {
                 }
             });
         }
+
         if (!app.settings.project || app.settings.socketUrl == 'http://localhost:8084') {
             $('#cordova_menu').trigger('click');
         }
@@ -313,6 +370,10 @@ var app = {
         }
         $('.vis-wait-text').css({left: 0, 'padding-left': '1em'});
 
+        app.initSpeechRecognition();
+        app.manageDisplayRotation();
+    },
+    initSpeechRecognition: function () {
         if (app.settings.project && app.settings.recognition) {
             $('body').append('<div id="cordova_show_recognized" style="position: absolute; z-index: 5000; background: lightskyblue; top: 1em; left: 1em;"></div>');
             app.recText = $('#cordova_show_recognized');
@@ -321,11 +382,37 @@ var app = {
             app.recognition.maxAlternatives = 3;
             app.recognition.continuous      = true;
             app.recognition.interimResults  = true;
+            app.recognition.lang            = app.settings.systemLang;
+            if (app.settings.keyword) {
+                app.match = [
+                    new RegExp("\\b" + app.settings.keyword + "\\b"),
+                    new RegExp("^"   + app.settings.keyword + "\\b"),
+                    new RegExp("\\b" + app.settings.keyword + "$")
+                ];
+            }
             app.recognition.onresult = function(event) {
                 if (event.results.length > 0) {
-                    console.log(event.results[0][0].transcript);
-                    app.recText.html(event.results[0][0].transcript);
-                    app.recText.show();
+                    var text = event.results[0][0].transcript;
+                    app.recText.html(text).show();
+                    if (event.results[0][0].final) {
+                        app.recText.css('background: lightblue');
+                        // start analyse
+                        var matched = !app.match;
+                        if (app.match) {
+                            for (var m = 0; m < app.match.length; m++) {
+                                if (app.match.test(text)) {
+                                    // Key phrase found
+                                    matched = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (matched){
+                            app.tts('Ok');
+                        }
+                    } else {
+                        app.recText.css('background: darkblue');
+                    }
 
                     if (app.recTextTimeout) clearTimeout(app.recTextTimeout);
 
@@ -336,17 +423,66 @@ var app = {
                 }
             };
             app.recognition.onend = function(event) {
+                app.menu.css('background', 'rgba(0, 0, 0, 0.1)');
                 setTimeout(function () {
-                    app.recognition.start();
+                    app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                    app.recognition.start(false);
                 }, 300);
             };
             app.recognition.onerror = function(event) {
+                app.menu.css('background', 'rgba(0, 0, 0, 0.1)');
                 setTimeout(function () {
-                    app.recognition.start();
+                    app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                    app.recognition.start(true);
                 }, 300);
             };
-            app.recognition.start();
+
+            app.recognition.ondebug = function (event) {
+                console.log(JSON.stringify(event));
+            };
+            app.menu = $('#cordova_menu');
+            app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+            app.recognition.start(false);
         }
+    },
+    manageDisplayRotation: function () {
+        // Manage rotation
+        app.window = {
+            orientation: window.orientation,
+            width:       window.innerWidth,
+            height:      window.innerHeight
+        };
+
+        window.onorientationchange = function() {
+            var viewport_scale;
+
+            if (window.orientation == 0 || window.orientation == 180) {
+                if (app.window.orientation == 0 || app.window.orientation == 180) {
+                    // landscape
+                    viewport_scale = 1;
+                } else {
+                    // portrait
+                    viewport_scale = app.window.width / app.window.height;
+                }
+            } else if (window.orientation == 90 || window.orientation == -90) {
+                if (app.window.orientation == 90 || app.window.orientation == -90) {
+                    // landscape
+                    viewport_scale = 1;
+                } else {
+                    // portrait
+                    viewport_scale = app.window.width / app.window.height;
+                }
+            }
+
+            // resize viewport
+            $('meta[name=viewport]').attr('content',
+                'width=' + app.window.width + ',' +
+                'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale);
+        };
+        // resize viewport
+        $('meta[name=viewport]').attr('content',
+            'width=' + app.window.width + ',' +
+            'minimum-scale=1, maximum-scale=1');
     },
     loadCss: function () {
         if (app.settings.project) {
@@ -508,7 +644,7 @@ var app = {
     },
     syncVis: function (project, cb) {
         if (!$('#cordova_progress').length) {
-            $('body').append('<div id="cordova_progress" style="position: absolute; z-index: 5003; top: 50%; left: 5%; width: 90%; height: 3em; background: gray">' +
+            $('body').append('<div id="cordova_progress" style="position: absolute; z-index: 5003; top: 50%; left: 5%; width: 90%; height: 2em; background: gray">' +
                 '<div id="cordova_progress_show" style="height: 100%; width: 0; background: lightblue"></div></div>');
         }
         $('#cordova_dialog_bg').show();
@@ -539,7 +675,8 @@ var app = {
         // install menu button
         $('body').append('<div id="cordova_menu"   style="top: 0.5em; left: 0.5em; padding-left: 0.5em; padding-right: 0.5em; position: absolute; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 5001" id="cordova_menu">...</div>');
         $('body').append('<div id="cordova_dialog_bg" style="position: absolute; top:0; right: 0; left: 0; bottom: 0; background: black; opacity: 0.3; display: none; z-index: 5002"></div>' +
-            '<div id="cordova_dialog" style="background: #d3d3d3; top: 1em; left: 1em; bottom: 1em; right: 1em; position: absolute; border-radius: 0.3em; border: 1px solid grey; display: none; z-index: 5003">' +
+            '<div id="cordova_dialog" style="background: #d3d3d3; top: 1em; left: 1em; bottom: 1em; right: 1em; position: absolute; border-radius: 0.3em; border: 1px solid grey; display: none; z-index: 5003; overflow-x: hidden; overflow-x' +
+            'y: auto">' +
             '<h1 style="padding-left: 1em;">' + _('Settings') + '</h1>' +
             '<table style="width: 100%; padding: 1em">' +
 
@@ -551,24 +688,27 @@ var app = {
 
             '<tr><td>' + _('Connected') + ':</td><td><div id="cordova_connected"></div></td></tr>'+
             '<tr><td>' + _('Language') + ':</td><td><select data-name="systemLang" class="cordova-setting" style="width: 100%">' +
-            '<option value="">' + _('System') + '</option>' +
-            '<option value="en">english</option>' +
-            '<option value="de">deutsch</option>' +
-            '<option value="ru">русский</option>' +
+                '<option value="">' + _('System') + '</option>' +
+                '<option value="en">english</option>' +
+                '<option value="de">deutsch</option>' +
+                '<option value="ru">русский</option>' +
             '</select></td></tr>'+
             '<tr><td>' + _('Project')               + ':</td><td><select class="cordova-setting" data-name="project"    id="cordova_project" style="width: 100%">' +
+            '<tr><td>' + _('Prevent from sleep')    + ':</td><td><input  class="cordova-setting" data-name="noSleep"    type="checkbox"></td></tr>'+
+            '<tr><td>' + _('Allow window move')     + ':</td><td><input  class="cordova-setting" data-name="allowMove"  type="checkbox"></td></tr>'+
+            '<tr><td>' + _('Speech recognition')    + ':</td><td><input  class="cordova-setting" data-name="recognition" type="checkbox"></td></tr>'+
+            '<tr><td>' + _('Keyword')               + ':</td><td><input  class="cordova-setting" data-name="keyword"    style="width: 100%">' +
+            '<tr><td>' + _('Instance')              + ':</td><td><input  class="cordova-setting" data-name="instance"   style="width: 100%"></td></tr>'+ '<tr><td colspan="2" style="background: darkgrey; color: white; font-weight: bold">' + _('WIFI') + '</td></tr>'+
+            '<tr><td>' + _('WIFI SSID')             + ':</td><td><input  class="cordova-setting" data-name="ssid"       style="width: calc(100% - 2em)" id="cordova_ssid"><button id="cordova_ssid_button" style="width: 3em">' + _('Actual') + '</button></td></tr>'+
             '<tr><td>' + _('WIFI Socket')           + ':</td><td><input  class="cordova-setting" data-name="socketUrl"  style="width: 100%"></td></tr>'+
             '<tr><td>' + _('WIFI User')             + ':</td><td><input  class="cordova-setting" data-name="user"       style="width: 100%"></td></tr>'+
             '<tr><td>' + _('WIFI Password')         + ':</td><td><input  class="cordova-setting" data-name="password"   type="password" id="cordova-password" style="width: 100%"></td></tr>'+
             '<tr><td>' + _('WIFI Password repeat')  + ':</td><td><input  id="cordova-password-repeat" type="password"   style="width: 100%"></td></tr>'+
+            '<tr><td colspan="2" style="background: darkgrey; color: white; font-weight: bold">' + _('Cell')      + '</td></tr>'+
             '<tr><td>' + _('Cell Socket')           + ':</td><td><input  class="cordova-setting" data-name="socketUrlGSM" style="width: 100%"></td></tr>'+
             '<tr><td>' + _('Cell User')             + ':</td><td><input  class="cordova-setting" data-name="userGSM"    style="width: 100%"></td></tr>'+
             '<tr><td>' + _('Cell Password')         + ':</td><td><input  class="cordova-setting" data-name="passwordGSM" type="password" id="cordova-password-gsm" style="width: 100%"></td></tr>'+
             '<tr><td>' + _('Cell Password repeat')  + ':</td><td><input  id="cordova-password-repeat-gsm" type="password" style="width: 100%"></td></tr>'+
-            '<tr><td>' + _('Prevent from sleep')    + ':</td><td><input  class="cordova-setting" data-name="noSleep"    type="checkbox"></td></tr>'+
-            '<tr><td>' + _('Allow window move')     + ':</td><td><input  class="cordova-setting" data-name="allowMove"  type="checkbox"></td></tr>'+
-            '<tr><td>' + _('Speech recognition')    + ':</td><td><input  class="cordova-setting" data-name="recognition" type="checkbox"></td></tr>'+
-            '<tr><td>' + _('Instance')              + ':</td><td><input  class="cordova-setting" data-name="instance"   style="width: 100%"></td></tr>'+
             '</select></td></tr>'+
             '</table></div>');
 
@@ -581,12 +721,24 @@ var app = {
                     $(this).val(app.settings[$(this).data('name')]);
                 }
             });
+            if (app.ssid) {
+                $('#cordova_ssid_button').show();
+                $('#cordova_ssid').css('width', 'calc(100% - 3em)');
+            } else {
+                $('#cordova_ssid_button').hide();
+                $('#cordova_ssid').css('width', '100%');
+            }
             $('#cordova-password-repeat').val($('#cordova-password').val());
             $('#cordova-password-repeat-gsm').val($('#cordova-password-gsm').val());
 
             $('#cordova_dialog_bg').show();
             $('#cordova_dialog').show();
         });
+
+        $('#cordova_ssid_button').click(function () {
+            $('#cordova_ssid').val(app.ssid);
+        });
+
         $('#cordova_cancel').click(function () {
             $('#cordova_dialog_bg').hide();
             $('#cordova_dialog').hide();

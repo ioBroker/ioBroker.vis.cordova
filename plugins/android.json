@@ -24,6 +24,9 @@
         },
         "org.apache.cordova.speech.speechrecognition": {
             "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "org.apache.cordova.wifiinfo": {
+            "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
     "dependent_plugins": {}

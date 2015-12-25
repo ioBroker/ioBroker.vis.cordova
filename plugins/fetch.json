@@ -55,5 +55,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "org.apache.cordova.wifiinfo": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/dippi/org.apache.cordova.wifiinfo",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

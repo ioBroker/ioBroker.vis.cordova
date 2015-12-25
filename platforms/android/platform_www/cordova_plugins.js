@@ -269,6 +269,14 @@ module.exports = [
         "clobbers": [
             "SpeechGrammarList"
         ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.wifiinfo/www/WifiInfo.js",
+        "id": "org.apache.cordova.wifiinfo.wifi",
+        "pluginId": "org.apache.cordova.wifiinfo",
+        "clobbers": [
+            "navigator.wifi"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -279,7 +287,8 @@ module.exports.metadata =
     "cordova-plugin-file": "3.0.0",
     "cordova-plugin-network-information": "1.1.0",
     "cordova-plugin-tts": "0.2.3",
-    "org.apache.cordova.speech.speechrecognition": "0.1.0"
+    "org.apache.cordova.speech.speechrecognition": "0.1.0",
+    "org.apache.cordova.wifiinfo": "0.1.1"
 }
 // BOTTOM OF METADATA
 });

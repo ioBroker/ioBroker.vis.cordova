@@ -18,22 +18,26 @@ import android.os.Looper;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.media.AudioManager;
 
 /**
  * Style and such borrowed from the TTS and PhoneListener plugins
  */
 public class SpeechRecognition extends CordovaPlugin {
     private static final String LOG_TAG = SpeechRecognition.class.getSimpleName();
-    public static final String ACTION_INIT = "init";
+    public static final String ACTION_INIT                   = "init";
     public static final String ACTION_SPEECH_RECOGNIZE_START = "start";
-    public static final String ACTION_SPEECH_RECOGNIZE_STOP = "stop";
+    public static final String ACTION_SPEECH_RECOGNIZE_STOP  = "stop";
     public static final String ACTION_SPEECH_RECOGNIZE_ABORT = "abort";
-    public static final String NOT_PRESENT_MESSAGE = "Speech recognition is not present or enabled";
+    public static final String NOT_PRESENT_MESSAGE           = "Speech recognition is not present or enabled";
 
-    private CallbackContext speechRecognizerCallbackContext;
+    private CallbackContext 	speechRecognizerCallbackContext;
+    private SpeechRecognizer 	recognizer;
+	private AudioManager 		audioManager;
+    private int 				mStreamVolume = -1;
+
     private boolean recognizerPresent = false;
-    private SpeechRecognizer recognizer;
-    private boolean aborted = false;
+    private boolean aborted           = false;
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
@@ -58,23 +62,34 @@ public class SpeechRecognition extends CordovaPlugin {
             }
         }
         else if (ACTION_SPEECH_RECOGNIZE_START.equals(action)) {
-            // recognize speech
+			if (audioManager == null) {
+				audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+			}
+			mStreamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+			
+			// recognize speech
             if (!recognizerPresent) {
                 callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, NOT_PRESENT_MESSAGE));
             }
             
             String lang = args.optString(0, "en");
+			
+			fireEvent("debug", lang);
 
             this.speechRecognizerCallbackContext = callbackContext;
 
             final Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);        
-            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-            intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,"voice.recognition.test");
-            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,lang);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, "voice.recognition.test");
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, lang);
+            intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, (new Long(2500)));
 
-            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS,5); 
+            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5); 
             
             Handler loopHandler = new Handler(Looper.getMainLooper());
+			
+			muteOn();
+			
             loopHandler.post(new Runnable() {
 
                 @Override
@@ -101,10 +116,24 @@ public class SpeechRecognition extends CordovaPlugin {
         }
         return true;
     }
-    
+	
+    // Hide this pips, when speech recognizer is ready
+    private void muteOn() {
+		if (mStreamVolume != -1) {
+			audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0); // setting system volume to zero, muting
+		}
+    }
+
+    private void muteOff() {
+		if (mStreamVolume != -1) {
+			audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mStreamVolume, 0); // again setting the system volume back to the original, un-mutting
+		}
+    }
+	
     private void stop(boolean abort) {
         this.aborted = abort;
         Handler loopHandler = new Handler(Looper.getMainLooper());
+		muteOff();
         loopHandler.post(new Runnable() {
 
             @Override
@@ -124,10 +153,10 @@ public class SpeechRecognition extends CordovaPlugin {
     }
 
     private void fireRecognitionEvent(ArrayList<String> transcripts, float[] confidences) {
-        JSONObject event = new JSONObject();
+        JSONObject event  = new JSONObject();
         JSONArray results = new JSONArray();
         try {
-            for(int i=0; i<transcripts.size(); i++) {
+            for(int i = 0; i < transcripts.size(); i++) {
                 JSONArray alternatives = new JSONArray();
                 JSONObject result = new JSONObject();
                 result.put("transcript", transcripts.get(i));
@@ -150,11 +179,18 @@ public class SpeechRecognition extends CordovaPlugin {
         this.speechRecognizerCallbackContext.sendPluginResult(pr); 
     }
 
-    private void fireEvent(String type) {
+	private void fireEvent(String type) {
+		fireEvent(type, null);
+	}
+	
+    private void fireEvent(String type, String data) {
         JSONObject event = new JSONObject();
         try {
-            event.put("type",type);
-        } catch (JSONException e) {
+            event.put("type", type);
+			if (data != null) {
+				event.put("data", data);
+			}
+       } catch (JSONException e) {
             // this will never happen
         }
         PluginResult pr = new PluginResult(PluginResult.Status.OK, event);
@@ -218,7 +254,9 @@ public class SpeechRecognition extends CordovaPlugin {
 
         @Override
         public void onReadyForSpeech(Bundle params) {
+			muteOff();
             Log.d(LOG_TAG, "ready for speech");
+			fireEvent("readyforspeach");
         }
 
         @Override
