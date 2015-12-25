@@ -277,6 +277,27 @@ module.exports = [
         "clobbers": [
             "navigator.wifi"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-app-version/www/AppVersionPlugin.js",
+        "id": "cordova-plugin-app-version.AppVersionPlugin",
+        "pluginId": "cordova-plugin-app-version",
+        "clobbers": [
+            "cordova.getAppVersion"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-x-toast/www/Toast.js",
+        "id": "cordova-plugin-x-toast.Toast",
+        "pluginId": "cordova-plugin-x-toast",
+        "clobbers": [
+            "window.plugins.toast"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-x-toast/test/tests.js",
+        "id": "cordova-plugin-x-toast.tests",
+        "pluginId": "cordova-plugin-x-toast"
     }
 ];
 module.exports.metadata = 
@@ -288,7 +309,9 @@ module.exports.metadata =
     "cordova-plugin-network-information": "1.1.0",
     "cordova-plugin-tts": "0.2.3",
     "org.apache.cordova.speech.speechrecognition": "0.1.0",
-    "org.apache.cordova.wifiinfo": "0.1.1"
+    "org.apache.cordova.wifiinfo": "0.1.1",
+    "cordova-plugin-app-version": "0.1.8",
+    "cordova-plugin-x-toast": "2.3.1"
 }
 // BOTTOM OF METADATA
 });

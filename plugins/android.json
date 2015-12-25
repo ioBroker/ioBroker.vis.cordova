@@ -27,6 +27,12 @@
         },
         "org.apache.cordova.wifiinfo": {
             "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-app-version": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-x-toast": {
+            "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
     "dependent_plugins": {}

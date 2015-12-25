@@ -21,6 +21,12 @@
     <feature name="WifiInfo">
         <param name="android-package" value="org.apache.cordova.wifiinfo.CordovaWifiInfo" />
     </feature>
+    <feature name="AppVersion">
+        <param name="android-package" value="uk.co.whiteoctober.cordova.AppVersion" />
+    </feature>
+    <feature name="Toast">
+        <param name="android-package" value="nl.xservices.plugins.Toast" />
+    </feature>
     <feature name="TTS">
         <param name="android-package" value="com.wordsbaking.cordova.tts.TTS" />
         <param name="onload" value="true" />
