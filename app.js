@@ -122,11 +122,13 @@ var app = {
             });
             return;
         }
-        index = index || 0;
-        var parts = dir.split('/');
 
-        app.localDir.getDirectory(parts[index], {
-                create:    create,
+        if (create) {
+            index = index || 0;
+            var parts = dir.split('/');
+
+            app.localDir.getDirectory(parts[index], {
+                create:    true,
                 exclusive: false
             }, function (dirHandler) {
                 if (parts.length - 1 == index) {
@@ -136,7 +138,17 @@ var app = {
                 }
             }, function (error) {
                 cb(error);
-        });
+            });
+        } else {
+            app.localDir.getDirectory(dir, {
+                create:    false,
+                exclusive: false
+            }, function (dirHandler) {
+                cb(null, dirHandler);
+            }, function (error) {
+                cb(error);
+            });
+        }
     },
     writeLocalFile: function (fileName, data, cb) {
         var parts = fileName.split('/');
@@ -146,8 +158,14 @@ var app = {
             if (dirHandler) {
                 dirHandler.getFile(fileN, {create: true}, function (fileHandler) {
                     fileHandler.createWriter(function (fileWriter) {
-                        fileWriter.truncate(0);
-                        fileWriter.write(new Blob([data], {type:'text/plain'}));
+                        try {
+                            fileWriter.truncate(0);
+                            fileWriter.write(new Blob([data], {type: 'text/plain'}));
+                        } catch (e) {
+                            console.error(fileWriter.nativeURL + ': ' + e);
+                            cb(e);
+                            return;
+                        }
                         cb();
                     }, function (error) {
                         cb(error);
@@ -157,6 +175,9 @@ var app = {
                     cb(error);
                     console.error('Cannot create file')
                 });
+            } else {
+                console.error('Directory "' + fileName + '" not found');
+                cb(error || 'Directory not found');
             }
         });
     },
@@ -194,9 +215,39 @@ var app = {
             }
         });
     },
+    deleteLocalFile: function (fileName, cb) {
+        var parts = fileName.split('/');
+        var fileN = parts.pop();
+        this.getLocalDir(parts.join('/'), true, function (error, dirHandler) {
+            if (error) console.error(error);
+            if (dirHandler) {
+                dirHandler.getFile(fileN, {create: false}, function (fileHandler) {
+                    fileHandler.remove(function () {
+                        cb();
+                    }, function (error) {
+                        cb(error);
+                        console.error('Cannot delete file: ' + error);
+                    });
+                }, function (error) {
+                    cb(error);
+                    console.error('Cannot create file')
+                });
+            }
+        });
+    },
 
     onDeviceReady: function () {
         app.receivedEvent('deviceready');
+
+        app.writeLocalFile('main/imgavSony.png', 'text', function (error) {
+            app.readLocalFile('main/imgavSony.png', function (error, result) {
+                if (error) console.error(error);
+                if (!result || app.settings.resync) {
+
+                }
+            });
+        });
+
 
         app.connection = navigator.network ? navigator.network.connection.type : undefined;
         document.addEventListener('online', function () {
@@ -378,28 +429,39 @@ var app = {
             if (error) console.error(error);
             $('#cordova_progress_show').css('width', (100 - (files.length / total) * 100) + '%');
 
-            // modify vis-views.json
-            if (filename && filename.indexOf('vis-views.json') != -1) {
-                app.viewExists = true;
-                var m = data.match(/"\/vis\.0\/.+"/g);
-                if (m) {
-                    for (var mm = 0; mm < m.length; mm++) {
-                        //file:///data/data/net.iobroker.vis/files/main/vis-user.css
-                        //cdvfile://localhost/persistent
-                        data = data.replace(m[mm], '"file:///data/data/net.iobroker.vis/files' + m[mm].substring(7));
-                    }
-                }
-
-                m = data.match(/"\/vis\/.+"/g);
-                if (m) {
-                    for (var mm = 0; mm < m.length; mm++) {
-                        data = data.replace(m[mm], '"' + m[mm].substring(6));
-                    }
-                }
-            }
-
             if (data) {
-                this.writeLocalFile(filename.replace(/^\/vis\.0\//, ''), data, function (error) {
+                // modify vis-views.json
+                if (filename && filename.indexOf('vis-views.json') != -1) {
+                    app.viewExists = true;
+                    var m = data.match(/"\/vis\.0\/.+"/g);
+                    if (m) {
+                        for (var mm = 0; mm < m.length; mm++) {
+                            //file:///data/data/net.iobroker.vis/files/main/vis-user.css
+                            //cdvfile://localhost/persistent
+                            var fn = m[mm].substring(8);
+                            var p  = fn.split('/');
+
+                            fn  = p.shift();
+                            fn += p.length ? '/' + p.join('') : '';
+
+                            data = data.replace(m[mm], '"file:///data/data/net.iobroker.vis/files/' + fn);
+                        }
+                    }
+
+                    m = data.match(/"\/vis\/.+"/g);
+                    if (m) {
+                        for (var mm = 0; mm < m.length; mm++) {
+                            data = data.replace(m[mm], '"' + m[mm].substring(6));
+                        }
+                    }
+                }
+
+                // remove subdirs
+                var p = filename.replace(/^\/vis\.0\//, '').split('/');
+                filename = p.shift();
+                filename += p.length ? '/' + p.join('') : '';
+
+                this.writeLocalFile(filename, data, function (error) {
                     if (error) console.error(error);
                     setTimeout(function () {
                         this.copyFilesToDevice(files, cb, total);
@@ -418,11 +480,12 @@ var app = {
             return;
         }
         var file = files.pop();
-        // todo
-
-        setTimeout(function () {
-            this.deleteFilesFromDevice(files, cb);
-        }.bind(this), 0);
+        this.deleteLocalFile(file, function (error) {
+            if (error) console.error(error);
+            setTimeout(function () {
+                this.copyFilesToDevice(files, cb, total);
+            }.bind(this), 0);
+        });
     },
     readRemoteProject: function (dir, cb, _files) {
         dir    = dir    || '';
@@ -444,7 +507,7 @@ var app = {
                                         cb(_files);
                                     }, 0);
                                 }
-                            });
+                            }, _files);
                         } else {
                             _files.push(dir + '/' + files[f].file);
                         }
