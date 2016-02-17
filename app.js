@@ -82,7 +82,9 @@ var app = {
         resync:         false,
         instance:       null,
         allowMove:      false,
-        recognition:    false
+        recognition:    false,
+        text2command:    0,
+        defaultRoom:    ''
     },
     connection: '',
     projects:   [],
@@ -239,15 +241,14 @@ var app = {
     onDeviceReady: function () {
         app.receivedEvent('deviceready');
 
-        app.writeLocalFile('main/imgavSony.png', 'text', function (error) {
+        /*app.writeLocalFile('main/imgavSony.png', 'text', function (error) {
             app.readLocalFile('main/imgavSony.png', function (error, result) {
                 if (error) console.error(error);
                 if (!result || app.settings.resync) {
 
                 }
             });
-        });
-
+        });*/
 
         app.connection = navigator.network ? navigator.network.connection.type : undefined;
         document.addEventListener('online', function () {
@@ -293,7 +294,7 @@ var app = {
             }
 
             if (!app.settings.allowMove) {
-                $('#vis_container').css({
+                /*$('#vis_container').css({
                     "-webkit-touch-callout":        "none",
                     "-ms-touch-select":             "none",
                     "-ms-touch-action":             "none",
@@ -307,7 +308,7 @@ var app = {
                     "-ms-user-select":              "none",
                     "user-select":                  "none",
                     "border":                       "none !important"
-                });
+                });*/
             }
             $('.vis-wait-text').css({left: 0, 'padding-left': '1em'});
 
@@ -638,8 +639,9 @@ var app = {
             });
         }
     },
+
     initSpeechRecognition: function () {
-        if (app.settings.project && app.settings.recognition) {
+        if (app.settings.project && app.settings.recognition && (app.settings.text2command || app.settings.text2command === 0)) {
             $('body').append('<div id="cordova_show_recognized" style="display:none; padding: 0.2em; border-radius: 0.4em;position: absolute; z-index: 5000; background: lightskyblue; top: 1em; left: 3em; font-size: 1.5em;"></div>');
             app.recText = $('#cordova_show_recognized');
 
@@ -649,6 +651,8 @@ var app = {
             app.recognition.interimResults  = true;
             app.recognition.lang            = app.settings.systemLang;
             if (app.settings.keyword) {
+                app.settings.keyword = app.settings.keyword.trim();
+                app.settings.keyword = app.settings.keyword.replace(/\s\s/g, ' ');
                 app.match = [
                     new RegExp('\\s' + app.settings.keyword + '\\s', 'i'),
                     new RegExp('^'   + app.settings.keyword + '\\s', 'i'),
@@ -667,14 +671,46 @@ var app = {
                         if (app.match) {
                             for (var m = 0; m < app.match.length; m++) {
                                 if (app.match[m].test(text)) {
+                                    text = text.replace(app.match[m], '').replace(/\s\s/g, ' ').trim();
                                     // Key phrase found
                                     matched = true;
                                     break;
                                 }
                             }
+                        } else {
+                            matched = true;
                         }
-                        if (matched){
-                            app.tts('Ok');
+                        if (matched) {
+                            if (app.settings.defaultRoom) {
+                                text = text + ' [' + app.settings.defaultRoom + ']';
+                                if (!app.defaultRoomRegExp) app.defaultRoomRegExp = new RegExp('\\s\\[' + app.settings.defaultRoom + '\\]', 'i');
+                            }
+                            // restart recognition if text2command inactive
+                            var timeout = setTimeout(function () {
+                                app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                                app.recognition.start(false);
+                            }, 1000);
+
+                            vis.conn._socket.emit('sendTo', 'text2command.' + app.settings.text2command, 'send', text, function (response) {
+                                // stop timeout if no text2command
+                                if (timeout) {
+                                    clearTimeout(timeout);
+                                    timeout = null;
+                                }
+                                response.response = response.response || '';
+                                if (app.settings.defaultRoom) {
+                                    response.response = response.response.replace(app.defaultRoomRegExp, '');
+                                }
+
+                                // say answer
+                                app.tts(response.response, function () {
+                                    // Start recognition
+                                    setTimeout(function () {
+                                        app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                                        app.recognition.start(false);
+                                    }, 500);
+                                });
+                            }.bind(this));
                         }
                     } else {
                         app.recText.css('background: darkblue');
@@ -788,22 +824,25 @@ var app = {
                 '<option value="de">deutsch</option>' +
                 '<option value="ru">русский</option>' +
             '</select></td></tr>'+
-            '<tr><td>' + _('Project')               + ':</td><td><select class="cordova-setting" data-name="project"    id="cordova_project" style="width: 100%">' +
-            '<tr><td>' + _('Prevent from sleep')    + ':</td><td><input  class="cordova-setting" data-name="noSleep"    type="checkbox"></td></tr>'+
-            '<tr><td>' + _('Allow window move')     + ':</td><td><input  class="cordova-setting" data-name="allowMove"  type="checkbox"></td></tr>'+
-            '<tr><td>' + _('Speech recognition')    + ':</td><td><input  class="cordova-setting" data-name="recognition" type="checkbox"></td></tr>'+
-            '<tr><td>' + _('Keyword')               + ':</td><td><input  class="cordova-setting" data-name="keyword"    style="width: 100%">' +
-            '<tr><td>' + _('Instance')              + ':</td><td><input  class="cordova-setting" data-name="instance"   style="width: 100%"></td></tr>'+ '<tr><td colspan="2" style="background: darkgrey; color: white; font-weight: bold">' + _('WIFI') + '</td></tr>'+
-            '<tr><td>' + _('WIFI SSID')             + ':</td><td><input  class="cordova-setting" data-name="ssid"       style="width: calc(100% - 2em)" id="cordova_ssid"><button id="cordova_ssid_button" style="width: 3em">' + _('Actual') + '</button></td></tr>'+
-            '<tr><td>' + _('WIFI Socket')           + ':</td><td><input  class="cordova-setting" data-name="socketUrl"  style="width: 100%"></td></tr>'+
-            '<tr><td>' + _('WIFI User')             + ':</td><td><input  class="cordova-setting" data-name="user"       style="width: 100%"></td></tr>'+
-            '<tr><td>' + _('WIFI Password')         + ':</td><td><input  class="cordova-setting" data-name="password"   type="password" id="cordova-password" style="width: 100%"></td></tr>'+
-            '<tr><td>' + _('WIFI Password repeat')  + ':</td><td><input  id="cordova-password-repeat" type="password"   style="width: 100%"></td></tr>'+
+            '<tr><td>' + _('Project')               + ':</td><td><select class="cordova-setting" data-name="project"     id="cordova_project" style="width: 100%"></select>' +
+            '<tr><td>' + _('Prevent from sleep')    + ':</td><td><input  class="cordova-setting" data-name="noSleep"     type="checkbox"/></td></tr>'+
+            '<tr><td>' + _('Allow window move')     + ':</td><td><input  class="cordova-setting" data-name="allowMove"   type="checkbox"/></td></tr>'+
+            '<tr><td>' + _('Speech recognition')    + ':</td><td><input  class="cordova-setting" data-name="recognition" type="checkbox"/></td></tr>'+
+            '<tr class="speech"><td>' + _('Keyword')               + ':</td><td><input  class="cordova-setting" data-name="keyword"     style="width: 100%"/>' +
+            '<tr class="speech"><td>' + _('Text 2 speech')         + ':</td><td><select id="text2command" class="cordova-setting" data-name="text2command" style="width: 100%"></select>' +
+            '<tr class="speech"><td>' + _('Default room')          + ':</td><td><select id="defaultRoom" class="cordova-setting" data-name="defaultRoom" style="width: 100%"></select>' +
+            '<tr><td>' + _('Instance')              + ':</td><td><input  class="cordova-setting" data-name="instance"    style="width: 100%"/></td></tr>'+
+            '<tr><td colspan="2" style="background: darkgrey; color: white; font-weight: bold">' + _('WIFI') + '</td></tr>'+
+            '<tr><td>' + _('WIFI SSID')             + ':</td><td><input  class="cordova-setting" data-name="ssid"       style="width: calc(100% - 2em)" id="cordova_ssid"/><button id="cordova_ssid_button" style="width: 3em">' + _('Actual') + '</button></td></tr>'+
+            '<tr><td>' + _('WIFI Socket')           + ':</td><td><input  class="cordova-setting" data-name="socketUrl"  style="width: 100%"/></td></tr>'+
+            '<tr><td>' + _('WIFI User')             + ':</td><td><input  class="cordova-setting" data-name="user"       style="width: 100%"/></td></tr>'+
+            '<tr><td>' + _('WIFI Password')         + ':</td><td><input  class="cordova-setting" data-name="password"   type="password" id="cordova-password" style="width: 100%"/></td></tr>'+
+            '<tr><td>' + _('WIFI Password repeat')  + ':</td><td><input  id="cordova-password-repeat" type="password"   style="width: 100%"/></td></tr>'+
             '<tr><td colspan="2" style="background: darkgrey; color: white; font-weight: bold">' + _('Cell')      + '</td></tr>'+
-            '<tr><td>' + _('Cell Socket')           + ':</td><td><input  class="cordova-setting" data-name="socketUrlGSM" style="width: 100%"></td></tr>'+
-            '<tr><td>' + _('Cell User')             + ':</td><td><input  class="cordova-setting" data-name="userGSM"    style="width: 100%"></td></tr>'+
-            '<tr><td>' + _('Cell Password')         + ':</td><td><input  class="cordova-setting" data-name="passwordGSM" type="password" id="cordova-password-gsm" style="width: 100%"></td></tr>'+
-            '<tr><td>' + _('Cell Password repeat')  + ':</td><td><input  id="cordova-password-repeat-gsm" type="password" style="width: 100%"></td></tr>'+
+            '<tr><td>' + _('Cell Socket')           + ':</td><td><input  class="cordova-setting" data-name="socketUrlGSM" style="width: 100%"/></td></tr>'+
+            '<tr><td>' + _('Cell User')             + ':</td><td><input  class="cordova-setting" data-name="userGSM"    style="width: 100%"/></td></tr>'+
+            '<tr><td>' + _('Cell Password')         + ':</td><td><input  class="cordova-setting" data-name="passwordGSM" type="password" id="cordova-password-gsm" style="width: 100%"/></td></tr>'+
+            '<tr><td>' + _('Cell Password repeat')  + ':</td><td><input  id="cordova-password-repeat-gsm" type="password" style="width: 100%"/></td></tr>'+
             '</select></td></tr>'+
             '</table></div>');
 
@@ -811,15 +850,44 @@ var app = {
             $('#cordova_version').text(version);
         });
 
+        // todo read text2command instances
+        // todo read rooms
+
         $('#cordova_menu').click(function () {
             // load settings
             $('#cordova_dialog .cordova-setting').each(function() {
                 if ($(this).attr('type') === 'checkbox') {
                     $(this).prop('checked', app.settings[$(this).data('name')]);
+                    if ($(this).data('name') === 'recognition' && !app.settings.recognition) {
+                        $('.speech').hide();
+                    }
                 } else {
                     $(this).val(app.settings[$(this).data('name')]);
                 }
             });
+
+            // todo read text2command instances
+            if (vis.conn) {
+                vis.conn._socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.text2command.', endkey: 'system.adapter.text2command.\u9999'}, function (err, res) {
+                    if (!err && res.rows.length) {
+                        var text = '<option value="">' + _('none') + '</option>';
+                        for (var i = 0; i < res.rows.length; i++) {
+                            text += '<option value="' + res.rows[i].id.substring('system.adapter.text2command.'.length) + '">' + res.rows[i].id.substring('system.adapter.text2command.'.length) + '</option>';
+                        }
+                        $('#text2command').html(text).val(app.settings.text2command);
+                    }
+                    vis.conn._socket.emit('getObjectView', 'system', 'enum', {startkey: 'enum.rooms.', endkey: 'enum.rooms.\u9999'}, function (err, res) {
+                        if (!err && res.rows.length) {
+                            var text = '<option value="">' + _('none') + '</option>';
+                            for (var i = 0; i < res.rows.length; i++) {
+                                text += '<option value="' + res.rows[i].value.common.name + '">' + res.rows[i].value.common.name + '</option>';
+                            }
+                            $('#defaultRoom').html(text).val(app.settings.defaultRoom);
+                        }
+                    });
+                });
+            }
+
             if (app.ssid) {
                 $('#cordova_ssid_button').show();
                 $('#cordova_ssid').css('width', 'calc(100% - 3.5em)');
@@ -830,120 +898,129 @@ var app = {
             $('#cordova-password-repeat').val($('#cordova-password').val());
             $('#cordova-password-repeat-gsm').val($('#cordova-password-gsm').val());
 
+            $('input[data-name="recognition"]').unbind('change').change(function () {
+                if ($(this).prop('checked')) {
+                    $('.speech').show();
+                } else {
+                    $('.speech').hide();
+                }
+            });
+
+            $('#cordova_ssid_button').unbind('click').click(function () {
+                $('#cordova_ssid').val(app.ssid);
+            });
+
+            $('#cordova_cancel').unbind('click').click(function () {
+                $('#cordova_dialog_bg').hide();
+                $('#cordova_dialog').hide();
+            }).css({height: '2em'});
+
+            $('#cordova_reload').unbind('click').click(function () {
+                var changed = false;
+                // save settings
+                $('#cordova_dialog .cordova-setting').each(function() {
+                    if ($(this).attr('type') === 'checkbox') {
+                        if (app.settings[$(this).data('name')] != $(this).prop('checked')) {
+                            changed = true;
+                            return false;
+                        }
+                    } else {
+                        if (app.settings[$(this).data('name')] != $(this).val()) {
+                            changed = true;
+                            return false;
+                        }
+                    }
+                });
+
+                if (changed && !window.confirm(_('Discard changes?'))) return;
+
+                $('#cordova_dialog_bg').hide();
+                $('#cordova_dialog').hide();
+                window.location.reload();
+            }).css({height: '2em'});
+
+            $('#cordova_resync').unbind('click').click(function () {
+                var changed = false;
+
+                // save settings
+                $('#cordova_dialog .cordova-setting').each(function() {
+                    if ($(this).attr('type') === 'checkbox') {
+                        if (app.settings[$(this).data('name')] != $(this).prop('checked')) {
+                            changed = true;
+                            return false;
+                        }
+                    } else {
+                        if (app.settings[$(this).data('name')] != $(this).val()) {
+                            changed = true;
+                            return false;
+                        }
+                    }
+                });
+
+                if (changed && !window.confirm(_('Discard changes?'))) return;
+
+                $('#cordova_dialog_bg').hide();
+                $('#cordova_dialog').hide();
+                app.settings.resync = true;
+                app.saveSettings();
+                window.location.reload();
+            }).css({height: '2em'});
+
+            $('#cordova_ok').unbind('click').click(function () {
+                if ($('#cordova-password').val() != $('#cordova-password-repeat').val()) {
+                    window.alert(_('WIFI password repeat does not equal to repeat'));
+                    return;
+                }
+                if ($('#cordova-password-gsm').val() != $('#cordova-password-repeat-gsm').val()) {
+                    window.alert(_('Cell password repeat does not equal to repeat'));
+                    return;
+                }
+
+                $('#cordova_dialog_bg').hide();
+                $('#cordova_dialog').hide();
+                var changed = false;
+                var projectChanged = false;
+
+                // save settings
+                $('#cordova_dialog .cordova-setting').each(function() {
+                    if ($(this).attr('type') === 'checkbox') {
+                        if (app.settings[$(this).data('name')] != $(this).prop('checked')) {
+                            app.settings[$(this).data('name')] = $(this).prop('checked');
+                            changed = true;
+                        }
+                    } else {
+                        if (app.settings[$(this).data('name')] != $(this).val()) {
+                            app.settings[$(this).data('name')] = $(this).val();
+                            changed = true;
+                            if ($(this).data('name') === 'project') projectChanged = true;
+                        }
+                    }
+                });
+
+                if (changed) {
+                    // If project name changed
+                    if (projectChanged && vis.conn.getIsConnected()) {
+                        // try to load all files
+                        app.syncVis(app.settings.project, function () {
+                            app.settings.resync = false;
+                            app.saveSettings();
+                            if (!app.viewExists) {
+                                window.alert(_('No views found in %s', app.settings.project));
+                            } else {
+                                window.location.reload();
+                            }
+                        });
+                    } else {
+                        app.saveSettings();
+                        window.location.reload();
+                    }
+                }
+            }).css({height: '2em'});
+
+
             $('#cordova_dialog_bg').show();
             $('#cordova_dialog').show();
         });
-
-        $('#cordova_ssid_button').click(function () {
-            $('#cordova_ssid').val(app.ssid);
-        });
-
-        $('#cordova_cancel').click(function () {
-            $('#cordova_dialog_bg').hide();
-            $('#cordova_dialog').hide();
-        }).css({height: '2em'});
-
-        $('#cordova_reload').click(function () {
-            var changed = false;
-            // save settings
-            $('#cordova_dialog .cordova-setting').each(function() {
-                if ($(this).attr('type') === 'checkbox') {
-                    if (app.settings[$(this).data('name')] != $(this).prop('checked')) {
-                        changed = true;
-                        return false;
-                    }
-                } else {
-                    if (app.settings[$(this).data('name')] != $(this).val()) {
-                        changed = true;
-                        return false;
-                    }
-                }
-            });
-
-            if (changed && !window.confirm(_('Discard changes?'))) return;
-
-            $('#cordova_dialog_bg').hide();
-            $('#cordova_dialog').hide();
-            window.location.reload();
-        }).css({height: '2em'});
-
-        $('#cordova_resync').click(function () {
-            var changed = false;
-
-            // save settings
-            $('#cordova_dialog .cordova-setting').each(function() {
-                if ($(this).attr('type') === 'checkbox') {
-                    if (app.settings[$(this).data('name')] != $(this).prop('checked')) {
-                        changed = true;
-                        return false;
-                    }
-                } else {
-                    if (app.settings[$(this).data('name')] != $(this).val()) {
-                        changed = true;
-                        return false;
-                    }
-                }
-            });
-
-            if (changed && !window.confirm(_('Discard changes?'))) return;
-
-            $('#cordova_dialog_bg').hide();
-            $('#cordova_dialog').hide();
-            app.settings.resync = true;
-            app.saveSettings();
-            window.location.reload();
-        }).css({height: '2em'});
-
-        $('#cordova_ok').click(function () {
-            if ($('#cordova-password').val() != $('#cordova-password-repeat').val()) {
-                window.alert(_('WIFI password repeat does not equal to repeat'));
-                return;
-            }
-            if ($('#cordova-password-gsm').val() != $('#cordova-password-repeat-gsm').val()) {
-                window.alert(_('Cell password repeat does not equal to repeat'));
-                return;
-            }
-
-            $('#cordova_dialog_bg').hide();
-            $('#cordova_dialog').hide();
-            var changed = false;
-            var projectChanged = false;
-
-            // save settings
-            $('#cordova_dialog .cordova-setting').each(function() {
-                if ($(this).attr('type') === 'checkbox') {
-                    if (app.settings[$(this).data('name')] != $(this).prop('checked')) {
-                        app.settings[$(this).data('name')] = $(this).prop('checked');
-                        changed = true;
-                    }
-                } else {
-                    if (app.settings[$(this).data('name')] != $(this).val()) {
-                        app.settings[$(this).data('name')] = $(this).val();
-                        changed = true;
-                        if ($(this).data('name') === 'project') projectChanged = true;
-                    }
-                }
-            });
-
-            if (changed) {
-                // If project name changed
-                if (projectChanged && vis.conn.getIsConnected()) {
-                    // try to load all files
-                    app.syncVis(app.settings.project, function () {
-                        app.settings.resync = false;
-                        app.saveSettings();
-                        if (!app.viewExists) {
-                            window.alert(_('No views found in %s', app.settings.project));
-                        } else {
-                            window.location.reload();
-                        }
-                    });
-                } else {
-                    app.saveSettings();
-                    window.location.reload();
-                }
-            }
-        }).css({height: '2em'});
     },
 
     onConnChange: function (connected) {

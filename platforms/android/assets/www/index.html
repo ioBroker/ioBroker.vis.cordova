@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--html manifest="cache.manifest" xmlns="http://www.w3.org/1999/html"-->
 <head>
-    <!-- ioBroker.vis Version 0.8.3 -->
+    <!-- ioBroker.vis Version 0.8.6 -->
 
     <meta charset="utf-8">
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -10,11 +10,12 @@
 
 	<!-- cordova settings -->
 	<meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' * 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' *; media-src *; connect-src *; script-src 'self' 'unsafe-eval' 'unsafe-inline' *">
+          content="default-src 'self' * 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' *; img-src *; media-src 'self' 'unsafe-inline' *; connect-src *; script-src 'self' 'unsafe-eval' 'unsafe-inline' *">
 	<meta name="format-detection" content="telephone=no">
 	<meta name="msapplication-tap-highlight" content="no">
 
     <link href="img/favicon.png" rel="shortcut icon" type="image/x-icon" />
+    <link href="img/favicon.png" rel="apple-touch-icon" />
 
     <title>ioBroker.vis</title>
 
@@ -34,6 +35,7 @@
     <script type="text/javascript" src="lib/js/can.2.2.4.custom.min.js"></script>
     <script type="text/javascript" src="lib/js/jquery.ui.touch-punch.min.js"></script>
     <script type="text/javascript" src="lib/js/jquery.multiselect-1.13.min.js"></script>
+    
     <script type="text/javascript" src="lib/js/loStorage.js"></script>
 
     
@@ -59,5 +61,6 @@
             <span id="dialog-message-text"></span>
         </p>
     </div>
+    <div id="gestureIndicator" style="position: absolute;display: none;pointer-events: none;z-index: 100;"></div>
 </body>
 </html>

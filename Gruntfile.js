@@ -79,6 +79,10 @@ module.exports = function (grunt) {
                             replacement: ''
                         },
                         {
+                            match: /<script type="text\/javascript" src="lib\/js\/quo\.standalone\.js"><\/script>/,
+                            replacement: ''
+                        },
+                        {
                             match: /<link rel="stylesheet" href="css\/vis-common-user\.css"\/>/,
                             replacement: '<link rel="stylesheet" href="file:///data/data/net.iobroker.vis/files/vis-common-user.css"/>'
                         }

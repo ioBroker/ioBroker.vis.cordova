@@ -1,7 +1,7 @@
 {
   "name": "iobroker.vis.cordova",
   "description": "Cordova APP for ioBroker.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": {
     "name": "bluefox",
     "email": "bluefox@ccu.io"
@@ -33,7 +33,7 @@
     "grunt-replace": "^0.9.3",
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-jscs": "^2.0.0",
-    "grunt-http": "^1.6.0",
+    "grunt-http": "^2.0.0",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-copy": "^0.8.0",
     "grunt-exec": "^0.4.6",
@@ -51,7 +51,7 @@
     "iobroker.vis-jqui-mfd": "*",
     "iobroker.vis-rgraph": "*",
     "iobroker.vis-timeandweather": "*",
-    "cordova": "^5.4.1"
+    "cordova": "^6.0.0"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.vis.cordova/issues"
