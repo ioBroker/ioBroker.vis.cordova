@@ -47,6 +47,11 @@ $.extend(systemDictionary, {
         "ru": "Повтор пароля"
     },
     "Actual":       {"en": "<=",                "de": "<=",                 "ru": "<="},
+    "Sleep in background": {
+        "en": "Sleep in background",
+        "de": "Schlaffen, falls inaktiv",
+        "ru": "Спать, если не активно"
+    },
     "Cell":         {"en": "Cell Connection",   "de": "Mobile Verbindung",  "ru": "Мобильное соединение"},
     "Cell Socket":  {"en": "Socket URL",        "de": "Socket URL",         "ru": "Socket URL"},
     "Cell User":    {"en": "Cell User",         "de": "Anwender",           "ru": "Пользователь"},
@@ -84,12 +89,14 @@ var app = {
         allowMove:      false,
         recognition:    false,
         text2command:    0,
-        defaultRoom:    ''
+        defaultRoom:    '',
+        noCommInBackground: false
     },
-    connection: '',
-    projects:   [],
-    ssid:       null,
-    localDir:   null,
+    inBackground: false,
+    connection:   '',
+    projects:     [],
+    ssid:         null,
+    localDir:     null,
     // Application Constructor
     initialize:     function () {
         if (this.settings.systemLang.indexOf('-') != -1) {
@@ -104,12 +111,25 @@ var app = {
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function () {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
+        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+        document.addEventListener('pause', this.onDevicePause.bind(this), false);
+        document.addEventListener('resume', this.onDeviceResume.bind(this), false);
     },
     receivedEvent: function (event) {
         console.log('Received Event: ' + event);
     },
-
+    onDevicePause: function () {
+        this.inBackground = true;
+        if (this.settings.noCommInBackground) {
+            vis.conn._socket.close();
+        }
+    },
+    onDeviceResume: function () {
+        this.inBackground = false;
+        if (this.settings.noCommInBackground) {
+            vis.conn._socket.connect();
+        }
+    },
     getLocalDir:    function (dir, create, cb, index) {
         if (typeof create === 'function') {
             index  = cb;
@@ -117,11 +137,11 @@ var app = {
             create = true;
         }
 
-        if (!app.localDir) {
+        if (!this.localDir) {
             window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dirHandler) {
-                app.localDir = dirHandler;
-                app.getLocalDir(dir, create, cb);
-            });
+                this.localDir = dirHandler;
+                this.getLocalDir(dir, create, cb);
+            }.bind(this));
             return;
         }
 
@@ -129,20 +149,20 @@ var app = {
             index = index || 0;
             var parts = dir.split('/');
 
-            app.localDir.getDirectory(parts[index], {
+            this.localDir.getDirectory(parts[index], {
                 create:    true,
                 exclusive: false
             }, function (dirHandler) {
                 if (parts.length - 1 == index) {
                     cb(null, dirHandler);
                 } else {
-                    app.getLocalDir(dir, create, cb, index + 1);
+                    this.getLocalDir(dir, create, cb, index + 1);
                 }
-            }, function (error) {
+            }.bind(this), function (error) {
                 cb(error);
             });
         } else {
-            app.localDir.getDirectory(dir, {
+            this.localDir.getDirectory(dir, {
                 create:    false,
                 exclusive: false
             }, function (dirHandler) {
@@ -239,62 +259,62 @@ var app = {
     },
 
     onDeviceReady: function () {
-        app.receivedEvent('deviceready');
+        this.receivedEvent('deviceready');
 
-        /*app.writeLocalFile('main/imgavSony.png', 'text', function (error) {
-            app.readLocalFile('main/imgavSony.png', function (error, result) {
+        /*this.writeLocalFile('main/imgavSony.png', 'text', function (error) {
+            this.readLocalFile('main/imgavSony.png', function (error, result) {
                 if (error) console.error(error);
-                if (!result || app.settings.resync) {
+                if (!result || this.settings.resync) {
 
                 }
-            });
-        });*/
+            }.bind(this));
+        }.bind(this));*/
 
-        app.connection = navigator.network ? navigator.network.connection.type : undefined;
+        this.connection = navigator.network ? navigator.network.connection.type : undefined;
         document.addEventListener('online', function () {
-            if (navigator.network && navigator.network.connection.type !== app.connection) {
+            if (navigator.network && navigator.network.connection.type !== this.connection) {
                 window.location.reload();
             }
-        }, false);
+        }.bind(this), false);
 
-        app.loadSettings(function () {
+        this.loadSettings(function () {
             if (window.plugins.insomnia) {
-                if (app.settings.noSleep) {
+                if (this.settings.noSleep) {
                     window.plugins.insomnia.keepAwake();
                 } else {
                     window.plugins.insomnia.allowSleepAgain();
                 }
             }
 
-            app.installMenu();
+            this.installMenu();
             // because of different translation
-            app.yes = _('yes');
-            app.no  = _('no');
-            app.loadCss();
+            this.yes = _('yes');
+            this.no  = _('no');
+            this.loadCss();
 
-            if (app.settings.project) {
-                app.readLocalFile(app.settings.project + '/vis-views.json', function (error, result) {
+            if (this.settings.project) {
+                this.readLocalFile(this.settings.project + '/vis-views.json', function (error, result) {
                     if (error) console.error(error);
-                    if (!result || app.settings.resync) {
-                        app.syncVis(app.settings.project, function () {
-                            app.settings.resync = false;
-                            app.saveSettings();
-                            if (!app.viewExists) {
-                                window.alert(_('No views found in %s', app.settings.project));
+                    if (!result || this.settings.resync) {
+                        this.syncVis(this.settings.project, function () {
+                            this.settings.resync = false;
+                            this.saveSettings();
+                            if (!this.viewExists) {
+                                window.alert(_('No views found in %s', this.settings.project));
                             } else {
                                 window.location.reload();
                             }
-                        });
+                        }.bind(this));
                     }
-                });
+                }.bind(this));
             }
 
-            if (!app.settings.project || app.settings.socketUrl == 'http://localhost:8084') {
+            if (!this.settings.project || this.settings.socketUrl == 'http://localhost:8084') {
                 $('#cordova_menu').trigger('click');
             }
 
-            if (!app.settings.allowMove) {
-                /*$('#vis_container').css({
+            if (!this.settings.allowMove) {
+                $('#vis_container').css({
                     "-webkit-touch-callout":        "none",
                     "-ms-touch-select":             "none",
                     "-ms-touch-action":             "none",
@@ -308,16 +328,16 @@ var app = {
                     "-ms-user-select":              "none",
                     "user-select":                  "none",
                     "border":                       "none !important"
-                });*/
+                });
             }
             $('.vis-wait-text').css({left: 0, 'padding-left': '1em'});
 
-            app.initSpeechRecognition();
-            app.manageDisplayRotation();
+            this.initSpeechRecognition();
+            this.manageDisplayRotation();
 
             // init vis
             main(jQuery);
-        });
+        }.bind(this));
     },
 
     loadSettings:   function (cb) {
@@ -346,8 +366,8 @@ var app = {
                     // read SSID info
                     delayed = true;
                     navigator.wifi.getWifiInfo(function (data) {
-                        app.ssid = data.connection.SSID;
-                        if (this.settings.socketUrlGSM && app.settings.ssid && data.connection.SSID != app.settings.ssid) {
+                        this.ssid = data.connection.SSID;
+                        if (this.settings.socketUrlGSM && this.settings.ssid && data.connection.SSID != this.settings.ssid) {
                             // other wifi network
                             socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
                         } else {
@@ -393,23 +413,23 @@ var app = {
     },
     readProjects:   function (cb) {
         if (vis.conn.getIsConnected()) {
-            app.projects = [];
+            this.projects = [];
             $('#cordova_project').html('');
             vis.conn.readDir('/vis.0', function (error, files) {
                 var count = 0;
                 for (var f = 0; f < files.length; f++) {
                     if (files[f].isDir) {
                         count++;
-                        app.readProjectsHelper(files[f].file, function (project) {
+                        this.readProjectsHelper(files[f].file, function (project) {
                             if (project) {
-                                app.projects.push(project);
-                                $('#cordova_project').append('<option value="' + project + '" ' + (project == app.settings.project ? 'selected' : '') + '>' + project + '</option>');
+                                this.projects.push(project);
+                                $('#cordova_project').append('<option value="' + project + '" ' + (project == this.settings.project ? 'selected' : '') + '>' + project + '</option>');
                             }
-                        });
+                        }.bind(this));
                     }
                 }
                 if (!--count && cb) cb();
-            });
+            }.bind(this));
         } else {
             setTimeout(function () {
                 this.readProjects(cb);
@@ -433,7 +453,7 @@ var app = {
             if (data) {
                 // modify vis-views.json
                 if (filename && filename.indexOf('vis-views.json') != -1) {
-                    app.viewExists = true;
+                    this.viewExists = true;
                     var m = data.match(/"\/vis\.0\/.+"/g);
                     if (m) {
                         for (var mm = 0; mm < m.length; mm++) {
@@ -488,6 +508,7 @@ var app = {
             }.bind(this), 0);
         });
     },
+
     readRemoteProject: function (dir, cb, _files) {
         dir    = dir    || '';
         _files = _files || [];
@@ -532,6 +553,7 @@ var app = {
             }.bind(this), 500);
         }
     },
+
     syncVis:        function (project, cb) {
         if (!$('#cordova_progress').length) {
             $('body').append('<div id="cordova_progress" style="position: absolute; z-index: 5003; top: 50%; left: 5%; width: 90%; height: 2em; background: gray">' +
@@ -573,9 +595,9 @@ var app = {
         // volume: from 0 to 100
         // pitch: 0 -2
 
-        if (!app.ttsText) {
+        if (!this.ttsText) {
             $('body').append('<div id="cordova_tts_text" style="border-radius: 1em; padding: 0.2em;position: absolute; z-index: 5000; background: lightgreen; top: 3em; left: 3em; font-size: 1.5em"></div>');
-            app.ttsText = $('#cordova_tts_text');
+            this.ttsText = $('#cordova_tts_text');
         }
 
         if (data[0] == '{') {
@@ -603,7 +625,7 @@ var app = {
             } else {
                 data = {
                     text:   data,
-                    locale: app.settings.systemLang
+                    locale: this.settings.systemLang
                 };
             }
         }
@@ -614,24 +636,24 @@ var app = {
         if (data.locale == 'de') data.locale = 'de-DE';
         if (data.locale == 'ru') data.locale = 'ru-RU';
 
-        if (app.settings.project && app.settings.recognition) {
-            app.menu.css('background', 'rgba(0, 0, 0, 0.1)');
-            app.recognition.stop();
+        if (this.settings.project && this.settings.recognition) {
+            this.menu.css('background', 'rgba(0, 0, 0, 0.1)');
+            this.recognition.stop();
         }
-        if (app.ttsTextTimer) clearTimeout(app.ttsTextTimer);
-        app.ttsText.html(data.text).show();
-        app.ttsTextTimer = setTimeout(function () {
-            app.ttsText.hide();
-            app.ttsTextTimer = null;
-        }, 3000);
+        if (this.ttsTextTimer) clearTimeout(this.ttsTextTimer);
+        this.ttsText.html(data.text).show();
+        this.ttsTextTimer = setTimeout(function () {
+            this.ttsText.hide();
+            this.ttsTextTimer = null;
+        }.bind(this), 3000);
 
         if (TTS) {
             TTS.speak(data, function () {
                 console.log(JSON.stringify(data));
 
-                if (app.settings.project && app.settings.recognition) {
-                    app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-                    app.recognition.start();
+                if (this.settings.project && this.settings.recognition) {
+                    this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                    this.recognition.start();
                 }
                 cb && cb();
             }, function (reason) {
@@ -641,37 +663,37 @@ var app = {
     },
 
     initSpeechRecognition: function () {
-        if (app.settings.project && app.settings.recognition && (app.settings.text2command || app.settings.text2command === 0)) {
+        if (this.settings.project && this.settings.recognition && (this.settings.text2command || this.settings.text2command === 0)) {
             $('body').append('<div id="cordova_show_recognized" style="display:none; padding: 0.2em; border-radius: 0.4em;position: absolute; z-index: 5000; background: lightskyblue; top: 1em; left: 3em; font-size: 1.5em;"></div>');
-            app.recText = $('#cordova_show_recognized');
+            this.recText = $('#cordova_show_recognized');
 
-            app.recognition = new SpeechRecognition();
-            app.recognition.maxAlternatives = 3;
-            app.recognition.continuous      = true;
-            app.recognition.interimResults  = true;
-            app.recognition.lang            = app.settings.systemLang;
-            if (app.settings.keyword) {
-                app.settings.keyword = app.settings.keyword.trim();
-                app.settings.keyword = app.settings.keyword.replace(/\s\s/g, ' ');
-                app.match = [
-                    new RegExp('\\s' + app.settings.keyword + '\\s', 'i'),
-                    new RegExp('^'   + app.settings.keyword + '\\s', 'i'),
-                    new RegExp('\\s' + app.settings.keyword + '$',   'i'),
-                    new RegExp('^'   + app.settings.keyword + '$',   'i')
+            this.recognition = new SpeechRecognition();
+            this.recognition.maxAlternatives = 3;
+            this.recognition.continuous      = true;
+            this.recognition.interimResults  = true;
+            this.recognition.lang            = this.settings.systemLang;
+            if (this.settings.keyword) {
+                this.settings.keyword = this.settings.keyword.trim();
+                this.settings.keyword = this.settings.keyword.replace(/\s\s/g, ' ');
+                this.match = [
+                    new RegExp('\\s' + this.settings.keyword + '\\s', 'i'),
+                    new RegExp('^'   + this.settings.keyword + '\\s', 'i'),
+                    new RegExp('\\s' + this.settings.keyword + '$',   'i'),
+                    new RegExp('^'   + this.settings.keyword + '$',   'i')
                 ];
             }
-            app.recognition.onresult = function(event) {
+            this.recognition.onresult = function(event) {
                 var matched = false;
                 if (event.results.length > 0) {
                     var text = event.results[0][0].transcript;
-                    app.recText.html(text).show();
+                    this.recText.html(text).show();
                     if (event.results[0][0].final) {
-                        app.recText.css('background: lightblue');
+                        this.recText.css('background: lightblue');
                         // start analyse
-                        if (app.match) {
-                            for (var m = 0; m < app.match.length; m++) {
-                                if (app.match[m].test(text)) {
-                                    text = text.replace(app.match[m], '').replace(/\s\s/g, ' ').trim();
+                        if (this.match) {
+                            for (var m = 0; m < this.match.length; m++) {
+                                if (this.match[m].test(text)) {
+                                    text = text.replace(this.match[m], '').replace(/\s\s/g, ' ').trim();
                                     // Key phrase found
                                     matched = true;
                                     break;
@@ -681,118 +703,127 @@ var app = {
                             matched = true;
                         }
                         if (matched) {
-                            if (app.settings.defaultRoom) {
-                                text = text + ' [' + app.settings.defaultRoom + ']';
-                                if (!app.defaultRoomRegExp) app.defaultRoomRegExp = new RegExp('\\s\\[' + app.settings.defaultRoom + '\\]', 'i');
+                            if (this.settings.defaultRoom) {
+                                text = text + ' [' + this.settings.defaultRoom + ']';
+                                if (!this.defaultRoomRegExp) this.defaultRoomRegExp = new RegExp('\\s\\[' + this.settings.defaultRoom + '\\]', 'i');
                             }
                             // restart recognition if text2command inactive
                             var timeout = setTimeout(function () {
-                                app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-                                app.recognition.start(false);
-                            }, 1000);
+                                if (!this.settings.noCommInBackground || !this.inBackground) {
+                                    this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                                    this.recognition.start(false);
+                                }
+                            }.bind(this), 1000);
 
-                            vis.conn._socket.emit('sendTo', 'text2command.' + app.settings.text2command, 'send', text, function (response) {
+                            vis.conn._socket.emit('sendTo', 'text2command.' + this.settings.text2command, 'send', text, function (response) {
                                 // stop timeout if no text2command
                                 if (timeout) {
                                     clearTimeout(timeout);
                                     timeout = null;
                                 }
                                 response.response = response.response || '';
-                                if (app.settings.defaultRoom) {
-                                    response.response = response.response.replace(app.defaultRoomRegExp, '');
+                                if (this.settings.defaultRoom) {
+                                    response.response = response.response.replace(this.defaultRoomRegExp, '');
                                 }
 
                                 // say answer
-                                app.tts(response.response, function () {
+                                this.tts(response.response, function () {
                                     // Start recognition
                                     setTimeout(function () {
-                                        app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-                                        app.recognition.start(false);
-                                    }, 500);
-                                });
+                                        if (!this.settings.noCommInBackground || !this.inBackground) {
+                                            this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                                            this.recognition.start(false);
+                                        }
+                                    }.bind(this), 500);
+                                }.bind(this));
                             }.bind(this));
                         }
                     } else {
-                        app.recText.css('background: darkblue');
+                        this.recText.css('background: darkblue');
                     }
 
-                    if (app.recTextTimeout) clearTimeout(app.recTextTimeout);
+                    if (this.recTextTimeout) clearTimeout(this.recTextTimeout);
 
-                    app.recTextTimeout = setTimeout(function () {
-                        app.recTextTimeout = null;
-                        app.recText.hide();
-                    }, 2000);
+                    this.recTextTimeout = setTimeout(function () {
+                        this.recTextTimeout = null;
+                        this.recText.hide();
+                    }.bind(this), 2000);
                 }
                 if (!matched) {
-                    setTimeout(function () {
-                        app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-                        app.recognition.start(false);
-                    }, 100);
+                    if (!this.settings.noCommInBackground || !this.inBackground) {
+                        setTimeout(function () {
+                            this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                            this.recognition.start(false);
+                        }.bind(this), 100);
+                    }
                 }
-            };
-            app.recognition.onend = function(event) {
-                app.menu.css('background', 'rgba(0, 0, 0, 0.1)');
-            };
-            app.recognition.onerror = function(event) {
+            }.bind(this);
+            this.recognition.onend = function(event) {
+                this.menu.css('background', 'rgba(0, 0, 0, 0.1)');
+            }.bind(this);
+            this.recognition.onerror = function(event) {
                 console.log(JSON.stringify(event));
-                app.menu.css('background', 'rgba(0, 0, 0, 0.1)');
-                setTimeout(function () {
-                    app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-                    app.recognition.start(true);
-                }, 300);
-            };
+                this.menu.css('background', 'rgba(0, 0, 0, 0.1)');
+                if (!this.settings.noCommInBackground || !this.inBackground) {
+                    setTimeout(function () {
+                        this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                        this.recognition.start(true);
+                    }.bind(this), 300);
+                }
+            }.bind(this);
 
-            app.recognition.ondebug = function (event) {
+            this.recognition.ondebug = function (event) {
                 console.log(JSON.stringify(event));
             };
-            app.menu = $('#cordova_menu');
-            app.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-            app.recognition.start(false);
+            this.menu = $('#cordova_menu');
+            this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+            this.recognition.start(false);
         }
     },
 
     manageDisplayRotation: function () {
         // Manage rotation
-        app.window = {
+        this.window = {
             orientation: window.orientation,
             width:       window.innerWidth,
             height:      window.innerHeight
         };
 
-        window.onorientationchange = function() {
+        window.onorientationchange = function () {
             var viewport_scale;
 
             if (window.orientation == 0 || window.orientation == 180) {
-                if (app.window.orientation == 0 || app.window.orientation == 180) {
+                if (this.window.orientation == 0 || this.window.orientation == 180) {
                     // landscape
                     viewport_scale = 1;
                 } else {
                     // portrait
-                    viewport_scale = app.window.width / app.window.height;
+                    viewport_scale = this.window.width / this.window.height;
                 }
             } else if (window.orientation == 90 || window.orientation == -90) {
-                if (app.window.orientation == 90 || app.window.orientation == -90) {
+                if (this.window.orientation == 90 || this.window.orientation == -90) {
                     // landscape
                     viewport_scale = 1;
                 } else {
                     // portrait
-                    viewport_scale = app.window.width / app.window.height;
+                    viewport_scale = this.window.width / this.window.height;
                 }
             }
 
             // resize viewport
             $('meta[name=viewport]').attr('content',
-                'width=' + app.window.width + ',' +
+                'width=' + this.window.width + ',' +
                 'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale);
-        };
+        }.bind(this);
         // resize viewport
         $('meta[name=viewport]').attr('content',
-            'width=' + app.window.width + ',' +
+            'width=' + this.window.width + ',' +
             'minimum-scale=1, maximum-scale=1');
     },
+
     loadCss:        function () {
-        if (app.settings.project) {
-            this.readLocalFile(app.settings.project + '/vis-user.css', function (error, data) {
+        if (this.settings.project) {
+            this.readLocalFile(this.settings.project + '/vis-user.css', function (error, data) {
                 if (data) {
                     $('head').append('<style id="vis-user" class="vis-user">' + data + '</style>');
                 }
@@ -801,10 +832,11 @@ var app = {
         }
 
     },
+
     installMenu:    function () {
         // install menu button
-        $('body').append('<div id="cordova_menu"   style="top: 0.5em; left: 0.5em; padding-left: 0.5em; padding-right: 0.5em; position: absolute; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 5001" id="cordova_menu">...</div>');
-        $('body').append('<div id="cordova_dialog_bg" style="position: absolute; top:0; right: 0; left: 0; bottom: 0; background: black; opacity: 0.3; display: none; z-index: 5002"></div>' +
+        $('body').append('<div id="cordova_menu" style="top: 0.5em; left: 0.5em; padding-left: 0.5em; padding-right: 0.5em; position: fixed; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 5001" id="cordova_menu">...</div>');
+        $('body').append('<div id="cordova_dialog_bg" style="position: fixed; top:0; right: 0; left: 0; bottom: 0; background: black; opacity: 0.3; display: none; z-index: 5002"></div>' +
             '<div id="cordova_dialog" style="background: #d3d3d3; top: 1em; left: 1em; bottom: 1em; right: 1em; position: absolute; border-radius: 0.3em; border: 1px solid grey; display: none; z-index: 5003; overflow-x: hidden; overflow-x' +
             'y: auto">' +
             '<div style="padding-left: 1em; font-size: 2em; font-weight: bold">' + _('Settings') +
@@ -828,11 +860,12 @@ var app = {
             '<tr><td>' + _('Prevent from sleep')    + ':</td><td><input  class="cordova-setting" data-name="noSleep"     type="checkbox"/></td></tr>'+
             '<tr><td>' + _('Allow window move')     + ':</td><td><input  class="cordova-setting" data-name="allowMove"   type="checkbox"/></td></tr>'+
             '<tr><td>' + _('Speech recognition')    + ':</td><td><input  class="cordova-setting" data-name="recognition" type="checkbox"/></td></tr>'+
-            '<tr class="speech"><td>' + _('Keyword')               + ':</td><td><input  class="cordova-setting" data-name="keyword"     style="width: 100%"/>' +
-            '<tr class="speech"><td>' + _('Text 2 speech')         + ':</td><td><select id="text2command" class="cordova-setting" data-name="text2command" style="width: 100%"></select>' +
-            '<tr class="speech"><td>' + _('Default room')          + ':</td><td><select id="defaultRoom" class="cordova-setting" data-name="defaultRoom" style="width: 100%"></select>' +
+            '<tr class="speech"><td>' + _('Keyword')       + ':</td><td><input  class="cordova-setting" data-name="keyword"     style="width: 100%"/>' +
+            '<tr class="speech"><td>' + _('Text 2 speech') + ':</td><td><select id="text2command" class="cordova-setting" data-name="text2command" style="width: 100%"></select>' +
+            '<tr class="speech"><td>' + _('Default room') + ':</td><td><select id="defaultRoom" class="cordova-setting" data-name="defaultRoom" style="width: 100%"></select>' +
             '<tr><td>' + _('Instance')              + ':</td><td><input  class="cordova-setting" data-name="instance"    style="width: 100%"/></td></tr>'+
-            '<tr><td colspan="2" style="background: darkgrey; color: white; font-weight: bold">' + _('WIFI') + '</td></tr>'+
+            '<tr><td>' + _('Sleep in background')   + ':</td><td><input  class="cordova-setting" data-name="noCommInBackground" type="checkbox"/></td></tr>'+
+            '<tr><td colspan="2" style="background: darkgrey; color: white; font-weight: bold">'      + _('WIFI') + '</td></tr>'+
             '<tr><td>' + _('WIFI SSID')             + ':</td><td><input  class="cordova-setting" data-name="ssid"       style="width: calc(100% - 2em)" id="cordova_ssid"/><button id="cordova_ssid_button" style="width: 3em">' + _('Actual') + '</button></td></tr>'+
             '<tr><td>' + _('WIFI Socket')           + ':</td><td><input  class="cordova-setting" data-name="socketUrl"  style="width: 100%"/></td></tr>'+
             '<tr><td>' + _('WIFI User')             + ':</td><td><input  class="cordova-setting" data-name="user"       style="width: 100%"/></td></tr>'+
@@ -1025,10 +1058,15 @@ var app = {
 
     onConnChange: function (connected) {
         if (connected) {
-            $('#cordova_connected').html('<span style="color:green">' + app.yes +'</span>');
-            if (!app.projects.length) app.readProjects();
+            $('#cordova_connected').html('<span style="color:green">' + this.yes +'</span>');
+            if (!this.projects.length) this.readProjects();
         } else {
-            $('#cordova_connected').html('<span style="color:red">'   + app.no +'</span>');
+            $('#cordova_connected').html('<span style="color:red">'   + this.no +'</span>');
+
+            // force reconnection
+            if (!this.settings.noCommInBackground || !this.inBackground) {
+                vis.conn._socket.connect();
+            }
         }
     }
 };

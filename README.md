@@ -15,6 +15,8 @@ or
 grunt build
 ```
 
+Output is in ```ioBroker.vis.cordova\platforms\android\build\outputs\apk```
+
 To test it on android Handy:
 ```
 cordova run android
@@ -61,8 +63,12 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.0.8 (2015-02-23)
+- (bluefox) fix "hide on condition"
+- (bluefox) implement sleep in background (if app is not active, do not communicate and do not recognize speech)
+
 ### 0.0.7 (2015-01-18)
-- (bluefox) image select dialog is connected
+- (bluefox) text2speech
 
 
 ## License
