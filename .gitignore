@@ -14,3 +14,13 @@
 /platforms/android/.gradle
 /platforms/android/CordovaLib/build
 /platforms/android/*.keystore
+/platforms/android/assets/www/cordova-js-src
+/platforms/android/assets/www/css
+/platforms/android/assets/www/icon
+/platforms/android/assets/www/img
+/platforms/android/assets/www/js
+/platforms/android/assets/www/lib
+/platforms/android/assets/www/plugins
+/platforms/android/assets/www/widgets
+/platforms/android/assets/www/cordova.js
+/platforms/android/assets/www/cordova_plugins.js

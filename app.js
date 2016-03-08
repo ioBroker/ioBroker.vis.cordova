@@ -90,7 +90,8 @@ var app = {
         recognition:    false,
         text2command:    0,
         defaultRoom:    '',
-        noCommInBackground: false
+        noCommInBackground: false,
+        responseWithTts: true
     },
     inBackground: false,
     connection:   '',
@@ -110,15 +111,21 @@ var app = {
     //
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function () {
+    onBackButton:   function () {
+        $('#cordova_cancel').trigger('click');
+    },
+    bindEvents:     function () {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
         document.addEventListener('pause', this.onDevicePause.bind(this), false);
         document.addEventListener('resume', this.onDeviceResume.bind(this), false);
+        document.addEventListener('menubutton', function () {
+            $('#cordova_menu').trigger('click');
+        }, false);
     },
-    receivedEvent: function (event) {
+    receivedEvent:  function (event) {
         console.log('Received Event: ' + event);
     },
-    onDevicePause: function () {
+    onDevicePause:  function () {
         this.inBackground = true;
         if (this.settings.noCommInBackground) {
             vis.conn._socket.close();
@@ -127,7 +134,7 @@ var app = {
     onDeviceResume: function () {
         this.inBackground = false;
         if (this.settings.noCommInBackground) {
-            vis.conn._socket.connect();
+            window.location.reload();
         }
     },
     getLocalDir:    function (dir, create, cb, index) {
@@ -258,7 +265,7 @@ var app = {
         });
     },
 
-    onDeviceReady: function () {
+    onDeviceReady:  function () {
         this.receivedEvent('deviceready');
 
         /*this.writeLocalFile('main/imgavSony.png', 'text', function (error) {
@@ -686,9 +693,7 @@ var app = {
                 var matched = false;
                 if (event.results.length > 0) {
                     var text = event.results[0][0].transcript;
-                    this.recText.html(text).show();
                     if (event.results[0][0].final) {
-                        this.recText.css('background: lightblue');
                         // start analyse
                         if (this.match) {
                             for (var m = 0; m < this.match.length; m++) {
@@ -703,6 +708,8 @@ var app = {
                             matched = true;
                         }
                         if (matched) {
+                            this.recText.css('background: lightblue');
+                            this.recText.html(text).show();
                             if (this.settings.defaultRoom) {
                                 text = text + ' [' + this.settings.defaultRoom + ']';
                                 if (!this.defaultRoomRegExp) this.defaultRoomRegExp = new RegExp('\\s\\[' + this.settings.defaultRoom + '\\]', 'i');
@@ -726,20 +733,42 @@ var app = {
                                     response.response = response.response.replace(this.defaultRoomRegExp, '');
                                 }
 
-                                // say answer
-                                this.tts(response.response, function () {
-                                    // Start recognition
+                                if (this.settings.responseWithTts) {
+                                    // say answer
+                                    this.tts(response.response, function () {
+                                        // Start recognition
+                                        setTimeout(function () {
+                                            if (!this.settings.noCommInBackground || !this.inBackground) {
+                                                this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                                                this.recognition.start(false);
+                                            }
+                                        }.bind(this), 500);
+                                    }.bind(this));
+                                } else {
                                     setTimeout(function () {
                                         if (!this.settings.noCommInBackground || !this.inBackground) {
                                             this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
                                             this.recognition.start(false);
                                         }
-                                    }.bind(this), 500);
-                                }.bind(this));
+                                    }.bind(this), 200);
+                                }
                             }.bind(this));
                         }
                     } else {
-                        this.recText.css('background: darkblue');
+                        if (this.match) {
+                            for (var m = 0; m < this.match.length; m++) {
+                                if (this.match[m].test(text)) {
+                                    text = text.replace(this.match[m], '').replace(/\s\s/g, ' ').trim();
+                                    // Key phrase found
+                                    matched = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!this.match || matched) {
+                            this.recText.html(text).show();
+                            this.recText.css('background: darkblue');
+                        }
                     }
 
                     if (this.recTextTimeout) clearTimeout(this.recTextTimeout);
@@ -749,6 +778,7 @@ var app = {
                         this.recText.hide();
                     }.bind(this), 2000);
                 }
+
                 if (!matched) {
                     if (!this.settings.noCommInBackground || !this.inBackground) {
                         setTimeout(function () {
@@ -835,9 +865,9 @@ var app = {
 
     installMenu:    function () {
         // install menu button
-        $('body').append('<div id="cordova_menu" style="top: 0.5em; left: 0.5em; padding-left: 0.5em; padding-right: 0.5em; position: fixed; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 5001" id="cordova_menu">...</div>');
-        $('body').append('<div id="cordova_dialog_bg" style="position: fixed; top:0; right: 0; left: 0; bottom: 0; background: black; opacity: 0.3; display: none; z-index: 5002"></div>' +
-            '<div id="cordova_dialog" style="background: #d3d3d3; top: 1em; left: 1em; bottom: 1em; right: 1em; position: absolute; border-radius: 0.3em; border: 1px solid grey; display: none; z-index: 5003; overflow-x: hidden; overflow-x' +
+        $('body').append('<div id="cordova_menu" style="top: 0.5em; left: 0.5em; padding-left: 0.5em; padding-right: 0.5em; position: fixed; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 15002" id="cordova_menu">...</div>');
+        $('body').append('<div id="cordova_dialog_bg" style="position: fixed; top:0; right: 0; left: 0; bottom: 0; background: black; opacity: 0.3; display: none; z-index: 15003"></div>' +
+            '<div id="cordova_dialog" style="background: #d3d3d3; top: 1em; left: 1em; bottom: 1em; right: 1em; position: absolute; border-radius: 0.3em; border: 1px solid grey; display: none; z-index: 15004; overflow-x: hidden; overflow-x' +
             'y: auto">' +
             '<div style="padding-left: 1em; font-size: 2em; font-weight: bold">' + _('Settings') +
             '<span style="padding-left: 1em; font-size: 0.5em" id="cordova_version"></span>' + '</div>' +
@@ -860,9 +890,10 @@ var app = {
             '<tr><td>' + _('Prevent from sleep')    + ':</td><td><input  class="cordova-setting" data-name="noSleep"     type="checkbox"/></td></tr>'+
             '<tr><td>' + _('Allow window move')     + ':</td><td><input  class="cordova-setting" data-name="allowMove"   type="checkbox"/></td></tr>'+
             '<tr><td>' + _('Speech recognition')    + ':</td><td><input  class="cordova-setting" data-name="recognition" type="checkbox"/></td></tr>'+
-            '<tr class="speech"><td>' + _('Keyword')       + ':</td><td><input  class="cordova-setting" data-name="keyword"     style="width: 100%"/>' +
-            '<tr class="speech"><td>' + _('Text 2 speech') + ':</td><td><select id="text2command" class="cordova-setting" data-name="text2command" style="width: 100%"></select>' +
-            '<tr class="speech"><td>' + _('Default room') + ':</td><td><select id="defaultRoom" class="cordova-setting" data-name="defaultRoom" style="width: 100%"></select>' +
+            '<tr class="speech"><td>' + _('Keyword')       + ':</td><td><input  class="cordova-setting" data-name="keyword"     style="width: 100%"/></td></tr>' +
+            '<tr class="speech"><td>' + _('Text 2 speech') + ':</td><td><select id="text2command" class="cordova-setting" data-name="text2command" style="width: 100%"></select></td></tr>' +
+            '<tr class="speech"><td>' + _('Default room') + ':</td><td><select id="defaultRoom" class="cordova-setting" data-name="defaultRoom" style="width: 100%"></select></td></tr>' +
+            '<tr class="speech"><td>' + _('Response over TTS') + ':</td><td><input class="cordova-setting" data-name="responseWithTts" type="checkbox"/></td></tr>' +
             '<tr><td>' + _('Instance')              + ':</td><td><input  class="cordova-setting" data-name="instance"    style="width: 100%"/></td></tr>'+
             '<tr><td>' + _('Sleep in background')   + ':</td><td><input  class="cordova-setting" data-name="noCommInBackground" type="checkbox"/></td></tr>'+
             '<tr><td colspan="2" style="background: darkgrey; color: white; font-weight: bold">'      + _('WIFI') + '</td></tr>'+
@@ -886,12 +917,14 @@ var app = {
         // todo read text2command instances
         // todo read rooms
 
+        var that = this;
         $('#cordova_menu').click(function () {
+            document.addEventListener('backbutton', that.onBackButton, false);
             // load settings
             $('#cordova_dialog .cordova-setting').each(function() {
                 if ($(this).attr('type') === 'checkbox') {
-                    $(this).prop('checked', app.settings[$(this).data('name')]);
-                    if ($(this).data('name') === 'recognition' && !app.settings.recognition) {
+                    $(this).prop('checked', that.settings[$(this).data('name')]);
+                    if ($(this).data('name') === 'recognition' && !that.settings.recognition) {
                         $('.speech').hide();
                     }
                 } else {
@@ -921,7 +954,7 @@ var app = {
                 });
             }
 
-            if (app.ssid) {
+            if (that.ssid) {
                 $('#cordova_ssid_button').show();
                 $('#cordova_ssid').css('width', 'calc(100% - 3.5em)');
             } else {
@@ -940,25 +973,27 @@ var app = {
             });
 
             $('#cordova_ssid_button').unbind('click').click(function () {
-                $('#cordova_ssid').val(app.ssid);
+                $('#cordova_ssid').val(that.ssid);
             });
 
             $('#cordova_cancel').unbind('click').click(function () {
+                document.removeEventListener('backbutton', that.onBackButton, false);
                 $('#cordova_dialog_bg').hide();
                 $('#cordova_dialog').hide();
             }).css({height: '2em'});
 
             $('#cordova_reload').unbind('click').click(function () {
+                document.removeEventListener('backbutton', that.onBackButton, false);
                 var changed = false;
                 // save settings
                 $('#cordova_dialog .cordova-setting').each(function() {
                     if ($(this).attr('type') === 'checkbox') {
-                        if (app.settings[$(this).data('name')] != $(this).prop('checked')) {
+                        if (that.settings[$(this).data('name')] != $(this).prop('checked')) {
                             changed = true;
                             return false;
                         }
                     } else {
-                        if (app.settings[$(this).data('name')] != $(this).val()) {
+                        if (that.settings[$(this).data('name')] != $(this).val()) {
                             changed = true;
                             return false;
                         }
@@ -973,17 +1008,18 @@ var app = {
             }).css({height: '2em'});
 
             $('#cordova_resync').unbind('click').click(function () {
+                document.removeEventListener('backbutton', that.onBackButton, false);
                 var changed = false;
 
                 // save settings
                 $('#cordova_dialog .cordova-setting').each(function() {
                     if ($(this).attr('type') === 'checkbox') {
-                        if (app.settings[$(this).data('name')] != $(this).prop('checked')) {
+                        if (that.settings[$(this).data('name')] != $(this).prop('checked')) {
                             changed = true;
                             return false;
                         }
                     } else {
-                        if (app.settings[$(this).data('name')] != $(this).val()) {
+                        if (that.settings[$(this).data('name')] != $(this).val()) {
                             changed = true;
                             return false;
                         }
@@ -994,12 +1030,13 @@ var app = {
 
                 $('#cordova_dialog_bg').hide();
                 $('#cordova_dialog').hide();
-                app.settings.resync = true;
-                app.saveSettings();
+                that.settings.resync = true;
+                that.saveSettings();
                 window.location.reload();
             }).css({height: '2em'});
 
             $('#cordova_ok').unbind('click').click(function () {
+                document.removeEventListener('backbutton', that.onBackButton, false);
                 if ($('#cordova-password').val() != $('#cordova-password-repeat').val()) {
                     window.alert(_('WIFI password repeat does not equal to repeat'));
                     return;
@@ -1017,13 +1054,13 @@ var app = {
                 // save settings
                 $('#cordova_dialog .cordova-setting').each(function() {
                     if ($(this).attr('type') === 'checkbox') {
-                        if (app.settings[$(this).data('name')] != $(this).prop('checked')) {
-                            app.settings[$(this).data('name')] = $(this).prop('checked');
+                        if (that.settings[$(this).data('name')] != $(this).prop('checked')) {
+                            that.settings[$(this).data('name')] = $(this).prop('checked');
                             changed = true;
                         }
                     } else {
-                        if (app.settings[$(this).data('name')] != $(this).val()) {
-                            app.settings[$(this).data('name')] = $(this).val();
+                        if (that.settings[$(this).data('name')] != $(this).val()) {
+                            that.settings[$(this).data('name')] = $(this).val();
                             changed = true;
                             if ($(this).data('name') === 'project') projectChanged = true;
                         }
@@ -1034,17 +1071,17 @@ var app = {
                     // If project name changed
                     if (projectChanged && vis.conn.getIsConnected()) {
                         // try to load all files
-                        app.syncVis(app.settings.project, function () {
-                            app.settings.resync = false;
-                            app.saveSettings();
-                            if (!app.viewExists) {
-                                window.alert(_('No views found in %s', app.settings.project));
+                        that.syncVis(that.settings.project, function () {
+                            that.settings.resync = false;
+                            that.saveSettings();
+                            if (!that.viewExists) {
+                                window.alert(_('No views found in %s', that.settings.project));
                             } else {
                                 window.location.reload();
                             }
                         });
                     } else {
-                        app.saveSettings();
+                        that.saveSettings();
                         window.location.reload();
                     }
                 }
@@ -1060,12 +1097,43 @@ var app = {
         if (connected) {
             $('#cordova_connected').html('<span style="color:green">' + this.yes +'</span>');
             if (!this.projects.length) this.readProjects();
+            if (this._connectInterval) {
+                clearInterval(this._connectInterval);
+                this._connectInterval = null;
+            }
+            if (this._countInterval) {
+                clearInterval(this._countInterval);
+                this._countInterval = null;
+            }
         } else {
             $('#cordova_connected').html('<span style="color:red">'   + this.no +'</span>');
 
+            if (this._connectInterval) {
+                clearInterval(this._connectInterval);
+                this._connectInterval = null;
+            }
+            if (this._countInterval) {
+                clearInterval(this._countInterval);
+                this._countInterval = null;
+            }
+
             // force reconnection
             if (!this.settings.noCommInBackground || !this.inBackground) {
-                vis.conn._socket.connect();
+                // reconnect
+                this._connectInterval = setInterval(function () {
+                    console.log('Trying connect...');
+                    vis.conn._socket.connect();
+                    this._countDown = 10;
+                    $('.splash-screen-text').html(this._countDown + '...').css('color', 'red');
+                }.bind(this), 10000);
+
+                this._countDown = 10;
+                $('.splash-screen-text').html(this._countDown + '...');
+
+                this._countInterval = setInterval(function () {
+                    this._countDown--;
+                    $('.splash-screen-text').html(this._countDown + '...');
+                }.bind(this), 1000);
             }
         }
     }
