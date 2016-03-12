@@ -1095,7 +1095,7 @@ var app = {
 
     onConnChange: function (connected) {
         if (connected) {
-            $('#cordova_connected').html('<span style="color:green">' + this.yes +'</span>');
+            $('#cordova_connected').html('<span style="color: green">' + this.yes +'</span>');
             if (!this.projects.length) this.readProjects();
             if (this._connectInterval) {
                 clearInterval(this._connectInterval);
@@ -1106,7 +1106,7 @@ var app = {
                 this._countInterval = null;
             }
         } else {
-            $('#cordova_connected').html('<span style="color:red">'   + this.no +'</span>');
+            $('#cordova_connected').html('<span style="color: red">'   + this.no +'</span>');
 
             if (this._connectInterval) {
                 clearInterval(this._connectInterval);
