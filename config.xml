@@ -20,9 +20,11 @@
     <allow-intent href="https://*/*" />
     <allow-navigation href="http://*/*" />
 
-    <preference name="AndroidPersistentFileLocation" value="Internal" />
+    <!--preference name="AndroidPersistentFileLocation" value="Internal" /-->
     <preference name="iosPersistentFileLocation" value="Library" />
     <preference name="BackupWebStorage" value="none" />
+    <preference name="AndroidPersistentFileLocation" value="Compatibility" />
+    <preference name="AndroidExtraFilesystems" value="sdcard,cache" />
 
     <platform name="android">
         <allow-intent href="market:*" />

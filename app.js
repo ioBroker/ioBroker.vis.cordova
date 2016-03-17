@@ -75,7 +75,12 @@ $.extend(systemDictionary, {
         "en": "Prevent from sleep",
         "de": "Nicht einschlafen",
         "ru": "Не засыпать"
-    }
+    },
+    "Text 2 speech":     {"en": "Text 2 speech",     "de": "Text 2 speech",     "ru": "Синтез речи"},
+    "Default room":      {"en": "Default room",      "de": "Default Raum",      "ru": "Комната по умолчанию"},
+    "Response over TTS": {"en": "Response over TTS", "de": "Antworten mit TTS", "ru": "Отвечать голосом"},
+    "Message":           {"en": "Message",           "de": "Meldung",           "ru": "Сообщение"},
+    "Discard changes?":  {"en": "Discard changes?",  "de": "Die Änderungen sind nicht gespeichert. Ignorieren?",  "ru": "Игнорировать изменения?"}
 });
 
 var app = {
@@ -90,6 +95,7 @@ var app = {
         recognition:    false,
         text2command:    0,
         defaultRoom:    '',
+        volume:         80,
         noCommInBackground: false,
         responseWithTts: true
     },
@@ -98,6 +104,7 @@ var app = {
     projects:     [],
     ssid:         null,
     localDir:     null,
+    directory:    cordova.file.externalDataDirectory,
     // Application Constructor
     initialize:     function () {
         if (this.settings.systemLang.indexOf('-') != -1) {
@@ -145,7 +152,7 @@ var app = {
         }
 
         if (!this.localDir) {
-            window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dirHandler) {
+            window.resolveLocalFileSystemURL(this.directory, function (dirHandler) {
                 this.localDir = dirHandler;
                 this.getLocalDir(dir, create, cb);
             }.bind(this));
@@ -186,22 +193,32 @@ var app = {
             if (error) console.error(error);
             if (dirHandler) {
                 dirHandler.getFile(fileN, {create: true}, function (fileHandler) {
+                    console.log('Store :' + fileN);
+                    var length = data.byteLength || data.length || 0;
                     fileHandler.createWriter(function (fileWriter) {
                         try {
                             fileWriter.truncate(0);
-                            fileWriter.write(new Blob([data], {type: 'text/plain'}));
+                            fileWriter.onwrite = function(evt) {
+                                if (length && evt.target.position !== length) return;
+                                console.log('write "' + fileN + '" success:' + JSON.stringify(evt));
+                                cb && cb();
+                                cb = null;
+                            };
+
+                            fileWriter.write(new Blob([data]));
                         } catch (e) {
                             console.error(fileWriter.nativeURL + ': ' + e);
-                            cb(e);
-                            return;
+                            cb && cb(e);
+                            cb = null;
                         }
-                        cb();
                     }, function (error) {
-                        cb(error);
-                        console.error('Cannot write file: ' + error);
+                        cb && cb(error);
+                        cb = null;
+                        console.error('Cannot write file: ' + JSON.stringify(error));
                     });
                 }, function (error) {
-                    cb(error);
+                    cb && cb(error);
+                    cb = null;
                     console.error('Cannot create file')
                 });
             } else {
@@ -231,7 +248,7 @@ var app = {
                         cb(_('Not found'), '', fileName);
                     } else {
                         cb(error, null, fileName);
-                        console.error('Cannot read file: ' + error);
+                        console.error('Cannot read file "' + fileName + '": ' + JSON.stringify(error));
                     }
                 });
             } else {
@@ -445,7 +462,7 @@ var app = {
     },
 
     copyFilesToDevice: function (files, cb, total) {
-        if (total === undefined) total = files.length;
+        if (total === undefined) total = files;
 
         if (!files || !files.length) {
             if (cb) setTimeout(cb, 0);
@@ -453,42 +470,70 @@ var app = {
         }
         var file = files.pop();
 
-        vis.conn.readFile(file, function (error, data, filename) {
+        vis.conn.readFile64(file, function (error, data, filename) {
             if (error) console.error(error);
-            $('#cordova_progress_show').css('width', (100 - (files.length / total) * 100) + '%');
+            $('#cordova_progress_show').css('width', (100 - (files.length / total.length) * 100) + '%');
 
-            if (data) {
+            if (!error && data !== undefined && data !== null) {
+                if (data.mime.indexOf('text') === -1 && data.mime.indexOf('application') === -1) {
+                    var binary_string =  window.atob(data.data);
+                    var len = binary_string.length;
+                    var bytes = new Uint8Array( len );
+                    for (var i = 0; i < len; i++)        {
+                        bytes[i] = binary_string.charCodeAt(i);
+                    }
+
+                    data = bytes.buffer;
+                } else {
+                    data = window.atob(data.data || '');
+                }
+
                 // modify vis-views.json
                 if (filename && filename.indexOf('vis-views.json') != -1) {
                     this.viewExists = true;
-                    var m = data.match(/"\/vis\.0\/.+"/g);
+                    data = data.toString();
+                    // detect: /vis/, /vis.0/, /icon-blabla/, ...
+                    var m = data.match(/": "\/[-_0-9\w]+(\.[-_0-9\w]+)?\/.+\.(png|jpg|jpeg|gif|wav|mp3|bmp)+"/g);
                     if (m) {
                         for (var mm = 0; mm < m.length; mm++) {
                             //file:///data/data/net.iobroker.vis/files/main/vis-user.css
                             //cdvfile://localhost/persistent
-                            var fn = m[mm].substring(8);
+                            var fn = m[mm].substring(5); // remove ": "/
+                            var originalFileName = fn.replace(/"/g, ''); // remove last "
                             var p  = fn.split('/');
+                            var adapter = p.shift(); // remove vis.0 or whatever
+                            fn  = p.shift(); // keep only one subdirectory
+                            fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
-                            fn  = p.shift();
-                            fn += p.length ? '/' + p.join('') : '';
-
-                            data = data.replace(m[mm], '"file:///data/data/net.iobroker.vis/files/' + fn);
-                        }
-                    }
-
-                    m = data.match(/"\/vis\/.+"/g);
-                    if (m) {
-                        for (var mm = 0; mm < m.length; mm++) {
-                            data = data.replace(m[mm], '"' + m[mm].substring(6));
+                            if (adapter === 'vis') {
+                                data = data.replace(m[mm], '": "' + m[mm].substring(9)); // remove ": "/vis/
+                            } else {
+                                // add to files
+                                if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) == -1) { // if "vis.0/dir/otherProject.png"
+                                    files.push('/' + originalFileName);
+                                }
+                                // files cannot be stored directly in root
+                                if (adapter == 'vis.0' && fn.indexOf('/') !== -1) {
+                                    adapter = ''
+                                } else {
+                                    adapter = adapter + '/';
+                                }
+                                data = data.replace(m[mm], '": "' + this.directory + adapter + fn);
+                            }
                         }
                     }
                 }
 
-                // remove subdirs
-                var p = filename.replace(/^\/vis\.0\//, '').split('/');
+                // remove sub-dirs
+                var p = filename.replace(/^\/[-_0-9\w]+(\.[-_0-9\w]+)?\//, '').split('/');
                 filename = p.shift();
                 filename += p.length ? '/' + p.join('') : '';
+                if (!p.length) {
+                    p = file.split('/');
+                    filename = (p[0] || p[1]) + '/' + filename;
+                }
 
+                console.log('writeLocalFile "' + file + '" as "' + filename + '"');
                 this.writeLocalFile(filename, data, function (error) {
                     if (error) console.error(error);
                     setTimeout(function () {
@@ -632,10 +677,13 @@ var app = {
             } else {
                 data = {
                     text:   data,
-                    locale: this.settings.systemLang
+                    locale: this.settings.systemLang,
+                    volume: this.settings.volume
                 };
             }
         }
+        data.volume = parseInt(data.volume || 100, 10) || 100;
+
         if (data.language) data.locale = data.language;
         if (data.lang)     data.locale = data.lang;
 
@@ -647,14 +695,21 @@ var app = {
             this.menu.css('background', 'rgba(0, 0, 0, 0.1)');
             this.recognition.stop();
         }
+
         if (this.ttsTextTimer) clearTimeout(this.ttsTextTimer);
+
         this.ttsText.html(data.text).show();
+
         this.ttsTextTimer = setTimeout(function () {
             this.ttsText.hide();
             this.ttsTextTimer = null;
         }.bind(this), 3000);
 
-        if (TTS) {
+        if (window && window.system && window.system.setSystemVolume) {
+            window.system.setSystemVolume(data.volume / 100);
+        }
+
+        if (typeof TTS !== 'undefined') {
             TTS.speak(data, function () {
                 console.log(JSON.stringify(data));
 
@@ -788,9 +843,11 @@ var app = {
                     }
                 }
             }.bind(this);
+
             this.recognition.onend = function(event) {
                 this.menu.css('background', 'rgba(0, 0, 0, 0.1)');
             }.bind(this);
+
             this.recognition.onerror = function(event) {
                 console.log(JSON.stringify(event));
                 this.menu.css('background', 'rgba(0, 0, 0, 0.1)');
@@ -805,6 +862,7 @@ var app = {
             this.recognition.ondebug = function (event) {
                 console.log(JSON.stringify(event));
             };
+
             this.menu = $('#cordova_menu');
             this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
             this.recognition.start(false);
@@ -928,12 +986,12 @@ var app = {
                         $('.speech').hide();
                     }
                 } else {
-                    $(this).val(app.settings[$(this).data('name')]);
+                    $(this).val(that.settings[$(this).data('name')]);
                 }
             });
 
             // todo read text2command instances
-            if (vis.conn) {
+            if (typeof vis !== 'undefined' && vis.conn) {
                 vis.conn._socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.text2command.', endkey: 'system.adapter.text2command.\u9999'}, function (err, res) {
                     if (!err && res.rows.length) {
                         var text = '<option value="">' + _('none') + '</option>';
@@ -1026,13 +1084,14 @@ var app = {
                     }
                 });
 
-                if (changed && !window.confirm(_('Discard changes?'))) return;
+                //if (changed && !window.confirm(_('Discard changes?'))) return;
 
-                $('#cordova_dialog_bg').hide();
-                $('#cordova_dialog').hide();
                 that.settings.resync = true;
+                /*$('#cordova_dialog_bg').hide();
+                $('#cordova_dialog').hide();
                 that.saveSettings();
-                window.location.reload();
+                window.location.reload();*/
+                $('#cordova_ok').trigger('click');
             }).css({height: '2em'});
 
             $('#cordova_ok').unbind('click').click(function () {
@@ -1067,9 +1126,9 @@ var app = {
                     }
                 });
 
-                if (changed) {
+                if (changed || that.settings.resync) {
                     // If project name changed
-                    if (projectChanged && vis.conn.getIsConnected()) {
+                    if ((projectChanged || that.settings.resync) && vis.conn.getIsConnected()) {
                         // try to load all files
                         that.syncVis(that.settings.project, function () {
                             that.settings.resync = false;
