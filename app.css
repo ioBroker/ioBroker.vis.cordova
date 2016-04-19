@@ -1,0 +1,206 @@
+/*
+	------------------------------ CSS STYLE FOR SETTING PAGE -------------------------------
+*/
+#cordova_dialog {
+    font-family: Helvetica, Arial, Sans-serif;
+}
+#cordova_dialog_bg {
+    -webkit-touch-callout:        none;
+    -ms-touch-select:             none;
+    -ms-touch-action:             none;
+    -webkit-tap-highlight-color:  rgba(0,0,0,0);
+    touch-callout:                none;
+    touch-select:                 none;
+    touch-action:                 none;
+    -webkit-user-select:          none;
+    -khtml-user-select:           none;
+    -moz-user-select:             none;
+    -ms-user-select:              none;
+    user-select:                  none;
+    border:                       none !important;
+    position:                     fixed;
+    top:                          0;
+    right:                        0;
+    left:                         0;
+    bottom:                       0;
+    background:                   black;
+    opacity:                      0.3;
+    display:                      none;
+    z-index:                      15003;
+}
+/*
+	-- Inputs
+*/
+#cordova_dialog input,
+#cordova_dialog input[type="text"],
+#cordova_dialog input[type="tel"],
+#cordova_dialog input[type="email"],
+#cordova_dialog input[type="password"],
+#cordova_dialog select {
+    background:     #545454;
+    border:         1px solid #4c8c99;
+    height:         30px;
+    width:          100%;
+    padding:        0 10px;
+    border-radius:  5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 5px;
+    -ms-border-radius: 5px;
+    color:          white;
+}
+
+#cordova_dialog input:focus,
+#cordova_dialog input[type="text"]:focus,
+#cordova_dialog input[type="tel"]:focus,
+#cordova_dialog input[type="email"]:focus,
+#cordova_dialog input[type="password"]:focus,
+#cordova_dialog select:focus {
+    background-color: #D1DCE8;
+    box-shadow: 0 0 10px #314861;
+    border-color: #2a4e55;
+}
+
+#cordova_dialog input,
+#cordova_dialog button {
+    transition: all .25s;
+}
+/*
+	BUTTON GROUP ---
+*/
+#cordova_dialog button,
+#cordova_dialog input[type="submit"] {
+    background: #000000;
+    border: 1px solid #4c8c99;
+    color: #a9cdd5;
+    margin-left: 3%;
+    padding: 0 20px;
+    border-radius: 5px;
+}
+
+#cordova_dialog button:first-child,
+#cordova_dialog input[type="submit"]:first-child {
+    margin-left: 0;
+}
+
+#cordova_dialog button:hover,
+#cordova_dialog input[type="submit"]:hover {
+    background: #080808;
+    border-color: #a9cdd5;
+}
+
+#cordova_dialog button:active,
+#cordova_dialog input[type="submit"]:active,
+#cordova_dialog button:focus,
+#cordova_dialog input[type="submit"]:focus {
+    box-shadow: 0 0 10px black inset;
+}
+
+#cordova_dialog {
+    color:      #dddddd;
+    background: rgba(0, 0, 0, 0.95);
+    top:        1em;
+    left:       1em;
+    bottom:     1em;
+    right:      1em;
+    position:   absolute;
+    border-radius: 0.3em;
+    border:     1px solid grey;
+    display:    none;
+    z-index:    15004;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+#cordova_dialog div,
+#cordova_dialog span,
+#cordova_dialog input,
+#cordova_dialog select {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+#cordova_dialog td,
+#cordova_dialog table,
+#cordova_dialog div,
+#cordova_dialog span,
+#cordova_dialog label {
+    color: #dddddd;
+}
+#cordova_dialog .section-legend {
+    font-weight: bold;
+    position: relative;
+}
+#cordova_dialog .cordova_toggle{
+    position: absolute;
+    top: 9px;
+    right: 5px;
+}
+#cordova_dialog .section-legend span {
+    display: block;
+    margin-bottom: 20px;
+    font-size: 1.25em;
+    padding: 0.25em 0.5em;
+    background: rgba(0, 0, 0, 0.25);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.75);
+}
+#cordova_dialog input[type="checkbox"] {
+    display: none;
+}
+#cordova_dialog input[type="checkbox"]:checked + .checkbox {
+    text-indent: 28px;
+    background: #4c8c99;
+    color: #ffffff;
+    border-color: #4c8c99;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.55);
+    text-shadow: 0 0 4px gold;
+}
+
+#cordova_dialog .checkbox {
+    position: relative;
+    padding-top: 7px;
+    width: 50px;
+    height: 20px;
+    transition: all .15s;
+    top: 0;
+    right: 0;
+    display: block;
+    font-size: 66px;
+    line-height: 20px;
+    border-radius: 25px;
+    color: #545454;
+    background: #212121;
+    border: 1px solid #616161;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.55);
+    float: right;
+}
+#cordova_dialog .button-group {
+    width: 100%;
+    padding: 10px;
+}
+#cordova_dialog .button-group .left,
+#cordova_dialog .button-group .right {
+    width: 50%;
+    float: left;
+}
+#cordova_dialog .button-group .right {
+    text-align: right;
+}
+
+#cordova_dialog .button-group button {
+    margin: 0 0 20px;
+    width: 80%;
+    display: inline-block;
+}
+
+#cordova_dialog .cordova-settings-label {
+    border-top: 1px dotted white;
+    font-weight: bold;
+    text-align: left;
+    height: 1.5em;
+}
+#cordova_dialog .cordova-settings-value {
+    text-align: right;
+    width: 100%;
+    height: 2em;
+}
+

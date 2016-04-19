@@ -66,6 +66,16 @@ $.extend(systemDictionary, {
         "de": "Spracherkennung",
         "ru": "Распознавание речи"
     },
+    "Speech recognition active": {
+        "en": "Speech recognition active",
+        "de": "Spracherkennung aktiviert",
+        "ru": "Распознавание речи активно"
+    },
+    "Volume": {
+        "en": "Speech volume",
+        "de": "Sprachlautstärke",
+        "ru": "Громкость речи"
+},
     "Allow window move": {
             "en": "Allow window move",
         "de": "Erlaube Fensterverschiebung",
@@ -85,7 +95,7 @@ $.extend(systemDictionary, {
 
 var app = {
     settings: {
-        socketUrl:      'http://localhost:8084',
+        socketUrl:      'http://localhost:8082',
         systemLang:     navigator.language || navigator.userLanguage || 'en',
         noSleep:        false,
         project:        '',
@@ -150,6 +160,8 @@ var app = {
             cb     = create;
             create = true;
         }
+
+        if (!this.directory) this.directory = cordova.file.externalDataDirectory;
 
         if (!this.localDir) {
             window.resolveLocalFileSystemURL(this.directory, function (dirHandler) {
@@ -284,6 +296,12 @@ var app = {
 
     onDeviceReady:  function () {
         this.receivedEvent('deviceready');
+        this.settings.socketUrl = this.settings.socketUrl.toLowerCase();
+
+        if (!this.settings.socketUrl.match(/^http:\/\/|^https:\/\//i)) {
+            this.settings.socketUrl = 'http://' + this.settings.socketUrl;
+        }
+
 
         /*this.writeLocalFile('main/imgavSony.png', 'text', function (error) {
             this.readLocalFile('main/imgavSony.png', function (error, result) {
@@ -924,47 +942,95 @@ var app = {
     installMenu:    function () {
         // install menu button
         $('body').append('<div id="cordova_menu" style="top: 0.5em; left: 0.5em; padding-left: 0.5em; padding-right: 0.5em; position: fixed; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 15002" id="cordova_menu">...</div>');
-        $('body').append('<div id="cordova_dialog_bg" style="position: fixed; top:0; right: 0; left: 0; bottom: 0; background: black; opacity: 0.3; display: none; z-index: 15003"></div>' +
-            '<div id="cordova_dialog" style="background: #d3d3d3; top: 1em; left: 1em; bottom: 1em; right: 1em; position: absolute; border-radius: 0.3em; border: 1px solid grey; display: none; z-index: 15004; overflow-x: hidden; overflow-x' +
-            'y: auto">' +
+        $('body').append('<div id="cordova_dialog_bg" style="display: none"></div>' +
+            '<div id="cordova_dialog">' +
             '<div style="padding-left: 1em; font-size: 2em; font-weight: bold">' + _('Settings') +
             '<span style="padding-left: 1em; font-size: 0.5em" id="cordova_version"></span>' + '</div>' +
             '<table style="width: 100%; padding: 1em">' +
 
-            '<tr><td colspan="2">' +
-            '<button id="cordova_reload">' + _('Reload')  + '</button>' +
-            '<button id="cordova_resync">' + _('Re-sync') + '</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-            '<button id="cordova_ok">'     + _('Ok')      + '</button>&nbsp;' +
-            '<button id="cordova_cancel">' + _('Cancel')  + '</button></td></tr>'+
+            '<tr><td colspan="2"><div class="button-group">'            +
+            '<div class="left">' +
+            '<button id="cordova_reload">&#8634;' + _('Reload')  + '</button>' +
+            '<button id="cordova_resync">⇔' + _('Re-sync') + '</button>' +
+            '</div><div class="right">' +
+            '<button id="cordova_ok">✔'     + _('Ok')      + '</button>' +
+            '<button id="cordova_cancel">&#10060;' + _('Cancel')  + '</button>' +
+            '</div></div></td></tr>'  +
 
-            '<tr><td>' + _('Connected') + ':</td><td><div id="cordova_connected"></div></td></tr>'+
-            '<tr><td>' + _('Language') + ':</td><td><select data-name="systemLang" class="cordova-setting" style="width: 100%">' +
-                '<option value="">' + _('System') + '</option>' +
-                '<option value="en">english</option>' +
-                '<option value="de">deutsch</option>' +
-                '<option value="ru">русский</option>' +
-            '</select></td></tr>'+
-            '<tr><td>' + _('Project')               + ':</td><td><select class="cordova-setting" data-name="project"     id="cordova_project" style="width: 100%"></select>' +
-            '<tr><td>' + _('Prevent from sleep')    + ':</td><td><input  class="cordova-setting" data-name="noSleep"     type="checkbox"/></td></tr>'+
-            '<tr><td>' + _('Allow window move')     + ':</td><td><input  class="cordova-setting" data-name="allowMove"   type="checkbox"/></td></tr>'+
-            '<tr><td>' + _('Speech recognition')    + ':</td><td><input  class="cordova-setting" data-name="recognition" type="checkbox"/></td></tr>'+
-            '<tr class="speech"><td>' + _('Keyword')       + ':</td><td><input  class="cordova-setting" data-name="keyword"     style="width: 100%"/></td></tr>' +
-            '<tr class="speech"><td>' + _('Text 2 speech') + ':</td><td><select id="text2command" class="cordova-setting" data-name="text2command" style="width: 100%"></select></td></tr>' +
-            '<tr class="speech"><td>' + _('Default room') + ':</td><td><select id="defaultRoom" class="cordova-setting" data-name="defaultRoom" style="width: 100%"></select></td></tr>' +
-            '<tr class="speech"><td>' + _('Response over TTS') + ':</td><td><input class="cordova-setting" data-name="responseWithTts" type="checkbox"/></td></tr>' +
-            '<tr><td>' + _('Instance')              + ':</td><td><input  class="cordova-setting" data-name="instance"    style="width: 100%"/></td></tr>'+
-            '<tr><td>' + _('Sleep in background')   + ':</td><td><input  class="cordova-setting" data-name="noCommInBackground" type="checkbox"/></td></tr>'+
-            '<tr><td colspan="2" style="background: darkgrey; color: white; font-weight: bold">'      + _('WIFI') + '</td></tr>'+
-            '<tr><td>' + _('WIFI SSID')             + ':</td><td><input  class="cordova-setting" data-name="ssid"       style="width: calc(100% - 2em)" id="cordova_ssid"/><button id="cordova_ssid_button" style="width: 3em">' + _('Actual') + '</button></td></tr>'+
-            '<tr><td>' + _('WIFI Socket')           + ':</td><td><input  class="cordova-setting" data-name="socketUrl"  style="width: 100%"/></td></tr>'+
-            '<tr><td>' + _('WIFI User')             + ':</td><td><input  class="cordova-setting" data-name="user"       style="width: 100%"/></td></tr>'+
-            '<tr><td>' + _('WIFI Password')         + ':</td><td><input  class="cordova-setting" data-name="password"   type="password" id="cordova-password" style="width: 100%"/></td></tr>'+
-            '<tr><td>' + _('WIFI Password repeat')  + ':</td><td><input  id="cordova-password-repeat" type="password"   style="width: 100%"/></td></tr>'+
-            '<tr><td colspan="2" style="background: darkgrey; color: white; font-weight: bold">' + _('Cell')      + '</td></tr>'+
-            '<tr><td>' + _('Cell Socket')           + ':</td><td><input  class="cordova-setting" data-name="socketUrlGSM" style="width: 100%"/></td></tr>'+
-            '<tr><td>' + _('Cell User')             + ':</td><td><input  class="cordova-setting" data-name="userGSM"    style="width: 100%"/></td></tr>'+
-            '<tr><td>' + _('Cell Password')         + ':</td><td><input  class="cordova-setting" data-name="passwordGSM" type="password" id="cordova-password-gsm" style="width: 100%"/></td></tr>'+
-            '<tr><td>' + _('Cell Password repeat')  + ':</td><td><input  id="cordova-password-repeat-gsm" type="password" style="width: 100%"/></td></tr>'+
+            '<tr><td class="cordova-settings-label">' + _('Connected') + ':</td></td><tr>' +
+            '<tr><td class="cordova-settings-value"><div id="cordova_connected"></div></td></tr>' +
+
+            '<tr><td class="cordova-settings-label">' + _('Language')  + ':</td></tr>' +
+            '<tr><td class="cordova-settings-value"><select data-name="systemLang" class="cordova-setting">' +
+            '<option value="">' + _('System') + '</option>' +
+            '<option value="en">english</option>' +
+            '<option value="de">deutsch</option>' +
+            '<option value="ru">русский</option>' +
+            '</select></td></tr>' +
+
+            '<tr><td class="cordova-settings-label">' + _('Project')               + ':</td></tr>' +
+            '<tr><td class="cordova-settings-value"><select class="cordova-setting" data-name="project"     id="cordova_project" style="width: 100%"></select></td></tr>' +
+
+            '<tr><td class="cordova-settings-label"><label for="noSleep">' + _('Prevent from sleep')       + ':</label></td></tr>' +
+            '<tr><td><input id="noSleep" class="cordova-setting" data-name="noSleep" type="checkbox"/><label for="noSleep" class="checkbox">&#8226;</label></td></tr>'+
+
+            '<tr><td class="cordova-settings-label"><label for="allowMove">' + _('Allow window move')      + ':</label></td></tr>' +
+            '<tr><td><input  id="allowMove"      class="cordova-setting" data-name="allowMove"   type="checkbox"/><label for="allowMove" class="checkbox">&#8226;</label></td></tr>'+
+
+            '<tr><td class="cordova-settings-label">' + _('Instance')              + ':</td></tr>' +
+            '<tr><td><input  class="cordova-setting" data-name="instance"    style="width: 100%"/></td></tr>' +
+
+            '<tr><td class="cordova-settings-label"><label for="noCommInBackground">' + _('Sleep in background')   + ':</label></td></tr>' +
+            '<tr><td><input  id="noCommInBackground" class="cordova-setting" data-name="noCommInBackground" type="checkbox"/><label for="noCommInBackground" class="checkbox">&#8226;</label></td></tr>'+
+
+            '<tr><td class="cordova-settings-label section-legend"><span>'      + _('Speech recognition') + '</span><div class="cordova_toggle" data-group="speech">▶</div></td></tr>'+
+            '<tr class="cordova-setting-speech"><td class="cordova-settings-label"><label for="recognition">' + _('Speech recognition active') + ':</label></td></tr>' +
+            '<tr class="cordova-setting-speech"><td><input  id="recognition" class="cordova-setting" data-name="recognition" type="checkbox"/><label for="recognition" class="checkbox">&#8226;</label></td></tr>'+
+
+            '<tr class="cordova-setting-speech cordova-settings-label speech"><td>' + _('Keyword')       + ':</td></tr>' +
+            '<tr class="cordova-setting-speech speech"><td><input  class="cordova-setting" data-name="keyword"     style="width: 100%"/></td></tr>' +
+
+            '<tr class="cordova-setting-speech cordova-settings-label speech"><td>' + _('Text 2 speech') + ':</td></tr>' +
+            '<tr class="cordova-setting-speech speech"><td><select id="text2command" class="cordova-setting" data-name="text2command" style="width: 100%"></select></td></tr>' +
+
+            '<tr class="cordova-setting-speech cordova-settings-label speech"><td>' + _('Volume') + ':</td></tr>' +
+            '<tr class="cordova-setting-speech speech"><td><input type="range" min="0" max="100" class="cordova-setting" data-name="volume" style="width: 100%"/></td></tr>' +
+
+            '<tr class="cordova-setting-speech cordova-settings-label speech"><td>' + _('Default room') + ':</td></tr>' +
+            '<tr class="cordova-setting-speech speech"><td><select id="defaultRoom" class="cordova-setting" data-name="defaultRoom" style="width: 100%"></select></td></tr>' +
+
+            '<tr class="cordova-setting-speech cordova-settings-label speech"><td><label for="responseWithTts">' + _('Response over TTS') + ':</label></td></tr>' +
+            '<tr class="cordova-setting-speech speech"><td><input id="responseWithTts"    class="cordova-setting" data-name="responseWithTts" type="checkbox"/><label for="responseWithTts" class="checkbox">&#8226;</label></td></tr>' +
+
+            '<tr><td class="cordova-settings-label section-legend"><span>'      + _('WIFI') + '</span><div class="cordova_toggle" data-group="ssid">▶</div></td></tr>'+
+            '<tr class="cordova-setting-ssid"><td>' + _('WIFI SSID') + ':</td></tr>' +
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="ssid"       style="width: calc(100% - 4em)" id="cordova_ssid"/><button id="cordova_ssid_button" style="width: 3em; height: 2.3em;">' + _('Actual') + '</button></td></tr>'+
+
+            '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Socket')           + ':</td></tr>' +
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="socketUrl"  style="width: 100%"/></td></tr>'+
+
+            '<tr class="cordova-setting-ssid"><td  class="cordova-settings-label">' + _('WIFI User')             + ':</td></tr>' +
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="user"       style="width: 100%"/></td></tr>'+
+
+            '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Password')         + ':</td></tr>' +
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="password"   type="password" id="cordova-password" style="width: 100%"/></td></tr>'+
+
+            '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Password repeat')  + ':</td></tr>' +
+            '<tr class="cordova-setting-ssid"><td><input id="cordova-password-repeat" type="password"   style="width: 100%"/></td></tr>'+
+
+            '<tr><td class="cordova-settings-label section-legend"><span>' + _('Cell')      + '</span><div class="cordova_toggle" data-group="cell">▶</div></td></tr>'+
+            '<tr class="cordova-setting-cell"><td>' + _('Cell Socket')           + ':</td></tr>' +
+            '<tr class="cordova-setting-cell"><td><input  class="cordova-setting" data-name="socketUrlGSM" style="width: 100%"/></td></tr>'+
+
+            '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell User')             + ':</td></tr>' +
+            '<tr class="cordova-setting-cell"><td><input class="cordova-setting" data-name="userGSM"    style="width: 100%"/></td></tr>'+
+
+            '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell Password')         + ':</td></tr>' +
+            '<tr class="cordova-setting-cell"><td><input class="cordova-setting" data-name="passwordGSM" type="password" id="cordova-password-gsm" style="width: 100%"/></td></tr>'+
+
+            '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell Password repeat')  + ':</td></tr>' +
+            '<tr class="cordova-setting-cell"><td><input id="cordova-password-repeat-gsm" type="password" style="width: 100%"/></td></tr>'+
+
             '</select></td></tr>'+
             '</table></div>');
 
@@ -1014,11 +1080,26 @@ var app = {
 
             if (that.ssid) {
                 $('#cordova_ssid_button').show();
-                $('#cordova_ssid').css('width', 'calc(100% - 3.5em)');
+                $('#cordova_ssid').css('width', 'calc(100% - 4em)');
             } else {
                 $('#cordova_ssid_button').hide();
                 $('#cordova_ssid').css('width', '100%');
             }
+
+            $('.cordova_toggle').unbind('click').click(function () {
+                if ($(this).html() == '▶') {
+                    $('.cordova-setting-' + $(this).data('group')).show();
+                    $(this).html('▼');
+                } else {
+                    $('.cordova-setting-' + $(this).data('group')).hide();
+                    $(this).html('▶');
+                }
+            });
+
+            $('.cordova-setting-ssid').hide();
+            $('.cordova-setting-cell').hide();
+            $('.cordova-setting-speech').hide();
+
             $('#cordova-password-repeat').val($('#cordova-password').val());
             $('#cordova-password-repeat-gsm').val($('#cordova-password-gsm').val());
 
@@ -1145,7 +1226,6 @@ var app = {
                     }
                 }
             }).css({height: '2em'});
-
 
             $('#cordova_dialog_bg').show();
             $('#cordova_dialog').show();
