@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+   id="com.jiliac.systemvolume"
+   version="0.1.0">
+    <name>System Volume</name>
+    <description>PhoneGap System Volume Plugin</description>
+    <license>MIT</license>
+    <keywords>phonegap,volume</keywords>
+    <repo>https://github.com/Jiliac/phonegap-plugin-systemvolume.git</repo>
+
+    <js-module src="www/systemvolume.js" name="SystemVolume">
+        <clobbers target="window.system" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="SystemVolume">
+                <param name="android-package" value="com.jiliac.systemvolume.SystemVolume"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/SystemVolume.java" target-dir="src/com/jiliac/systemvolume" />     
+
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+       </config-file>
+        
+    </platform>          
+    
+    <config-file target="AndroidManifest.xml" parent="/manifest">
+        <uses-permission android:name="android.permission.VIBRATE"/>
+    </config-file>
+</plugin>

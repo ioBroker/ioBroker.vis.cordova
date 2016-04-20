@@ -115,6 +115,7 @@ var app = {
     ssid:         null,
     localDir:     null,
     directory:    cordova.file.externalDataDirectory,
+    speaking:     false,
     // Application Constructor
     initialize:     function () {
         if (this.settings.systemLang.indexOf('-') != -1) {
@@ -728,15 +729,20 @@ var app = {
         }
 
         if (typeof TTS !== 'undefined') {
+            var d = new Date();
+            console.log('[' + d.getSeconds() + '.' + d.getMilliseconds() + '] Start speaking: ' + JSON.stringify(data));
+            this.speaking = true;
             TTS.speak(data, function () {
-                console.log(JSON.stringify(data));
+                var d = new Date();
+                console.log('[' + d.getSeconds() + '.' + d.getMilliseconds() + '] Stop speaking: ' + JSON.stringify(data));
 
+                this.speaking = false;
                 if (this.settings.project && this.settings.recognition) {
                     this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
                     this.recognition.start();
                 }
                 cb && cb();
-            }, function (reason) {
+            }.bind(this), function (reason) {
                 console.error(reason);
             });
         }
@@ -791,7 +797,7 @@ var app = {
                             var timeout = setTimeout(function () {
                                 if (!this.settings.noCommInBackground || !this.inBackground) {
                                     this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-                                    this.recognition.start(false);
+                                    if (!this.speaking) this.recognition.start(false);
                                 }
                             }.bind(this), 1000);
 
@@ -813,7 +819,7 @@ var app = {
                                         setTimeout(function () {
                                             if (!this.settings.noCommInBackground || !this.inBackground) {
                                                 this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-                                                this.recognition.start(false);
+                                                if (!this.speaking) this.recognition.start(false);
                                             }
                                         }.bind(this), 500);
                                     }.bind(this));
@@ -821,7 +827,7 @@ var app = {
                                     setTimeout(function () {
                                         if (!this.settings.noCommInBackground || !this.inBackground) {
                                             this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-                                            this.recognition.start(false);
+                                            if (!this.speaking) this.recognition.start(false);
                                         }
                                     }.bind(this), 200);
                                 }
@@ -856,7 +862,7 @@ var app = {
                     if (!this.settings.noCommInBackground || !this.inBackground) {
                         setTimeout(function () {
                             this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-                            this.recognition.start(false);
+                            if (!this.speaking) this.recognition.start(false);
                         }.bind(this), 100);
                     }
                 }
@@ -867,12 +873,13 @@ var app = {
             }.bind(this);
 
             this.recognition.onerror = function(event) {
-                console.log(JSON.stringify(event));
+                var d = new Date();
+                console.log('[' + d.getSeconds() + '.' + d.getMilliseconds() + '] Error by recognizing: ' + JSON.stringify(event));
                 this.menu.css('background', 'rgba(0, 0, 0, 0.1)');
                 if (!this.settings.noCommInBackground || !this.inBackground) {
                     setTimeout(function () {
                         this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-                        this.recognition.start(true);
+                        if (!this.speaking) this.recognition.start(true);
                     }.bind(this), 300);
                 }
             }.bind(this);
@@ -883,7 +890,7 @@ var app = {
 
             this.menu = $('#cordova_menu');
             this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-            this.recognition.start(false);
+            if (!this.speaking) this.recognition.start(false);
         }
     },
 

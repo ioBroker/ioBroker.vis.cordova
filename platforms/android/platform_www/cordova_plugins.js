@@ -298,6 +298,14 @@ module.exports = [
         "file": "plugins/cordova-plugin-x-toast/test/tests.js",
         "id": "cordova-plugin-x-toast.tests",
         "pluginId": "cordova-plugin-x-toast"
+    },
+    {
+        "file": "plugins/com.jiliac.systemvolume/www/systemvolume.js",
+        "id": "com.jiliac.systemvolume.SystemVolume",
+        "pluginId": "com.jiliac.systemvolume",
+        "clobbers": [
+            "window.system"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -311,7 +319,8 @@ module.exports.metadata =
     "org.apache.cordova.speech.speechrecognition": "0.1.0",
     "org.apache.cordova.wifiinfo": "0.1.1",
     "cordova-plugin-app-version": "0.1.8",
-    "cordova-plugin-x-toast": "2.3.1"
+    "cordova-plugin-x-toast": "2.3.1",
+    "com.jiliac.systemvolume": "0.1.0"
 }
 // BOTTOM OF METADATA
 });

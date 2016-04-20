@@ -33,6 +33,9 @@
         },
         "cordova-plugin-x-toast": {
             "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "com.jiliac.systemvolume": {
+            "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
     "dependent_plugins": {}

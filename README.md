@@ -59,9 +59,16 @@ You can write the JSON-string or Object into control.command as ```{instance: 'A
 
 With command in javascript adapter you can activate text to speech engine of Android:
 
-```setState('vis.0.control.command', '{"instance": "FFFFFFFF", "data":"say something", "command": "tts"}');```
+```setState('vis.0.control.command', '{"instance": "*", "data":"say something", "command": "tts"}');```
 
 ## Changelog
+
+### 0.1.0 (2015-04-20)
+- (bluefox) fix TTS
+- (bluefox) allow pictures from other projects
+- (blufeox) change storage to external
+- (bluefox) change settings dialog
+- (bluefox) allow set system volume for speach
 
 ### 0.0.8 (2015-02-23)
 - (bluefox) fix "hide on condition"
