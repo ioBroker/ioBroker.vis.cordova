@@ -114,7 +114,7 @@ var app = {
     projects:     [],
     ssid:         null,
     localDir:     null,
-    directory:    cordova.file.externalDataDirectory,
+    directory:    cordova.file.dataDirectory,
     speaking:     false,
     // Application Constructor
     initialize:     function () {
@@ -162,12 +162,15 @@ var app = {
             create = true;
         }
 
-        if (!this.directory) this.directory = cordova.file.externalDataDirectory;
+        if (!this.directory) this.directory = cordova.file.dataDirectory;
 
         if (!this.localDir) {
             window.resolveLocalFileSystemURL(this.directory, function (dirHandler) {
                 this.localDir = dirHandler;
                 this.getLocalDir(dir, create, cb);
+            }.bind(this), function (error) {
+                console.error('Cannot get "' + this.directory + '": ' + error);
+                cb(error);
             }.bind(this));
             return;
         }
@@ -206,13 +209,30 @@ var app = {
             if (error) console.error(error);
             if (dirHandler) {
                 dirHandler.getFile(fileN, {create: true}, function (fileHandler) {
-                    console.log('Store :' + fileN);
+                    console.log('Store:' + fileN);
                     var length = data.byteLength || data.length || 0;
                     fileHandler.createWriter(function (fileWriter) {
+                        // workaround. Sometimes onWrite do not return.
+                        var writeTimer = setTimeout(function () {
+                            cb && cb('Timeout by write of "' + fileN + '"');
+                            cb = null;
+                        }, 1000);
+
                         try {
                             fileWriter.truncate(0);
                             fileWriter.onwrite = function(evt) {
-                                if (length && evt.target.position !== length) return;
+                                if (writeTimer) {
+                                    clearTimeout(writeTimer);
+                                    writeTimer = null;
+                                }
+
+                                if (length && evt.target.position < length) {
+                                    writeTimer = setTimeout(function () {
+                                        cb && cb('Timeout by _write of "' + fileN + '"');
+                                        cb = null;
+                                    }, 1000);
+                                    return;
+                                }
                                 console.log('write "' + fileN + '" success:' + JSON.stringify(evt));
                                 cb && cb();
                                 cb = null;
@@ -489,22 +509,32 @@ var app = {
         }
         var file = files.pop();
 
+        console.log('Read file: ' + file);
         vis.conn.readFile64(file, function (error, data, filename) {
             if (error) console.error(error);
             $('#cordova_progress_show').css('width', (100 - (files.length / total.length) * 100) + '%');
 
             if (!error && data !== undefined && data !== null) {
-                if (data.mime.indexOf('text') === -1 && data.mime.indexOf('application') === -1) {
+                if ((data.mime.indexOf('text') === -1 && data.mime.indexOf('application') === -1)) {
                     var binary_string =  window.atob(data.data);
                     var len = binary_string.length;
-                    var bytes = new Uint8Array( len );
+                    var bytes = new Uint8Array(len);
+
                     for (var i = 0; i < len; i++)        {
                         bytes[i] = binary_string.charCodeAt(i);
                     }
 
                     data = bytes.buffer;
                 } else {
-                    data = window.atob(data.data || '');
+                    if (data.mime === 'application/json') {
+                        data = decodeURIComponent(window.atob(data.data));
+                    } else {
+                        try {
+                            data = window.atob(data.data || '');
+                        } catch (err) {
+                            data = data.data || '';
+                        }
+                    }
                 }
 
                 // modify vis-views.json
@@ -553,12 +583,14 @@ var app = {
                 }
 
                 console.log('writeLocalFile "' + file + '" as "' + filename + '"');
+
                 this.writeLocalFile(filename, data, function (error) {
                     if (error) console.error(error);
                     setTimeout(function () {
                         this.copyFilesToDevice(files, cb, total);
                     }.bind(this), 0);
                 }.bind(this));
+
             } else {
                 setTimeout(function () {
                     this.copyFilesToDevice(files, cb, total);
@@ -630,14 +662,24 @@ var app = {
             $('body').append('<div id="cordova_progress" style="position: absolute; z-index: 5003; top: 50%; left: 5%; width: 90%; height: 2em; background: gray">' +
                 '<div id="cordova_progress_show" style="height: 100%; width: 0; background: lightblue"></div></div>');
         }
-        $('#cordova_dialog_bg').show();
 
         if (vis.conn.getIsConnected()) {
+            $('#cordova_dialog_bg').show();
+
+            // let the menu button available
+            var timeout = setTimeout(function () {
+                $('#cordova_dialog_bg').hide();
+            }.bind(this), 4000);
+
             // read common css file
             vis.conn._socket.emit('readFile', 'vis', 'css/vis-common-user.css', function (err, data) {
                 setTimeout(function () {
+                    // create empty file
                     this.writeLocalFile('vis-common-user.css', data || '', function (error) {
+
                         if (error) console.error(error);
+
+
                         this.readRemoteProject(project, function (files) {
                             this.copyFilesToDevice(files, function () {
                                 $('#cordova_progress').remove();
@@ -648,10 +690,13 @@ var app = {
                     }.bind(this));
                 }.bind(this), 0);
             }.bind(this));
+
         } else {
+
             setTimeout(function () {
                 this.syncVis(project, cb);
             }.bind(this), 500);
+
         }
     },
 
