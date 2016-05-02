@@ -63,6 +63,9 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.1.1 (2015-04-24)
+- (bluefox) try to fix file saving
+
 ### 0.1.0 (2015-04-20)
 - (bluefox) fix TTS
 - (bluefox) allow pictures from other projects
