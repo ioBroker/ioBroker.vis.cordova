@@ -114,7 +114,7 @@ var app = {
     projects:     [],
     ssid:         null,
     localDir:     null,
-    directory:    cordova.file.dataDirectory,
+    directory:    (cordova && cordova.file) ? cordova.file.dataDirectory : null,
     speaking:     false,
     // Application Constructor
     initialize:     function () {
@@ -542,7 +542,7 @@ var app = {
                     this.viewExists = true;
                     data = data.toString();
                     // detect: /vis/, /vis.0/, /icon-blabla/, ...
-                    var m = data.match(/": "\/[-_0-9\w]+(\.[-_0-9\w]+)?\/.+\.(png|jpg|jpeg|gif|wav|mp3|bmp)+"/g);
+                    var m = data.match(/": "\/[-_0-9\w]+(\.[-_0-9\w]+)?\/.+\.(png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
                     if (m) {
                         for (var mm = 0; mm < m.length; mm++) {
                             //file:///data/data/net.iobroker.vis/files/main/vis-user.css
