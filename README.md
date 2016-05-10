@@ -63,6 +63,9 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.2.0 (2016-05-10)
+- (bluefox) make it run on 4.0.x and 4.1.x
+
 ### 0.1.2 (2016-05-03)
 - (bluefox) fix error with SVG files
 - (bluefox) try to fix error with start

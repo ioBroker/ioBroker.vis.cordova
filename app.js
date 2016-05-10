@@ -95,7 +95,7 @@ $.extend(systemDictionary, {
 
 var app = {
     settings: {
-        socketUrl:      'http://localhost:8082',
+        socketUrl:      'http://localhost:8082',//10.0.2.2. for emulator
         systemLang:     navigator.language || navigator.userLanguage || 'en',
         noSleep:        false,
         project:        '',
@@ -211,48 +211,60 @@ var app = {
                 dirHandler.getFile(fileN, {create: true}, function (fileHandler) {
                     console.log('Store:' + fileN);
                     var length = data.byteLength || data.length || 0;
-                    fileHandler.createWriter(function (fileWriter) {
-                        // workaround. Sometimes onWrite do not return.
-                        var writeTimer = setTimeout(function () {
-                            cb && cb('Timeout by write of "' + fileN + '"');
-                            cb = null;
-                        }, 1000);
-
-                        try {
-                            fileWriter.truncate(0);
-                            fileWriter.onwrite = function(evt) {
-                                if (writeTimer) {
-                                    clearTimeout(writeTimer);
-                                    writeTimer = null;
-                                }
-
-                                if (length && evt.target.position < length) {
-                                    writeTimer = setTimeout(function () {
-                                        cb && cb('Timeout by _write of "' + fileN + '"');
-                                        cb = null;
-                                    }, 1000);
-                                    return;
-                                }
-                                console.log('write "' + fileN + '" success:' + JSON.stringify(evt));
-                                cb && cb();
+                    try {
+                        fileHandler.createWriter(function (fileWriter) {
+                            // workaround. Sometimes onWrite do not return.
+                            var writeTimer = setTimeout(function () {
+                                cb && cb('Timeout by write of "' + fileN + '"');
                                 cb = null;
-                            };
+                            }, 1000);
 
-                            fileWriter.write(new Blob([data]));
-                        } catch (e) {
-                            console.error(fileWriter.nativeURL + ': ' + e);
-                            cb && cb(e);
+                            try {
+                                fileWriter.truncate(0);
+                                fileWriter.onwrite = function(evt) {
+                                    if (writeTimer) {
+                                        clearTimeout(writeTimer);
+                                        writeTimer = null;
+                                    }
+
+                                    if (length && evt.target.position < length) {
+                                        writeTimer = setTimeout(function () {
+                                            cb && cb('Timeout by _write of "' + fileN + '"');
+                                            cb = null;
+                                        }, 1000);
+                                        return;
+                                    }
+                                    console.log('write "' + fileN + '" success:' + JSON.stringify(evt));
+                                    cb && cb();
+                                    cb = null;
+                                };
+
+                                if (window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder) {
+                                    var bb = new (window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder)();
+                                    bb.append(data);
+                                    fileWriter.write(bb.getBlob());
+                                } else {
+                                    fileWriter.write(new Blob([data]));
+                                }
+                            } catch (error) {
+                                console.error(fileWriter.nativeURL + ': ' + error);
+                                cb && cb(error);
+                                cb = null;
+                            }
+                        }, function (error) {
+                            cb && cb(error);
                             cb = null;
-                        }
-                    }, function (error) {
+                            console.error('Cannot write file: ' + JSON.stringify(error));
+                        });
+                    } catch (err) {
                         cb && cb(error);
                         cb = null;
-                        console.error('Cannot write file: ' + JSON.stringify(error));
-                    });
+                        console.error('Cannot create file:' + err);
+                    }
                 }, function (error) {
                     cb && cb(error);
                     cb = null;
-                    console.error('Cannot create file')
+                    console.error('Cannot create file: ' + error);
                 });
             } else {
                 console.error('Directory "' + fileName + '" not found');
@@ -424,24 +436,29 @@ var app = {
             if (this.settings.socketUrlGSM && navigator.network && navigator.network.connection.type != 'wifi') {
                 socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
             } else {
-                // If WIFI and SSID is set
-                if (navigator.wifi) {
-                    // read SSID info
-                    delayed = true;
-                    navigator.wifi.getWifiInfo(function (data) {
-                        this.ssid = data.connection.SSID;
-                        if (this.settings.socketUrlGSM && this.settings.ssid && data.connection.SSID != this.settings.ssid) {
-                            // other wifi network
-                            socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
-                        } else {
+                try {
+                    // If WIFI and SSID is set
+                    if (this.settings.socketUrlGSM && this.settings.ssid && navigator.wifi) {
+                        // read SSID info
+                        delayed = true;
+                        navigator.wifi.getWifiInfo(function (data) {
+                            this.ssid = data.connection.SSID;
+                            if (this.settings.socketUrlGSM && this.settings.ssid && data.connection.SSID != this.settings.ssid) {
+                                // other wifi network
+                                socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+                            } else {
+                                socketUrl = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                            }
+                            cb && cb();
+                        }.bind(this), function (error) {
                             socketUrl = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
-                        }
-                        cb && cb();
-                    }.bind(this), function (error) {
+                            console.error(error);
+                        }.bind(this));
+                    } else {
                         socketUrl = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
-                        console.error(error);
-                    }.bind(this));
-                } else {
+                    }
+                } catch (err) {
+                    delayed = false;
                     socketUrl = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
                 }
             }
