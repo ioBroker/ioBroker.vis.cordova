@@ -107,7 +107,8 @@ var app = {
         defaultRoom:    '',
         volume:         80,
         noCommInBackground: false,
-        responseWithTts: true
+        responseWithTts: true,
+        initialZoom:     '1'
     },
     inBackground: false,
     connection:   '',
@@ -390,19 +391,19 @@ var app = {
 
             if (!this.settings.allowMove) {
                 $('#vis_container').css({
-                    "-webkit-touch-callout":        "none",
-                    "-ms-touch-select":             "none",
-                    "-ms-touch-action":             "none",
-                    "-webkit-tap-highlight-color":  "rgba(0,0,0,0)",
-                    "touch-callout":                "none",
-                    "touch-select":                 "none",
-                    "touch-action":                 "none",
-                    "-webkit-user-select":          "none",
-                    "-khtml-user-select":           "none",
-                    "-moz-user-select":             "none",
-                    "-ms-user-select":              "none",
-                    "user-select":                  "none",
-                    "border":                       "none !important"
+                    '-webkit-touch-callout':        'none',
+                    '-ms-touch-select':             'none',
+                    '-ms-touch-action':             'none',
+                    '-webkit-tap-highlight-color':  'rgba(0,0,0,0)',
+                    'touch-callout':                'none',
+                    'touch-select':                 'none',
+                    'touch-action':                 'none',
+                    '-webkit-user-select':          'none',
+                    '-khtml-user-select':           'none',
+                    '-moz-user-select':             'none',
+                    '-ms-user-select':              'none',
+                    'user-select':                  'none',
+                    'border':                       'none !important'
                 });
             }
             $('.vis-wait-text').css({left: 0, 'padding-left': '1em'});
@@ -963,7 +964,6 @@ var app = {
             width:       window.innerWidth,
             height:      window.innerHeight
         };
-
         window.onorientationchange = function () {
             var viewport_scale;
 
@@ -991,9 +991,11 @@ var app = {
                 'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale);
         }.bind(this);
         // resize viewport
+        this.settings.initialZoom = parseFloat(this.settings.initialZoom) || 1;
+        
         $('meta[name=viewport]').attr('content',
             'width=' + this.window.width + ',' +
-            'minimum-scale=1, maximum-scale=1');
+            'minimum-scale=' + (this.settings.initialZoom || 1) + ', initial-scale=' + (this.settings.initialZoom || 1) + ', maximum-scale=' + (this.settings.initialZoom || 1));
     },
 
     loadCss:        function () {
@@ -1045,6 +1047,9 @@ var app = {
 
             '<tr><td class="cordova-settings-label"><label for="allowMove">' + _('Allow window move')      + ':</label></td></tr>' +
             '<tr><td><input  id="allowMove"      class="cordova-setting" data-name="allowMove"   type="checkbox"/><label for="allowMove" class="checkbox">&#8226;</label></td></tr>'+
+
+//            '<tr><td class="cordova-settings-label">' + _('Initial zoom')      + ':</td></tr>' +
+//            '<tr><td><input class="cordova-setting" data-name="initialZoom" style="width: 100%"/></td></tr>'+
 
             '<tr><td class="cordova-settings-label">' + _('Instance')              + ':</td></tr>' +
             '<tr><td><input  class="cordova-setting" data-name="instance"    style="width: 100%"/></td></tr>' +
