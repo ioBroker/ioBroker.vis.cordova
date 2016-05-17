@@ -1,13 +1,13 @@
 {
   "name": "iobroker.vis.cordova",
   "description": "Cordova APP for ioBroker.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "bluefox",
-    "email": "bluefox@ccu.io"
+    "email": "dogafox@gmail.com"
   },
   "contributors": [
-    "bluefox <bluefox@ccu.io>"
+    "bluefox <dogafox@gmail.com>"
   ],
   "homepage": "https://github.com/ioBroker/ioBroker.vis.cordova",
   "repository": {
@@ -30,7 +30,7 @@
     "SCADA"
   ],
   "dependencies": {
-    "grunt": "^1.0.1",
+    "grunt": "^0.4.5",
     "grunt-replace": "^1.0.1",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-jscs": "^2.8.0",
@@ -40,18 +40,19 @@
     "grunt-exec": "^0.4.6",
     "iobroker.web": "*",
     "iobroker.vis": "ioBroker/ioBroker.vis",
-    "iobroker.vis-metro": "*",
-    "iobroker.vis-keyboard": "*",
-    "iobroker.vis-colorpicker": "*",
-    "iobroker.vis-hqwidgets": "*",
-    "iobroker.vis-plumb": "*",
-    "ioBroker.vis-google-fonts": "*",
-    "iobroker.vis-lcars": "*",
     "iobroker.vis-bars": "*",
+    "iobroker.vis-colorpicker": "*",
     "iobroker.vis-fancyswitch": "*",
+    "ioBroker.vis-google-fonts": "*",
+    "iobroker.vis-hqwidgets": "*",
     "iobroker.vis-jqui-mfd": "*",
+    "iobroker.vis-keyboard": "*",
+    "iobroker.vis-lcars": "*",
+    "iobroker.vis-metro": "*",
+    "iobroker.vis-plumb": "*",
     "iobroker.vis-rgraph": "*",
     "iobroker.vis-timeandweather": "*",
+    "iobroker.vis-justgage": "*",
     "cordova": "^6.1.1"
   },
   "bugs": {

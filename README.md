@@ -63,6 +63,9 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.2.1 (2016-05-17)
+- (bluefox) add justgauge
+
 ### 0.2.0 (2016-05-10)
 - (bluefox) make it run on 4.0.x and 4.1.x
 
