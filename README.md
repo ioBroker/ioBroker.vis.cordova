@@ -63,6 +63,11 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.3.0 (2016-06-13)
+- (bluefox) update cordova lib
+- (bluefox) add vis-history
+- (bluefox) use latest vis
+
 ### 0.2.1 (2016-05-17)
 - (bluefox) add justgauge
 
