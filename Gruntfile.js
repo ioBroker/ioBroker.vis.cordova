@@ -83,8 +83,8 @@ module.exports = function (grunt) {
                             replacement: ''
                         },*/
                         {
-                            match: /<link rel="stylesheet" href="css\/vis-common-user\.css"\/>/,
-                            replacement: '<link rel="stylesheet" href="file:///data/data/net.iobroker.vis/files/vis-common-user.css"/>'
+                            match: /<link rel="stylesheet" type="text\/css" href="css\/vis-common-user\.css" \/>/,
+                            replacement: '<link rel="stylesheet" type="text/css" href="file:///data/data/net.iobroker.vis/files/vis-common-user.css" />'
                         }
                     ]
                 },

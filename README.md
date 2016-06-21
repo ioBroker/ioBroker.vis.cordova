@@ -5,6 +5,9 @@ ioBroker.vis.cordova
 WEB visualisation for ioBroker platform as android App.
 
 You still need ioBroker and installed vis to create views.
+## Usage
+Install app via App Store 
+
 
 ## How to build
 
@@ -62,6 +65,10 @@ With command in javascript adapter you can activate text to speech engine of And
 ```setState('vis.0.control.command', '{"instance": "*", "data":"say something", "command": "tts"}');```
 
 ## Changelog
+
+### 0.3.1 (2016-06-21)
+- (bluefox) fix common.css
+- (bluefox) try up to 10 times to store the file if got error
 
 ### 0.3.0 (2016-06-13)
 - (bluefox) update cordova lib

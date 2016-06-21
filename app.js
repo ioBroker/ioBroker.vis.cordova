@@ -203,22 +203,31 @@ var app = {
             });
         }
     },
-    writeLocalFile: function (fileName, data, cb) {
+    writeLocalFile: function (fileName, data, cb, _counter) {
+        var that = this;
+        _counter = _counter || 0;
+
         var parts = fileName.split('/');
         var fileN = parts.pop();
         this.getLocalDir(parts.join('/'), true, function (error, dirHandler) {
             if (error) console.error(error);
+
             if (dirHandler) {
                 dirHandler.getFile(fileN, {create: true}, function (fileHandler) {
-                    console.log('Store:' + fileN);
+                    console.log('Store: ' + fileN);
                     var length = data.byteLength || data.length || 0;
                     try {
                         fileHandler.createWriter(function (fileWriter) {
                             // workaround. Sometimes onWrite do not return.
                             var writeTimer = setTimeout(function () {
-                                cb && cb('Timeout by write of "' + fileN + '"');
-                                cb = null;
-                            }, 1000);
+                                if (_counter < 10) {
+                                    console.warn('Timeout by write of: ' + fileN + ', Attempt: ' + _counter);
+                                    that.writeLocalFile(fileName, data, cb, _counter + 1);
+                                } else {
+                                    cb && cb('Timeout by write of "' + fileN + '"');
+                                    cb = null;
+                                }
+                            }, 2000);
 
                             try {
                                 fileWriter.truncate(0);
@@ -230,9 +239,14 @@ var app = {
 
                                     if (length && evt.target.position < length) {
                                         writeTimer = setTimeout(function () {
-                                            cb && cb('Timeout by _write of "' + fileN + '"');
-                                            cb = null;
-                                        }, 1000);
+                                            if (_counter < 10) {
+                                                console.warn('Timeout by write of: ' + fileN + ', Attempt: ' + _counter);
+                                                that.writeLocalFile(fileName, data, cb, _counter + 1);
+                                            } else {
+                                                cb && cb('Timeout by _write of "' + fileN + '"');
+                                                cb = null;
+                                            }
+                                        }, 2000);
                                         return;
                                     }
                                     console.log('write "' + fileN + '" success:' + JSON.stringify(evt));
@@ -248,24 +262,52 @@ var app = {
                                     fileWriter.write(new Blob([data]));
                                 }
                             } catch (error) {
-                                console.error(fileWriter.nativeURL + ': ' + error);
-                                cb && cb(error);
-                                cb = null;
+                                if (_counter < 10) {
+                                    console.warn('Error by write of: ' + fileN + ', Attempt: ' + _counter + ' [' + error + ']');
+                                    setTimeout(function () {
+                                        that.writeLocalFile(fileName, data, cb, _counter + 1);
+                                    }, 100);
+                                } else {
+                                    console.error(fileWriter.nativeURL + ': ' + error);
+                                    cb && cb(error);
+                                    cb = null;
+                                }
                             }
                         }, function (error) {
-                            cb && cb(error);
-                            cb = null;
-                            console.error('Cannot write file: ' + JSON.stringify(error));
+                            if (_counter < 10) {
+                                console.warn('Error by write of: ' + fileN + ', Attempt: ' + _counter + ' [' + error + ']');
+                                setTimeout(function () {
+                                    that.writeLocalFile(fileName, data, cb, _counter + 1);
+                                }, 100);
+                            } else {
+                                cb && cb(error);
+                                cb = null;
+                                console.error('Cannot write file: ' + JSON.stringify(error));
+                            }
                         });
                     } catch (err) {
-                        cb && cb(error);
-                        cb = null;
-                        console.error('Cannot create file:' + err);
+                        if (_counter < 10) {
+                            console.warn('Error by write of: ' + fileN + ', Attempt: ' + _counter + ' [' + error + ']');
+                            setTimeout(function () {
+                                that.writeLocalFile(fileName, data, cb, _counter + 1);
+                            }, 100);
+                        } else {
+                            cb && cb(error);
+                            cb = null;
+                            console.error('Cannot create file:' + err);
+                        }
                     }
                 }, function (error) {
-                    cb && cb(error);
-                    cb = null;
-                    console.error('Cannot create file: ' + error);
+                    if (_counter < 10) {
+                        console.warn('Error by write of: ' + fileN + ', Attempt: ' + _counter + ' [' + error + ']');
+                        setTimeout(function () {
+                            that.writeLocalFile(fileName, data, cb, _counter + 1);
+                        }, 100);
+                    } else {
+                        cb && cb(error);
+                        cb = null;
+                        console.error('Cannot create file: ' + error);
+                    }
                 });
             } else {
                 console.error('Directory "' + fileName + '" not found');
@@ -696,8 +738,7 @@ var app = {
                     this.writeLocalFile('vis-common-user.css', data || '', function (error) {
 
                         if (error) console.error(error);
-
-
+                        
                         this.readRemoteProject(project, function (files) {
                             this.copyFilesToDevice(files, function () {
                                 $('#cordova_progress').remove();

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--html manifest="cache.manifest" xmlns="http://www.w3.org/1999/html"-->
 <head>
-    <!-- vis Version 0.9.4 -->
+    <!-- vis Version 0.10.3 -->
 
     <meta charset="utf-8">
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -10,7 +10,7 @@
 
 	<!-- cordova settings -->
 	<meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' * 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' *; img-src *; media-src 'self' 'unsafe-inline' *; connect-src *; script-src 'self' 'unsafe-eval' 'unsafe-inline' *">
+          content="default-src 'self' * 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' *; img-src 'self' 'unsafe-inline' * data:; media-src 'self' 'unsafe-inline' *; connect-src *; script-src 'self' 'unsafe-eval' 'unsafe-inline' *">
 	<meta name="format-detection" content="telephone=no">
 	<meta name="msapplication-tap-highlight" content="no">
 
@@ -21,10 +21,11 @@
 
     <link rel="stylesheet" href="lib/css/jquery.multiselect-1.13.css" type="text/css" />
 
-    <link rel="stylesheet" href="css/backgrounds.css"/>
-    <link rel="stylesheet" href="css/vis.css"/>
-    <link rel="stylesheet" href="file:///data/data/net.iobroker.vis/files/vis-common-user.css"/>
-    <link rel="stylesheet" href="css/app.css"/>
+    <link rel="stylesheet" type="text/css" href="css/backgrounds.css" />
+    <link rel="stylesheet" type="text/css" href="css/vis.css" />
+    <link rel="stylesheet" href="file:///data/data/net.iobroker.vis/files/vis-common-user.css" />
+    <link rel="stylesheet" type="text/css" href="css/app.css" />
+    <link rel="stylesheet" type="text/css" href="css/styles.css" />
 
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="lib/js/jquery-1.11.2.min.js"></script>
@@ -33,7 +34,7 @@
     <script type="text/javascript" src="lib/js/translate.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
 
-    <script type="text/javascript" src="lib/js/can.2.2.4.custom.min.js"></script>
+    <script type="text/javascript" src="lib/js/can.2.3.24.custom.min.js"></script>
     <script type="text/javascript" src="lib/js/jquery.ui.touch-punch.min.js"></script>
     <script type="text/javascript" src="lib/js/jquery.multiselect-1.13.min.js"></script>
     <script type="text/javascript" src="lib/js/quo.standalone.js"></script>
