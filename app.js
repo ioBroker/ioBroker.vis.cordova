@@ -560,6 +560,100 @@ var app = {
         }
     },
 
+    replaceFilesInViews: function (viewsObj, total, files) {
+        var data = viewsObj.toString();
+        // detect: /vis/, /vis.0/, /icon-blabla/, ...
+        var m = data.match(/": "\/[-_0-9\w]+(\.[-_0-9\w]+)?\/.+\.(png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
+        if (m) {
+            for (var mm = 0; mm < m.length; mm++) {
+                //file:///data/data/net.iobroker.vis/files/main/vis-user.css
+                //cdvfile://localhost/persistent
+                var fn = m[mm].substring(5); // remove ": "/
+                var originalFileName = fn.replace(/"/g, ''); // remove last "
+                var p  = fn.split('/');
+                var adapter = p.shift(); // remove vis.0 or whatever
+                fn  = p.shift(); // keep only one subdirectory
+                fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
+
+                if (adapter === 'vis') {
+                    data = data.replace(m[mm], '": "' + m[mm].substring(10)); // remove src="/vis/
+                } else {
+                    // add to files
+                    if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) == -1) { // if "vis.0/dir/otherProject.png"
+                        files.push('/' + originalFileName);
+                    }
+                    // files cannot be stored directly in root
+                    if (adapter == 'vis.0' && fn.indexOf('/') !== -1) {
+                        adapter = '';
+                    } else {
+                        adapter = adapter + '/';
+                    }
+                    data = data.replace(m[mm], '": "' + this.directory + adapter + fn);
+                }
+            }
+        }
+        // try to replace <img src="/vis.0/main...">
+        m = data.match(/src=\\"\/[-_0-9\w]+(\.[-_0-9\w]+)?\/.+\.(png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\"/g);
+        if (m) {
+            for (var mm = 0; mm < m.length; mm++) {
+                //file:///data/data/net.iobroker.vis/files/main/vis-user.css
+                //cdvfile://localhost/persistent
+                var fn = m[mm].substring(7); // remove src=\"/
+                var originalFileName = fn.replace(/\\"/g, ''); // remove last "
+                var p  = fn.split('/');
+                var adapter = p.shift(); // remove vis.0 or whatever
+                fn  = p.shift(); // keep only one subdirectory
+                fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
+
+                if (adapter === 'vis') {
+                    data = data.replace(m[mm], 'src=\\"' + m[mm].substring(11)); // remove src=\"/vis/
+                } else {
+                    // add to files
+                    if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) === -1) { // if "vis.0/dir/otherProject.png"
+                        files.push('/' + originalFileName);
+                    }
+                    // files cannot be stored directly in root
+                    if (adapter == 'vis.0' && fn.indexOf('/') !== -1) {
+                        adapter = '';
+                    } else {
+                        adapter = adapter + '/';
+                    }
+                    data = data.replace(m[mm], 'src=\\"' + this.directory + adapter + fn);
+                }
+            }
+        }
+        // try to replace <img src='/vis.0/main...'>
+        m = data.match(/src='\/[-_0-9\w]+(\.[-_0-9\w]+)?\/.+\.(png|jpg|jpeg|gif|wav|mp3|bmp|svg)+'/g);
+        if (m) {
+            for (var mm = 0; mm < m.length; mm++) {
+                //file:///data/data/net.iobroker.vis/files/main/vis-user.css
+                //cdvfile://localhost/persistent
+                var fn = m[mm].substring(6); // remove src="/
+                var originalFileName = fn.replace(/'/g, ''); // remove last "
+                var p  = fn.split('/');
+                var adapter = p.shift(); // remove vis.0 or whatever
+                fn  = p.shift(); // keep only one subdirectory
+                fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
+
+                if (adapter === 'vis') {
+                    data = data.replace(m[mm], "src='" + m[mm].substring(9)); // remove ": "/vis/
+                } else {
+                    // add to files
+                    if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) === -1) { // if "vis.0/dir/otherProject.png"
+                        files.push('/' + originalFileName);
+                    }
+                    // files cannot be stored directly in root
+                    if (adapter == 'vis.0' && fn.indexOf('/') !== -1) {
+                        adapter = '';
+                    } else {
+                        adapter = adapter + '/';
+                    }
+                    data = data.replace(m[mm], "src='" + this.directory + adapter + fn);
+                }
+            }
+        }
+        return data;
+    },
     copyFilesToDevice: function (files, cb, total) {
         if (total === undefined) total = files;
 
@@ -598,39 +692,9 @@ var app = {
                 }
 
                 // modify vis-views.json
-                if (filename && filename.indexOf('vis-views.json') != -1) {
+                if (filename && filename.indexOf('vis-views.json') !== -1) {
                     this.viewExists = true;
-                    data = data.toString();
-                    // detect: /vis/, /vis.0/, /icon-blabla/, ...
-                    var m = data.match(/": "\/[-_0-9\w]+(\.[-_0-9\w]+)?\/.+\.(png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
-                    if (m) {
-                        for (var mm = 0; mm < m.length; mm++) {
-                            //file:///data/data/net.iobroker.vis/files/main/vis-user.css
-                            //cdvfile://localhost/persistent
-                            var fn = m[mm].substring(5); // remove ": "/
-                            var originalFileName = fn.replace(/"/g, ''); // remove last "
-                            var p  = fn.split('/');
-                            var adapter = p.shift(); // remove vis.0 or whatever
-                            fn  = p.shift(); // keep only one subdirectory
-                            fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
-
-                            if (adapter === 'vis') {
-                                data = data.replace(m[mm], '": "' + m[mm].substring(9)); // remove ": "/vis/
-                            } else {
-                                // add to files
-                                if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) == -1) { // if "vis.0/dir/otherProject.png"
-                                    files.push('/' + originalFileName);
-                                }
-                                // files cannot be stored directly in root
-                                if (adapter == 'vis.0' && fn.indexOf('/') !== -1) {
-                                    adapter = ''
-                                } else {
-                                    adapter = adapter + '/';
-                                }
-                                data = data.replace(m[mm], '": "' + this.directory + adapter + fn);
-                            }
-                        }
-                    }
+                    data = this.replaceFilesInViews(data, total, files);
                 }
 
                 // remove sub-dirs

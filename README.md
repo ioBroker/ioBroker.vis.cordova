@@ -66,6 +66,9 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.3.2 (2016-06-21)
+- (bluefox) replace src="/vis/..." too
+
 ### 0.3.1 (2016-06-21)
 - (bluefox) fix common.css
 - (bluefox) try up to 10 times to store the file if got error
