@@ -51,6 +51,7 @@ Commands:
 * popup - opens a new browser window. Link must be specified in "control.data", e.g. http://google.com
 * playSound - play sound file. The link to file is specified in "control.data", e.g. http://www.modular-planet.de/fx/marsians/Marsiansrev.mp3.
   You can upload your own file in vis and let it play as for instance "/vis.0/main/img/myFile.mp3".
+* tts - text 2 speech. *data* - consist phrase, that must be spoken.
 
 If user changes the view or at start the variables will be filled by vis with
 
