@@ -52,6 +52,11 @@ $.extend(systemDictionary, {
         "de": "Schlaffen, falls inaktiv",
         "ru": "Спать, если не активно"
     },
+    "Fullscreen": {
+        "en": "Fullscreen",
+        "de": "Vollbild",
+        "ru": "Fullscreen"
+    },	
     "Cell":         {"en": "Cell Connection",   "de": "Mobile Verbindung",  "ru": "Мобильное соединение"},
     "Cell Socket":  {"en": "Socket URL",        "de": "Socket URL",         "ru": "Socket URL"},
     "Cell User":    {"en": "Cell User",         "de": "Anwender",           "ru": "Пользователь"},
@@ -71,6 +76,11 @@ $.extend(systemDictionary, {
         "de": "Spracherkennung aktiviert",
         "ru": "Распознавание речи активно"
     },
+   "Orientation": {
+        "en": "Orientation",
+        "de": "Ausrichtung",
+        "ru": "Orientation"
+    },	
     "Volume": {
         "en": "Speech volume",
         "de": "Sprachlautstärke",
@@ -102,6 +112,8 @@ var app = {
         resync:         false,
         instance:       null,
         allowMove:      false,
+		fullscreen:     false,
+		orientation:    0,
         recognition:    false,
         text2command:    0,
         defaultRoom:    '',
@@ -450,8 +462,46 @@ var app = {
             }
             $('.vis-wait-text').css({left: 0, 'padding-left': '1em'});
 
-            this.initSpeechRecognition();
+			//alert ('Orientation: ' + this.settings.orientation )
+			if (this.settings.orientation==1) 
+			  {
+			  window.plugins.orientationLock.lock("portrait");
+			  }
+			 else if (this.settings.orientation==2) 
+			  {
+			  window.plugins.orientationLock.lock("landscape");
+			  }
+			 else
+			 {
+			 window.plugins.orientationLock.unlock()	 
+			 }	
+
+			this.initSpeechRecognition();
             this.manageDisplayRotation();
+
+            function successFunction()
+              {
+              console.info("It worked!");
+              }
+
+            function errorFunction(error)
+              {
+              console.error(error);
+              }
+
+            function trace(value)
+              {
+              console.log(value);
+              }
+ 
+ 			if (this.settings.fullscreen) 
+			  {
+			  AndroidFullScreen.immersiveMode(successFunction, errorFunction);
+			  }
+			 else  
+			  {
+			  AndroidFullScreen.leanMode(successFunction, errorFunction);
+			  }
 
             // init vis
             main(jQuery);
@@ -475,6 +525,7 @@ var app = {
             this.settings = $.extend(this.settings, value);
 
             systemLang   = this.settings.systemLang || navigator.language || navigator.userLanguage;
+			orientation = this.settings.orientation || 0;
 
             if (this.settings.socketUrlGSM && navigator.network && navigator.network.connection.type != 'wifi') {
                 socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
@@ -1144,6 +1195,13 @@ var app = {
             '<option value="ru">русский</option>' +
             '</select></td></tr>' +
 
+            '<tr><td class="cordova-settings-label">' + _('Orientation')  + ':</td></tr>' +
+            '<tr><td class="cordova-settings-value"><select data-name="orientation" class="cordova-setting">' +
+            '<option value="0">auto</option>' +
+            '<option value="1">portrait</option>' +
+            '<option value="2">landscape</option>' +
+            '</select></td></tr>' +			
+			
             '<tr><td class="cordova-settings-label">' + _('Project')               + ':</td></tr>' +
             '<tr><td class="cordova-settings-value"><select class="cordova-setting" data-name="project"     id="cordova_project" style="width: 100%"></select></td></tr>' +
 
@@ -1152,6 +1210,9 @@ var app = {
 
             '<tr><td class="cordova-settings-label"><label for="allowMove">' + _('Allow window move')      + ':</label></td></tr>' +
             '<tr><td><input  id="allowMove"      class="cordova-setting" data-name="allowMove"   type="checkbox"/><label for="allowMove" class="checkbox">&#8226;</label></td></tr>'+
+
+            '<tr><td class="cordova-settings-label"><label for="fullscreen">' + _('Fullscreen')      + ':</label></td></tr>' +
+            '<tr><td><input  id="fullscreen"      class="cordova-setting" data-name="fullscreen"   type="checkbox"/><label for="fullscreen" class="checkbox">&#8226;</label></td></tr>'+
 
 //            '<tr><td class="cordova-settings-label">' + _('Initial zoom')      + ':</td></tr>' +
 //            '<tr><td><input class="cordova-setting" data-name="initialZoom" style="width: 100%"/></td></tr>'+
@@ -1456,5 +1517,14 @@ var app = {
         }
     }
 };
+
+function logout(){
+   {    
+   navigator.app.exitApp();
+   };
+}
+
+
+
 
 app.initialize();
