@@ -115,6 +115,9 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ![CC BY-NC License](https://github.com/GermanBluefox/DashUI/raw/master/images/cc-nc-by.png)
 
+It is **prohibited** to publish this app or modifications of this app in any kind of mobile application stores (Google App Store, Amazon App Store, ...). 
+Even if the name of the app is modified and it is free of charge you **may not** publish it.
+
 Short content:
 Licensees may copy, distribute, display and perform the work and make derivative works based on it only if they give the author or licensor the credits in the manner specified by these.
 Licensees may copy, distribute, display, and perform the work and make derivative works based on it only for noncommercial purposes.
