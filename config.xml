@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="net.iobroker.vis" version="0.3.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>ioBroker.vis</name>
+    <name>mars-vegas home</name>
     <description>
         ioBroker.vis runtime for ioBroker.
     </description>
@@ -11,10 +11,18 @@
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <plugin name="cordova-plugin-file" spec="1" />
     <plugin name="cordova-plugin-network-information" spec="1" />
+	
     <access origin="*" />
-    <allow-intent href="http://*/*" />
+    <access origin="cdvfile://*" />
+	<access origin="file://*" />
+	<allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
+	<allow-intent href="file://*/*" />
+	<allow-intent href="cdvfile://*/*" />
     <allow-navigation href="http://*/*" />
+	<allow-navigation href="*"/>
+	<allow-navigation href="file://*/*" />
+	<allow-navigation href="cdvfile://*/*" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     <preference name="iosPersistentFileLocation" value="Library" />
     <preference name="BackupWebStorage" value="none" />
@@ -29,6 +37,6 @@
     <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
     <preference name="xwalkMode" value="embedded" />
     <preference name="xwalkMultipleApk" value="true" />
-	<preference name="orientation" value="portrait"/>
+	<!-- <preference name="orientation" value="portrait"/> -->
     <engine name="android" spec="~5.1.1" />
 </widget>
