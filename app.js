@@ -50,7 +50,7 @@ $.extend(systemDictionary, {
     "Actual":       {"en": "<=",                "de": "<=",                 "ru": "<="},
     "Sleep in background": {
         "en": "Sleep in background",
-        "de": "Schlaffen, falls inaktiv",
+        "de": "Schlafen, falls inaktiv",
         "ru": "Спать, если не активно"
     },
     "Fullscreen": {
@@ -110,7 +110,7 @@ $.extend(systemDictionary, {
     },
     "Prevent from sleep": {
         "en": "Prevent from sleep",
-        "de": "Nicht einschlafen",
+        "de": "Einschlafen verhindern",
         "ru": "Не засыпать"
     },
     "Text 2 speech":     {"en": "Text 2 speech",     "de": "Text 2 speech",     "ru": "Синтез речи"},
