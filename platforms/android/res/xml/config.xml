@@ -50,7 +50,7 @@
         <param name="android-package" value="cordova.custom.plugins.exitapp.ExitApp" />
     </feature>
     <allow-intent href="market:*" />
-    <name>mars-vegas home</name>
+    <name>ioBroker.vis</name>
     <description>
         ioBroker.vis runtime for ioBroker.
     </description>
