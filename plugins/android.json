@@ -36,6 +36,18 @@
         },
         "com.jiliac.systemvolume": {
             "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova.custom.plugins.exitapp": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-fullscreen": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "com.phonegap.plugins.OrientationLock": {
+            "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
     "dependent_plugins": {}

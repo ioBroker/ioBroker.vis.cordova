@@ -98,12 +98,11 @@
         "is_top_level": true,
         "variables": {}
     },
-    "com.phonegap.plugins.OrientationLock": {
+    "cordova.custom.plugins.exitapp": {
         "source": {
-            "type": "git",
-            "url": "https://github.com/cogitor/PhoneGap-OrientationLock.git",
-            "subdir": "."
-        }  
+            "type": "registry",
+            "id": "cordova-plugin-exitapp"
+        },
         "is_top_level": true,
         "variables": {}
     },
@@ -115,12 +114,13 @@
         "is_top_level": true,
         "variables": {}
     },
-    "cordova.custom.plugins.exitapp": {
+    "com.phonegap.plugins.OrientationLock": {
         "source": {
-            "type": "registry",
-            "id": "cordova.custom.plugins.exitapp"
+            "type": "git",
+            "url": "https://github.com/cogitor/PhoneGap-OrientationLock.git",
+            "subdir": "."
         },
         "is_top_level": true,
         "variables": {}
-    }    
+    }
 }
