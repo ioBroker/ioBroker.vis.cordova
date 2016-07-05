@@ -114,5 +114,13 @@
         },
         "is_top_level": true,
         "variables": {}
-    }
+    },
+    "cordova.custom.plugins.exitapp": {
+        "source": {
+            "type": "registry",
+            "id": "cordova.custom.plugins.exitapp"
+        },
+        "is_top_level": true,
+        "variables": {}
+    }    
 }
