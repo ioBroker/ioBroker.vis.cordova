@@ -1,4 +1,5 @@
 /*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -49,9 +50,14 @@ $.extend(systemDictionary, {
     "Actual":       {"en": "<=",                "de": "<=",                 "ru": "<="},
     "Sleep in background": {
         "en": "Sleep in background",
-        "de": "Schlaffen, falls inaktiv",
+        "de": "Schlafen, falls inaktiv",
         "ru": "Спать, если не активно"
     },
+    "Fullscreen": {
+        "en": "Fullscreen",
+        "de": "Vollbild",
+        "ru": "Fullscreen"
+    },	
     "Cell":         {"en": "Cell Connection",   "de": "Mobile Verbindung",  "ru": "Мобильное соединение"},
     "Cell Socket":  {"en": "Socket URL",        "de": "Socket URL",         "ru": "Socket URL"},
     "Cell User":    {"en": "Cell User",         "de": "Anwender",           "ru": "Пользователь"},
@@ -71,7 +77,28 @@ $.extend(systemDictionary, {
         "de": "Spracherkennung aktiviert",
         "ru": "Распознавание речи активно"
     },
-    "Volume": {
+   "Orientation": {
+        "en": "Orientation",
+        "de": "Ausrichtung",
+        "ru": "Orientation"
+    },	
+   "Zoom Level Portrait": {
+        "en": "Zoom Level Portrait",
+        "de": "Zoom Level Portrait",
+        "ru": "Zoom Level Portrait"
+    },	
+  "Substitution URL": {
+        "en": "Substitution URL",
+        "de": "Austausch URL",
+        "ru": "Substitution URL"
+    },	
+   "Zoom Level Landscape": {
+        "en": "Zoom Level Landscape",
+        "de": "Zoom Level Landscape",
+        "ru": "Zoom Level Landscape"
+    },	
+ 
+  "Volume": {
         "en": "Speech volume",
         "de": "Sprachlautstärke",
         "ru": "Громкость речи"
@@ -83,7 +110,7 @@ $.extend(systemDictionary, {
     },
     "Prevent from sleep": {
         "en": "Prevent from sleep",
-        "de": "Nicht einschlafen",
+        "de": "Einschlafen verhindern",
         "ru": "Не засыпать"
     },
     "Text 2 speech":     {"en": "Text 2 speech",     "de": "Text 2 speech",     "ru": "Синтез речи"},
@@ -102,10 +129,15 @@ var app = {
         resync:         false,
         instance:       null,
         allowMove:      false,
+		fullscreen:     false,
+		lockorientation:    0,
         recognition:    false,
         text2command:    0,
         defaultRoom:    '',
         volume:         80,
+		zoomLevelPortrait: 100,
+		zoomLevelLandscape: 100,
+		substitutionUrl : '',
         noCommInBackground: false,
         responseWithTts: true,
         initialZoom:     '1'
@@ -450,8 +482,47 @@ var app = {
             }
             $('.vis-wait-text').css({left: 0, 'padding-left': '1em'});
 
-            this.initSpeechRecognition();
+			//alert ('Orientation: ' + this.settings.lockorientation )
+			if (this.settings.lockorientation==1) 
+			  {
+			  window.plugins.orientationLock.lock("portrait");
+			  }
+			 else if (this.settings.lockorientation==2) 
+			  {
+			  window.plugins.orientationLock.lock("landscape");
+			  }
+			 else
+			 {
+			 window.plugins.orientationLock.unlock()	 
+			 }	
+
+
+			this.initSpeechRecognition();
             this.manageDisplayRotation();
+
+            function successFunction()
+              {
+              console.info("It worked!");
+              }
+
+            function errorFunction(error)
+              {
+              console.error(error);
+              }
+
+            function trace(value)
+              {
+              console.log(value);
+              }
+ 
+ 			if (this.settings.fullscreen) 
+			  {
+			  AndroidFullScreen.immersiveMode(successFunction, errorFunction);
+			  }
+			 else  
+			  {
+			  AndroidFullScreen.leanMode(successFunction, errorFunction);
+			  }
 
             // init vis
             main(jQuery);
@@ -475,6 +546,10 @@ var app = {
             this.settings = $.extend(this.settings, value);
 
             systemLang   = this.settings.systemLang || navigator.language || navigator.userLanguage;
+			lockorientation = this.settings.lockorientation || 0;
+			zoomLevelPortrait = this.settings.zoomLevelPortrait || 100;
+		    zoomLevelLandscape = this.settings.zoomLevelLandscape || 100;
+			substitutionUrl = this.settings.substitutionUrl || '';
 
             if (this.settings.socketUrlGSM && navigator.network && navigator.network.connection.type != 'wifi') {
                 socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
@@ -562,21 +637,97 @@ var app = {
 
     replaceFilesInViews: function (viewsObj, total, files) {
         var data = viewsObj.toString();
+		if (this.settings.substitutionUrl.length>0)
+		  {
+			// detect: this.settings.substitutionUrl/vis/, substitutionUrl/vis.0/, substitutionUrl/icon-blabla/, ...
+			var re = new RegExp('": "'+ escapeRegExp (this.settings.substitutionUrl) +'\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/.+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"',"g");
+			var m = data.match(re);
+			if (m) {
+				for (var mm = 0; mm < m.length; mm++) {
+					//file:///data/data/net.iobroker.vis/files/main/vis-user.css
+					//cdvfile://localhost/persistent
+					console.log ('Found:' + m [mm])
+					var fn = m[mm].substring(this.settings.substitutionUrl.length + 5); // remove ": " + this.settings.substitutionUrl +"/"
+					var originalFileName = fn.replace(/"/g, ''); // remove last "
+					var p  = fn.split('/');
+					var adapter = p.shift(); // remove vis.0 or whatever
+					fn  = p.shift(); // keep only one subdirectory
+					fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
+
+					if (adapter === 'vis') {
+						data = data.replace(m[mm], '": "' + m[mm].substring(9 + this.settings.substitutionUrl.length)); // remove src="/vis/
+					} else {
+						// add to files
+						if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) == -1) { // if "vis.0/dir/otherProject.png"
+							files.push('/' + originalFileName);
+						}
+						// files cannot be stored directly in root
+						if (adapter == 'vis.0' && fn.indexOf('/') !== -1) {
+							adapter = '';
+						} else {
+							adapter = adapter + '/';
+						}
+						data = data.replace(m[mm], '": "' + this.directory + adapter + fn);
+					}
+				}
+			}
+			// detect: this.settings.substitutionUrl/vis/, substitutionUrl/vis.0/, substitutionUrl/icon-blabla/, ...
+			var re = new RegExp('url\\(\\\\"'+ escapeRegExp (this.settings.substitutionUrl) +'\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/.+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"','g');
+			var m = data.match(re);
+			
+			if (m) {
+				for (var mm = 0; mm < m.length; mm++) {
+					//file:///data/data/net.iobroker.vis/files/main/vis-user.css
+					//cdvfile://localhost/persistent
+					var fn = m[mm].substring(this.settings.substitutionUrl.length + 7); // remove 'url(\"' + substitutionUrl +"/"
+					var originalFileName = fn.replace(/\\\"/g, ''); // remove last "
+					var p  = fn.split('/');
+					var adapter = p.shift(); // remove vis.0 or whatever
+					fn  = p.shift(); // keep only one subdirectory
+					fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
+
+					if (adapter === 'vis') 
+					  {
+					  data = data.replace(m[mm], 'url(\\"' + m[mm].substring(11 + this.settings.substitutionUrl.length)); // remove src="/vis/
+					  }
+					 else 
+					  {
+					  // add to files
+					  if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) == -1) 
+					    { // if "vis.0/dir/otherProject.png"
+						files.push('/' + originalFileName);
+						}
+						// files cannot be stored directly in root
+					  if (adapter == 'vis.0' && fn.indexOf('/') !== -1) 
+					    {
+						adapter = '';
+						} 
+					   else 
+					    {
+						adapter = adapter + '/';
+						}
+					data = data.replace(m[mm], 'url(\\"' + this.directory + adapter + fn);
+					}
+				}
+			}				  
+  	    }	
+
+
         // detect: /vis/, /vis.0/, /icon-blabla/, ...
-        var m = data.match(/": "\/[-_0-9\w]+(\.[-_0-9\w]+)?\/.+\.(png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
+        var m = data.match(/": "\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/.+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
         if (m) {
             for (var mm = 0; mm < m.length; mm++) {
                 //file:///data/data/net.iobroker.vis/files/main/vis-user.css
                 //cdvfile://localhost/persistent
                 var fn = m[mm].substring(5); // remove ": "/
-                var originalFileName = fn.replace(/"/g, ''); // remove last "
+                var originalFileName = fn.replace(/\\"/g, ''); // remove last "
                 var p  = fn.split('/');
                 var adapter = p.shift(); // remove vis.0 or whatever
                 fn  = p.shift(); // keep only one subdirectory
                 fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
                 if (adapter === 'vis') {
-                    data = data.replace(m[mm], '": "' + m[mm].substring(10)); // remove src="/vis/
+                    data = data.replace(m[mm], '": "' + m[mm].substring(9)); // remove ": "/vis/
                 } else {
                     // add to files
                     if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) == -1) { // if "vis.0/dir/otherProject.png"
@@ -592,8 +743,9 @@ var app = {
                 }
             }
         }
+
         // try to replace <img src="/vis.0/main...">
-        m = data.match(/src=\\"\/[-_0-9\w]+(\.[-_0-9\w]+)?\/.+\.(png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\"/g);
+        m = data.match(/src=\\"\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/.+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\"/g);
         if (m) {
             for (var mm = 0; mm < m.length; mm++) {
                 //file:///data/data/net.iobroker.vis/files/main/vis-user.css
@@ -622,8 +774,9 @@ var app = {
                 }
             }
         }
+		
         // try to replace <img src='/vis.0/main...'>
-        m = data.match(/src='\/[-_0-9\w]+(\.[-_0-9\w]+)?\/.+\.(png|jpg|jpeg|gif|wav|mp3|bmp|svg)+'/g);
+        m = data.match(/src='\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/.+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+'/g);
         if (m) {
             for (var mm = 0; mm < m.length; mm++) {
                 //file:///data/data/net.iobroker.vis/files/main/vis-user.css
@@ -1072,23 +1225,11 @@ var app = {
         window.onorientationchange = function () {
             var viewport_scale;
 
-            if (window.orientation == 0 || window.orientation == 180) {
-                if (this.window.orientation == 0 || this.window.orientation == 180) {
-                    // landscape
-                    viewport_scale = 1;
-                } else {
-                    // portrait
-                    viewport_scale = this.window.width / this.window.height;
-                }
-            } else if (window.orientation == 90 || window.orientation == -90) {
-                if (this.window.orientation == 90 || this.window.orientation == -90) {
-                    // landscape
-                    viewport_scale = 1;
-                } else {
-                    // portrait
-                    viewport_scale = this.window.width / this.window.height;
-                }
-            }
+            if (window.orientation == 0 || window.orientation == 180) 
+			  viewport_scale = this.settings.zoomLevelLandscape / 100;
+
+			else 
+             viewport_scale = this.settings.zoomLevelPortrait / 100;
 
             // resize viewport
             $('meta[name=viewport]').attr('content',
@@ -1096,11 +1237,24 @@ var app = {
                 'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale);
         }.bind(this);
         // resize viewport
-        this.settings.initialZoom = parseFloat(this.settings.initialZoom) || 1;
+        //this.settings.initialZoom = parseFloat(this.settings.initialZoom) || 1;
         
-        $('meta[name=viewport]').attr('content',
+        //$('meta[name=viewport]').attr('content',
+        //    'width=' + this.window.width + ',' +
+        //    'minimum-scale=' + (this.settings.initialZoom || 1) + ', initial-scale=' + (this.settings.initialZoom || 1) + ', maximum-scale=' + (this.settings.initialZoom || 1));
+
+        var viewport_scale;
+
+        if (window.orientation == 0 || window.orientation == 180) 
+		   viewport_scale =  this.settings.zoomLevelLandscape / 100;
+  		 else 
+           viewport_scale =  this.settings.zoomLevelPortrait / 100;
+
+         // resize viewport
+         $('meta[name=viewport]').attr('content',
             'width=' + this.window.width + ',' +
-            'minimum-scale=' + (this.settings.initialZoom || 1) + ', initial-scale=' + (this.settings.initialZoom || 1) + ', maximum-scale=' + (this.settings.initialZoom || 1));
+            'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale);		
+		
     },
 
     loadCss:        function () {
@@ -1144,6 +1298,13 @@ var app = {
             '<option value="ru">русский</option>' +
             '</select></td></tr>' +
 
+            '<tr><td class="cordova-settings-label">' + _('Orientation')  + ':</td></tr>' +
+            '<tr><td class="cordova-settings-value"><select data-name="lockorientation" class="cordova-setting">' +
+            '<option value="0">auto</option>' +
+            '<option value="1">portrait</option>' +
+            '<option value="2">landscape</option>' +
+            '</select></td></tr>' +			
+			
             '<tr><td class="cordova-settings-label">' + _('Project')               + ':</td></tr>' +
             '<tr><td class="cordova-settings-value"><select class="cordova-setting" data-name="project"     id="cordova_project" style="width: 100%"></select></td></tr>' +
 
@@ -1153,6 +1314,16 @@ var app = {
             '<tr><td class="cordova-settings-label"><label for="allowMove">' + _('Allow window move')      + ':</label></td></tr>' +
             '<tr><td><input  id="allowMove"      class="cordova-setting" data-name="allowMove"   type="checkbox"/><label for="allowMove" class="checkbox">&#8226;</label></td></tr>'+
 
+            '<tr><td class="cordova-settings-label"><label for="fullscreen">' + _('Fullscreen')      + ':</label></td></tr>' +
+            '<tr><td><input  id="fullscreen"      class="cordova-setting" data-name="fullscreen"   type="checkbox"/><label for="fullscreen" class="checkbox">&#8226;</label></td></tr>'+
+            '<tr class="cordova-settings-label"><td>' + _('Zoom Level Portrait') + ':</td></tr>' +
+            '<tr class="cordova-settings-value"><td><input type="range" min="1" max="500" class="cordova-setting" data-name="zoomLevelPortrait" style="width: 100%"/></td></tr>' +
+            '<tr class="cordova-settings-label"><td>' + _('Zoom Level Landscape') + ':</td></tr>' +
+            '<tr class="cordova-settings-value"><td><input type="range" min="1" max="500" class="cordova-setting" data-name="zoomLevelLandscape" style="width: 100%"/></td></tr>' +
+ 
+            '<tr class="cordova-settings-label"><td>' + _('Substitution URL')       + ':</td></tr>' +
+            '<tr class="cordova-setting-value"><td><input  class="cordova-setting" data-name="substitutionUrl" style="width: 100%"/></td></tr>' +
+			
 //            '<tr><td class="cordova-settings-label">' + _('Initial zoom')      + ':</td></tr>' +
 //            '<tr><td><input class="cordova-setting" data-name="initialZoom" style="width: 100%"/></td></tr>'+
 
@@ -1456,5 +1627,16 @@ var app = {
         }
     }
 };
+
+function logout(){
+   {    
+   navigator.app.exitApp();
+   };
+}
+
+function escapeRegExp(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
 
 app.initialize();
