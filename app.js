@@ -483,46 +483,37 @@ var app = {
             $('.vis-wait-text').css({left: 0, 'padding-left': '1em'});
 
 			//alert ('Orientation: ' + this.settings.lockorientation )
-			if (this.settings.lockorientation==1) 
-			  {
-			  window.plugins.orientationLock.lock("portrait");
-			  }
-			 else if (this.settings.lockorientation==2) 
-			  {
-			  window.plugins.orientationLock.lock("landscape");
-			  }
-			 else
-			 {
-			 window.plugins.orientationLock.unlock()	 
-			 }	
+			if (this.settings.lockorientation == 1) {
+			    window.plugins.orientationLock.lock('portrait');
+            } else if (this.settings.lockorientation == 2) {
+			    window.plugins.orientationLock.lock('landscape');
+            } else {
+			    window.plugins.orientationLock.unlock()
+            }
 
 
 			this.initSpeechRecognition();
             this.manageDisplayRotation();
 
-            function successFunction()
-              {
-              console.info("It worked!");
-              }
+            function successFunction() {
+                console.info('It worked!');
+            }
 
-            function errorFunction(error)
-              {
-              console.error(error);
-              }
+            function errorFunction(error) {
+                console.error(error);
+            }
 
-            function trace(value)
-              {
-              console.log(value);
-              }
- 
- 			if (this.settings.fullscreen) 
-			  {
-			  AndroidFullScreen.immersiveMode(successFunction, errorFunction);
-			  }
-			 else  
-			  {
-			  AndroidFullScreen.leanMode(successFunction, errorFunction);
-			  }
+            function trace(value) {
+                console.log(value);
+            }
+            if (typeof AndroidFullScreen !== 'undefined') {
+                if (this.settings.fullscreen) {
+                    AndroidFullScreen.immersiveMode(successFunction, errorFunction);
+                } else {
+                    AndroidFullScreen.leanMode(successFunction, errorFunction);
+                }
+            }
+
 
             // init vis
             main(jQuery);
@@ -543,13 +534,13 @@ var app = {
             } else {
                 value = {};
             }
-            this.settings = $.extend(this.settings, value);
+            this.settings       = $.extend(this.settings, value);
 
-            systemLang   = this.settings.systemLang || navigator.language || navigator.userLanguage;
-			lockorientation = this.settings.lockorientation || 0;
-			zoomLevelPortrait = this.settings.zoomLevelPortrait || 100;
-		    zoomLevelLandscape = this.settings.zoomLevelLandscape || 100;
-			substitutionUrl = this.settings.substitutionUrl || '';
+            systemLang          = this.settings.systemLang || navigator.language || navigator.userLanguage;
+			lockorientation     = this.settings.lockorientation || 0;
+			zoomLevelPortrait   = this.settings.zoomLevelPortrait || 100;
+		    zoomLevelLandscape  = this.settings.zoomLevelLandscape || 100;
+			substitutionUrl     = this.settings.substitutionUrl || '';
 
             if (this.settings.socketUrlGSM && navigator.network && navigator.network.connection.type != 'wifi') {
                 socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
@@ -637,16 +628,17 @@ var app = {
 
     replaceFilesInViews: function (viewsObj, total, files) {
         var data = viewsObj.toString();
-		if (this.settings.substitutionUrl.length>0)
-		  {
+        var m;
+		if (this.settings.substitutionUrl) {
 			// detect: this.settings.substitutionUrl/vis/, substitutionUrl/vis.0/, substitutionUrl/icon-blabla/, ...
-			var re = new RegExp('": "'+ escapeRegExp (this.settings.substitutionUrl) +'\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/.+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"',"g");
-			var m = data.match(re);
+			var re = new RegExp('": "' + escapeRegExp (this.settings.substitutionUrl) + '\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/.+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"', 'g');
+            var mm;
+            m = data.match(re);
 			if (m) {
-				for (var mm = 0; mm < m.length; mm++) {
+				for (mm = 0; mm < m.length; mm++) {
 					//file:///data/data/net.iobroker.vis/files/main/vis-user.css
 					//cdvfile://localhost/persistent
-					console.log ('Found:' + m [mm])
+					console.log ('Found:' + m [mm]);
 					var fn = m[mm].substring(this.settings.substitutionUrl.length + 5); // remove ": " + this.settings.substitutionUrl +"/"
 					var originalFileName = fn.replace(/"/g, ''); // remove last "
 					var p  = fn.split('/');
@@ -672,11 +664,11 @@ var app = {
 				}
 			}
 			// detect: this.settings.substitutionUrl/vis/, substitutionUrl/vis.0/, substitutionUrl/icon-blabla/, ...
-			var re = new RegExp('url\\(\\\\"'+ escapeRegExp (this.settings.substitutionUrl) +'\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/.+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"','g');
-			var m = data.match(re);
+			re = new RegExp('url\\(\\\\"' + escapeRegExp (this.settings.substitutionUrl) + '\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/.+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"','g');
+			m = data.match(re);
 			
 			if (m) {
-				for (var mm = 0; mm < m.length; mm++) {
+				for (mm = 0; mm < m.length; mm++) {
 					//file:///data/data/net.iobroker.vis/files/main/vis-user.css
 					//cdvfile://localhost/persistent
 					var fn = m[mm].substring(this.settings.substitutionUrl.length + 7); // remove 'url(\"' + substitutionUrl +"/"
@@ -686,37 +678,24 @@ var app = {
 					fn  = p.shift(); // keep only one subdirectory
 					fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
-					if (adapter === 'vis') 
-					  {
-					  data = data.replace(m[mm], 'url(\\"' + m[mm].substring(11 + this.settings.substitutionUrl.length)); // remove src="/vis/
-					  }
-					 else 
-					  {
 					  // add to files
-					  if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) == -1) 
-					    { // if "vis.0/dir/otherProject.png"
-						files.push('/' + originalFileName);
-						}
-						// files cannot be stored directly in root
-					  if (adapter == 'vis.0' && fn.indexOf('/') !== -1) 
-					    {
-						adapter = '';
-						} 
-					   else 
-					    {
-						adapter = adapter + '/';
-						}
+                    if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) === -1) { // if "vis.0/dir/otherProject.png"
+                        files.push('/' + originalFileName);
+                    } // files cannot be stored directly in root
+                    if (adapter === 'vis.0' && fn.indexOf('/') !== -1) {
+                        adapter = '';
+                    } else {
+                        adapter = adapter + '/';
+                    }
 					data = data.replace(m[mm], 'url(\\"' + this.directory + adapter + fn);
-					}
 				}
 			}				  
-  	    }	
-
+  	    }
 
         // detect: /vis/, /vis.0/, /icon-blabla/, ...
-        var m = data.match(/": "\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/.+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
+        m = data.match(/": "\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/.+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
         if (m) {
-            for (var mm = 0; mm < m.length; mm++) {
+            for (mm = 0; mm < m.length; mm++) {
                 //file:///data/data/net.iobroker.vis/files/main/vis-user.css
                 //cdvfile://localhost/persistent
                 var fn = m[mm].substring(5); // remove ": "/
@@ -726,28 +705,42 @@ var app = {
                 fn  = p.shift(); // keep only one subdirectory
                 fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
-                if (adapter === 'vis') {
-                    data = data.replace(m[mm], '": "' + m[mm].substring(9)); // remove ": "/vis/
-                } else {
-                    // add to files
-                    if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) == -1) { // if "vis.0/dir/otherProject.png"
-                        files.push('/' + originalFileName);
-                    }
-                    // files cannot be stored directly in root
-                    if (adapter == 'vis.0' && fn.indexOf('/') !== -1) {
-                        adapter = '';
-                    } else {
-                        adapter = adapter + '/';
-                    }
-                    data = data.replace(m[mm], '": "' + this.directory + adapter + fn);
+                // files cannot be stored directly in root
+                if (adapter === 'vis.0' && fn.indexOf('/') !== -1) {
+                    adapter = '';
                 }
+
+                var newName = originalFileName;
+                if (newName[0] === '/') newName = newName.substring(1);
+                if (newName[newName.length - 1] === '"') newName = newName.substring(0, newName.length - 1);
+                newName = ('/' + newName).replace('/vis.0/', '');
+
+                // add to files
+                var found = false;
+                for (var ff = 0; ff < total.length; ff++) {
+                    if (typeof total[ff] === 'string' && total[ff] === newName) {
+                        found = true;
+                        break;
+                    }
+                    if (typeof total[ff] === 'object' && total[ff].src === newName) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) { // if "vis.0/dir/otherProject.png"
+                    files.push({src: newName, dst: adapter + fn.replace(/\s/g, '_').replace(/"$/, '')});
+                }
+
+                // remove spaces in names because they will be %20
+                data = data.replace(m[mm], '": "' + this.directory + adapter + fn.replace(/\s/g, '_'));
             }
         }
 
         // try to replace <img src="/vis.0/main...">
         m = data.match(/src=\\"\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/.+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\"/g);
         if (m) {
-            for (var mm = 0; mm < m.length; mm++) {
+            for (mm = 0; mm < m.length; mm++) {
                 //file:///data/data/net.iobroker.vis/files/main/vis-user.css
                 //cdvfile://localhost/persistent
                 var fn = m[mm].substring(7); // remove src=\"/
@@ -757,28 +750,40 @@ var app = {
                 fn  = p.shift(); // keep only one subdirectory
                 fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
-                if (adapter === 'vis') {
-                    data = data.replace(m[mm], 'src=\\"' + m[mm].substring(11)); // remove src=\"/vis/
-                } else {
-                    // add to files
-                    if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) === -1) { // if "vis.0/dir/otherProject.png"
-                        files.push('/' + originalFileName);
-                    }
-                    // files cannot be stored directly in root
-                    if (adapter == 'vis.0' && fn.indexOf('/') !== -1) {
-                        adapter = '';
-                    } else {
-                        adapter = adapter + '/';
-                    }
-                    data = data.replace(m[mm], 'src=\\"' + this.directory + adapter + fn);
+                var newName = originalFileName;
+                if (newName[0] === '/') newName = newName.substring(1);
+                if (newName[newName.length - 1] === '"') newName = newName.substring(0, newName.length - 2);
+                newName = ('/' + newName).replace('/vis.0/', '');
+
+                // files cannot be stored directly in root
+                if (adapter === 'vis.0' && fn.indexOf('/') !== -1) {
+                    adapter = '';
                 }
+
+                // add to files
+                var found = false;
+                for (var ff = 0; ff < total.length; ff++) {
+                    if (typeof total[ff] === 'string' && total[ff] === newName) {
+                        found = true;
+                        break;
+                    }
+                    if (typeof total[ff] === 'object' && total[ff].src === newName) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) { // if "vis.0/dir/otherProject.png"
+                    files.push({src: newName, dst: adapter + fn.replace(/\s/g, '_').replace(/\\"$/, '')});
+                }
+                // remove spaces in names because they will be %20
+                data = data.replace(m[mm], 'src=\\"' + this.directory + adapter + fn.replace(/\s/g, '_'));
             }
         }
 		
         // try to replace <img src='/vis.0/main...'>
         m = data.match(/src='\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/.+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+'/g);
         if (m) {
-            for (var mm = 0; mm < m.length; mm++) {
+            for (mm = 0; mm < m.length; mm++) {
                 //file:///data/data/net.iobroker.vis/files/main/vis-user.css
                 //cdvfile://localhost/persistent
                 var fn = m[mm].substring(6); // remove src="/
@@ -788,21 +793,33 @@ var app = {
                 fn  = p.shift(); // keep only one subdirectory
                 fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
-                if (adapter === 'vis') {
-                    data = data.replace(m[mm], "src='" + m[mm].substring(9)); // remove ": "/vis/
-                } else {
-                    // add to files
-                    if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) === -1) { // if "vis.0/dir/otherProject.png"
-                        files.push('/' + originalFileName);
-                    }
-                    // files cannot be stored directly in root
-                    if (adapter == 'vis.0' && fn.indexOf('/') !== -1) {
-                        adapter = '';
-                    } else {
-                        adapter = adapter + '/';
-                    }
-                    data = data.replace(m[mm], "src='" + this.directory + adapter + fn);
+                var newName = originalFileName;
+                if (newName[0] === '/') newName = newName.substring(1);
+                if (newName[newName.length - 1] === "'") newName = newName.substring(0, newName.length - 1);
+                newName = ('/' + newName).replace('/vis.0/', '');
+
+                // files cannot be stored directly in root
+                if (adapter === 'vis.0' && fn.indexOf('/') !== -1) {
+                    adapter = '';
                 }
+
+                // add to files
+                var found = false;
+                for (var ff = 0; ff < total.length; ff++) {
+                    if (typeof total[ff] === 'string' && total[ff] === newName) {
+                        found = true;
+                        break;
+                    }
+                    if (typeof total[ff] === 'object' && total[ff].src === newName) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) { // if "vis.0/dir/otherProject.png"
+                    files.push({src: newName, dst: adapter + fn.replace(/\s/g, '_').replace(/'$/, '')});
+                }
+                // remove spaces in names because they will be %20
+                data = data.replace(m[mm], "src='" + this.directory + adapter + fn.replace(/\s/g, '_'));
             }
         }
         return data;
@@ -816,7 +833,13 @@ var app = {
         }
         var file = files.pop();
 
-        console.log('Read file: ' + file);
+        console.log('Read file: ' + JSON.stringify(file));
+        var dest;
+        if (typeof file === 'object') {
+            dest = file.dst;
+            file = file.src;
+        }
+        
         vis.conn.readFile64(file, function (error, data, filename) {
             if (error) console.error(error);
             $('#cordova_progress_show').css('width', (100 - (files.length / total.length) * 100) + '%');
@@ -851,12 +874,18 @@ var app = {
                 }
 
                 // remove sub-dirs
-                var p = filename.replace(/^\/[-_0-9\w]+(\.[-_0-9\w]+)?\//, '').split('/');
-                filename = p.shift();
-                filename += p.length ? '/' + p.join('') : '';
-                if (!p.length) {
-                    p = file.split('/');
-                    filename = (p[0] || p[1]) + '/' + filename;
+                if (dest) {
+                    filename = dest;
+                } else {
+                    var p = filename.replace(/^\/[-_0-9\w]+(\.[-_0-9\w]+)?\//, '').split('/');
+                    filename = p.shift();
+                    filename += p.length ? '/' + p.join('') : '';
+                    if (!p.length) {
+                        p = file.split('/');
+                        filename = (p[0] || p[1]) + '/' + filename;
+                    }
+                    // remove spaces in names because they will be %20
+                    filename = filename.replace(/\s/g, '_');
                 }
 
                 console.log('writeLocalFile "' + file + '" as "' + filename + '"');
@@ -1225,11 +1254,11 @@ var app = {
         window.onorientationchange = function () {
             var viewport_scale;
 
-            if (window.orientation == 0 || window.orientation == 180) 
-			  viewport_scale = this.settings.zoomLevelLandscape / 100;
-
-			else 
-             viewport_scale = this.settings.zoomLevelPortrait / 100;
+            if (window.orientation == 0 || window.orientation == 180) {
+                viewport_scale = this.settings.zoomLevelLandscape / 100;
+            } else {
+                viewport_scale = this.settings.zoomLevelPortrait / 100;
+            }
 
             // resize viewport
             $('meta[name=viewport]').attr('content',
@@ -1245,10 +1274,11 @@ var app = {
 
         var viewport_scale;
 
-        if (window.orientation == 0 || window.orientation == 180) 
-		   viewport_scale =  this.settings.zoomLevelLandscape / 100;
-  		 else 
-           viewport_scale =  this.settings.zoomLevelPortrait / 100;
+        if (window.orientation == 0 || window.orientation == 180) {
+            viewport_scale =  this.settings.zoomLevelLandscape / 100;
+        } else {
+            viewport_scale =  this.settings.zoomLevelPortrait / 100;
+        }
 
          // resize viewport
          $('meta[name=viewport]').attr('content',
@@ -1628,15 +1658,12 @@ var app = {
     }
 };
 
-function logout(){
-   {    
+function logout() {
    navigator.app.exitApp();
-   };
 }
 
 function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 }
-
 
 app.initialize();

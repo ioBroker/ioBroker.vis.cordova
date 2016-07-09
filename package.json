@@ -1,7 +1,7 @@
 {
   "name": "iobroker.vis.cordova",
   "description": "Cordova APP for ioBroker.",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "author": {
     "name": "bluefox",
     "email": "dogafox@gmail.com"
@@ -50,6 +50,7 @@
     "iobroker.vis-justgage": "*",
     "iobroker.vis-keyboard": "*",
     "iobroker.vis-lcars": "*",
+    "iobroker.vis-map": "*",
     "iobroker.vis-metro": "*",
     "iobroker.vis-plumb": "*",
     "iobroker.vis-rgraph": "*",

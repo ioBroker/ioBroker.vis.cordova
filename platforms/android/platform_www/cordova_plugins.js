@@ -306,6 +306,28 @@ module.exports = [
         "clobbers": [
             "window.system"
         ]
+    },
+    {
+        "file": "plugins/cordova.custom.plugins.exitapp/www/ExitApp.js",
+        "id": "cordova.custom.plugins.exitapp.exitApp",
+        "pluginId": "cordova.custom.plugins.exitapp",
+        "merges": [
+            "navigator.app"
+        ]
+    },
+    {
+        "file": "plugins/com.phonegap.plugins.OrientationLock/www/orientationLock.js",
+        "id": "com.phonegap.plugins.OrientationLock.OrientationLock",
+        "clobbers": [
+            "OrientationLock"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-fullscreen/www/AndroidFullScreen.js",
+        "id": "cordova-plugin-fullscreen.AndroidFullScreen",
+        "clobbers": [
+            "AndroidFullScreen"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -320,7 +342,11 @@ module.exports.metadata =
     "org.apache.cordova.wifiinfo": "0.1.1",
     "cordova-plugin-app-version": "0.1.8",
     "cordova-plugin-x-toast": "2.3.1",
-    "com.jiliac.systemvolume": "0.1.0"
-}
+    "com.jiliac.systemvolume": "0.1.0",
+    "cordova.custom.plugins.exitapp": "1.0.0",
+    "com.phonegap.plugins.OrientationLock": "0.1",
+    "cordova-plugin-crosswalk-webview": "1.8.0",
+    "cordova-plugin-fullscreen": "1.1.0"
+};
 // BOTTOM OF METADATA
 });

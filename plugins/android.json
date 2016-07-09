@@ -43,10 +43,10 @@
         "cordova.custom.plugins.exitapp": {
             "PACKAGE_NAME": "net.iobroker.vis"
         },
-        "cordova-plugin-fullscreen": {
+        "com.phonegap.plugins.OrientationLock": {
             "PACKAGE_NAME": "net.iobroker.vis"
         },
-        "com.phonegap.plugins.OrientationLock": {
+        "cordova-plugin-fullscreen": {
             "PACKAGE_NAME": "net.iobroker.vis"
         }
     },

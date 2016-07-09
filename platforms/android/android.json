@@ -43,6 +43,38 @@
                         {
                             "xml": "<feature name=\"SystemVolume\"><param name=\"android-package\" value=\"com.jiliac.systemvolume.SystemVolume\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"OrientationLock\"><param name=\"android-package\" value=\"com.plugin.phonegap.OrientationLock\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"webView\" value=\"org.crosswalk.engine.XWalkWebViewEngine\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference default=\"19+\" name=\"xwalkVersion\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference default=\"xwalk_core_library_canary:17+\" name=\"xwalkLiteVersion\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference default=\"--disable-pull-to-refresh-effect\" name=\"xwalkCommandLine\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference default=\"embedded\" name=\"xwalkMode\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference default=\"true\" name=\"xwalkMultipleApk\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"AndroidFullScreen\"><param name=\"android-package\" value=\"com.mesmotronic.plugins.FullScreenPlugin\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -55,19 +87,19 @@
                             "count": 1
                         },
                         {
-                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
-                            "count": 1
-                        },
-                        {
                             "xml": "<uses-permission android:name=\"android.permission.RECORD_AUDIO\" />",
                             "count": 1
                         },
                         {
-                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
+                            "xml": "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\" />",
                             "count": 1
                         },
                         {
-                            "xml": "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\" />",
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
                             "count": 1
                         }
                     ],
@@ -92,6 +124,10 @@
                         },
                         {
                             "xml": "<feature name=\"TTS\"><param name=\"android-package\" value=\"com.wordsbaking.cordova.tts.TTS\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"ExitApp\"><param name=\"android-package\" value=\"cordova.custom.plugins.exitapp.ExitApp\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -128,6 +164,18 @@
             "PACKAGE_NAME": "net.iobroker.vis"
         },
         "com.jiliac.systemvolume": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova.custom.plugins.exitapp": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "com.phonegap.plugins.OrientationLock": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-fullscreen": {
             "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
@@ -439,6 +487,28 @@
             "clobbers": [
                 "window.system"
             ]
+        },
+        {
+            "file": "plugins/cordova.custom.plugins.exitapp/www/ExitApp.js",
+            "id": "cordova.custom.plugins.exitapp.exitApp",
+            "pluginId": "cordova.custom.plugins.exitapp",
+            "merges": [
+                "navigator.app"
+            ]
+        },
+        {
+            "file": "plugins/com.phonegap.plugins.OrientationLock/www/orientationLock.js",
+            "id": "com.phonegap.plugins.OrientationLock.OrientationLock",
+            "clobbers": [
+                "OrientationLock"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-fullscreen/www/AndroidFullScreen.js",
+            "id": "cordova-plugin-fullscreen.AndroidFullScreen",
+            "clobbers": [
+                "AndroidFullScreen"
+            ]
         }
     ],
     "plugin_metadata": {
@@ -451,6 +521,10 @@
         "org.apache.cordova.wifiinfo": "0.1.1",
         "cordova-plugin-app-version": "0.1.8",
         "cordova-plugin-x-toast": "2.3.1",
-        "com.jiliac.systemvolume": "0.1.0"
+        "com.jiliac.systemvolume": "0.1.0",
+        "cordova.custom.plugins.exitapp": "1.0.0",
+        "com.phonegap.plugins.OrientationLock": "0.1",
+        "cordova-plugin-crosswalk-webview": "1.8.0",
+        "cordova-plugin-fullscreen": "1.1.0"
     }
 }
