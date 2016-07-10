@@ -77,34 +77,34 @@ $.extend(systemDictionary, {
         "de": "Spracherkennung aktiviert",
         "ru": "Распознавание речи активно"
     },
-   "Orientation": {
+    "Orientation": {
         "en": "Orientation",
         "de": "Ausrichtung",
-        "ru": "Orientation"
+        "ru": "Ориенитация"
     },	
-   "Zoom Level Portrait": {
+    "Zoom Level Portrait": {
         "en": "Zoom Level Portrait",
         "de": "Zoom Level Portrait",
-        "ru": "Zoom Level Portrait"
+        "ru": "Зум при верт. положении"
     },	
-  "Substitution URL": {
+    "Substitution URL": {
         "en": "Substitution URL",
         "de": "Austausch URL",
-        "ru": "Substitution URL"
+        "ru": "Замена URL"
     },	
-   "Zoom Level Landscape": {
+    "Zoom Level Landscape": {
         "en": "Zoom Level Landscape",
         "de": "Zoom Level Landscape",
-        "ru": "Zoom Level Landscape"
+        "ru": "Зум при гор. положении"
     },	
  
-  "Volume": {
+    "Volume": {
         "en": "Speech volume",
         "de": "Sprachlautstärke",
         "ru": "Громкость речи"
-},
+    },
     "Allow window move": {
-            "en": "Allow window move",
+        "en": "Allow window move",
         "de": "Erlaube Fensterverschiebung",
         "ru": "Разрешить сдвиг окна"
     },
@@ -629,6 +629,7 @@ var app = {
     replaceFilesInViews: function (viewsObj, total, files) {
         var data = viewsObj.toString();
         var m;
+        var newName;
 		if (this.settings.substitutionUrl) {
 			// detect: this.settings.substitutionUrl/vis/, substitutionUrl/vis.0/, substitutionUrl/icon-blabla/, ...
 			var re = new RegExp('": "' + escapeRegExp (this.settings.substitutionUrl) + '\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/.+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"', 'g');
@@ -646,21 +647,30 @@ var app = {
 					fn  = p.shift(); // keep only one subdirectory
 					fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
-					if (adapter === 'vis') {
-						data = data.replace(m[mm], '": "' + m[mm].substring(9 + this.settings.substitutionUrl.length)); // remove src="/vis/
-					} else {
-						// add to files
-						if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) == -1) { // if "vis.0/dir/otherProject.png"
-							files.push('/' + originalFileName);
-						}
-						// files cannot be stored directly in root
-						if (adapter == 'vis.0' && fn.indexOf('/') !== -1) {
-							adapter = '';
-						} else {
-							adapter = adapter + '/';
-						}
-						data = data.replace(m[mm], '": "' + this.directory + adapter + fn);
-					}
+                    if (originalFileName[0] === '/') originalFileName = originalFileName.substring(1);
+                    if (originalFileName[originalFileName.length - 1] === '"') originalFileName = originalFileName.substring(0, originalFileName.length - 1);
+                    originalFileName = ('/' + originalFileName).replace('/vis.0/', '');
+
+                    // files cannot be stored directly in root
+                    if (adapter === 'vis.0' && fn.indexOf('/') !== -1) adapter = '';
+
+                    // add to files
+                    var found = false;
+                    for (var ff = 0; ff < total.length; ff++) {
+                        if (typeof total[ff] === 'string' && total[ff] === originalFileName) {
+                            found = true;
+                            break;
+                        }
+                        if (typeof total[ff] === 'object' && total[ff].src === originalFileName) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) { // if "vis.0/dir/otherProject.png"
+                        files.push({src: originalFileName, dst: adapter + fn.replace(/\s/g, '_').replace(/\\"$/, '')});
+                    }
+
+                    data = data.replace(m[mm], '": "' + this.directory + adapter + fn.replace(/\s/g, '_'));
 				}
 			}
 			// detect: this.settings.substitutionUrl/vis/, substitutionUrl/vis.0/, substitutionUrl/icon-blabla/, ...
@@ -672,22 +682,36 @@ var app = {
 					//file:///data/data/net.iobroker.vis/files/main/vis-user.css
 					//cdvfile://localhost/persistent
 					var fn = m[mm].substring(this.settings.substitutionUrl.length + 7); // remove 'url(\"' + substitutionUrl +"/"
-					var originalFileName = fn.replace(/\\\"/g, ''); // remove last "
+					var originalFileName = fn.replace(/\\"/g, ''); // remove last "
 					var p  = fn.split('/');
 					var adapter = p.shift(); // remove vis.0 or whatever
 					fn  = p.shift(); // keep only one subdirectory
 					fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
-					  // add to files
-                    if (total.indexOf(('/' + originalFileName).replace('/vis.0/', '')) === -1) { // if "vis.0/dir/otherProject.png"
-                        files.push('/' + originalFileName);
-                    } // files cannot be stored directly in root
-                    if (adapter === 'vis.0' && fn.indexOf('/') !== -1) {
-                        adapter = '';
-                    } else {
-                        adapter = adapter + '/';
+                    if (originalFileName[0] === '/') originalFileName = originalFileName.substring(1);
+                    if (originalFileName[originalFileName.length - 1] === '"') originalFileName = originalFileName.substring(0, originalFileName.length - 1);
+                    originalFileName = ('/' + originalFileName).replace('/vis.0/', '');
+
+                    // files cannot be stored directly in root
+                    if (adapter === 'vis.0' && fn.indexOf('/') !== -1) adapter = '';
+
+                    // add to files
+                    var found = false;
+                    for (var ff = 0; ff < total.length; ff++) {
+                        if (typeof total[ff] === 'string' && total[ff] === originalFileName) {
+                            found = true;
+                            break;
+                        }
+                        if (typeof total[ff] === 'object' && total[ff].src === originalFileName) {
+                            found = true;
+                            break;
+                        }
                     }
-					data = data.replace(m[mm], 'url(\\"' + this.directory + adapter + fn);
+                    if (!found) { // if "vis.0/dir/otherProject.png"
+                        files.push({src: originalFileName, dst: adapter + fn.replace(/\s/g, '_').replace(/\\"$/, '')});
+                    }
+
+					data = data.replace(m[mm], 'url(\\"' + this.directory + adapter + fn.replace(/\s/g, '_'));
 				}
 			}				  
   	    }
@@ -710,7 +734,7 @@ var app = {
                     adapter = '';
                 }
 
-                var newName = originalFileName;
+                newName = originalFileName;
                 if (newName[0] === '/') newName = newName.substring(1);
                 if (newName[newName.length - 1] === '"') newName = newName.substring(0, newName.length - 1);
                 newName = ('/' + newName).replace('/vis.0/', '');
@@ -750,7 +774,7 @@ var app = {
                 fn  = p.shift(); // keep only one subdirectory
                 fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
-                var newName = originalFileName;
+                newName = originalFileName;
                 if (newName[0] === '/') newName = newName.substring(1);
                 if (newName[newName.length - 1] === '"') newName = newName.substring(0, newName.length - 2);
                 newName = ('/' + newName).replace('/vis.0/', '');
@@ -793,7 +817,7 @@ var app = {
                 fn  = p.shift(); // keep only one subdirectory
                 fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
-                var newName = originalFileName;
+                newName = originalFileName;
                 if (newName[0] === '/') newName = newName.substring(1);
                 if (newName[newName.length - 1] === "'") newName = newName.substring(0, newName.length - 1);
                 newName = ('/' + newName).replace('/vis.0/', '');
