@@ -1279,9 +1279,9 @@ var app = {
             var viewport_scale;
 
             if (window.orientation == 0 || window.orientation == 180) {
-                viewport_scale = this.settings.zoomLevelLandscape / 100;
-            } else {
                 viewport_scale = this.settings.zoomLevelPortrait / 100;
+            } else {
+                viewport_scale = this.settings.zoomLevelLandscape / 100;
             }
 
             // resize viewport
