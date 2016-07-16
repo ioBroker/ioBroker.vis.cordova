@@ -149,6 +149,7 @@ var app = {
     localDir:     null,
     directory:    (cordova && cordova.file) ? cordova.file.dataDirectory : null,
     speaking:     false,
+    connected:    false,
     // Application Constructor
     initialize:     function () {
         if (this.settings.systemLang.indexOf('-') != -1) {
@@ -514,7 +515,6 @@ var app = {
                 }
             }
 
-
             // init vis
             main(jQuery);
         }.bind(this));
@@ -534,13 +534,13 @@ var app = {
             } else {
                 value = {};
             }
-            this.settings       = $.extend(this.settings, value);
-
-            systemLang          = this.settings.systemLang || navigator.language || navigator.userLanguage;
-			lockorientation     = this.settings.lockorientation || 0;
-			zoomLevelPortrait   = this.settings.zoomLevelPortrait || 100;
-		    zoomLevelLandscape  = this.settings.zoomLevelLandscape || 100;
-			substitutionUrl     = this.settings.substitutionUrl || '';
+            this.settings                     = $.extend(this.settings, value);
+            // systemLang is global variable and defined in visLang.js
+            systemLang                        = this.settings.systemLang || navigator.language || navigator.userLanguage;
+            this.settings.lockorientation     = this.settings.lockorientation       || 0;
+            this.settings.zoomLevelPortrait   = this.settings.zoomLevelPortrait     || 100;
+            this.settings.zoomLevelLandscape  = this.settings.zoomLevelLandscape    || 100;
+            this.settings.substitutionUrl     = this.settings.substitutionUrl       || '';
 
             if (this.settings.socketUrlGSM && navigator.network && navigator.network.connection.type != 'wifi') {
                 socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
@@ -1371,9 +1371,9 @@ var app = {
             '<tr><td class="cordova-settings-label"><label for="fullscreen">' + _('Fullscreen')      + ':</label></td></tr>' +
             '<tr><td><input  id="fullscreen"      class="cordova-setting" data-name="fullscreen"   type="checkbox"/><label for="fullscreen" class="checkbox">&#8226;</label></td></tr>'+
             '<tr class="cordova-settings-label"><td>' + _('Zoom Level Portrait') + ':</td></tr>' +
-            '<tr class="cordova-settings-value"><td><input type="range" min="1" max="500" class="cordova-setting" data-name="zoomLevelPortrait" style="width: 100%"/></td></tr>' +
+            '<tr class="cordova-settings-value"><td><input type="number" min="1" max="500" class="cordova-setting" data-name="zoomLevelPortrait" style="width: 80px"/><input type="range" min="1" max="500" class="cordova-setting" data-name="zoomLevelPortrait" style="width: calc(100% - 85px)"/></td></tr>' +
             '<tr class="cordova-settings-label"><td>' + _('Zoom Level Landscape') + ':</td></tr>' +
-            '<tr class="cordova-settings-value"><td><input type="range" min="1" max="500" class="cordova-setting" data-name="zoomLevelLandscape" style="width: 100%"/></td></tr>' +
+            '<tr class="cordova-settings-value"><td><input type="number" min="1" max="500" class="cordova-setting" data-name="zoomLevelLandscape" style="width: 80px"><input type="range" min="1" max="500" class="cordova-setting" data-name="zoomLevelLandscape" style="width: calc(100% - 85px)"/></td></tr>' +
  
             '<tr class="cordova-settings-label"><td>' + _('Substitution URL')       + ':</td></tr>' +
             '<tr class="cordova-setting-value"><td><input  class="cordova-setting" data-name="substitutionUrl" style="width: 100%"/></td></tr>' +
@@ -1442,25 +1442,44 @@ var app = {
             $('#cordova_version').text(version);
         });
 
-        // todo read text2command instances
-        // todo read rooms
+        // install sync for zoomLevelPortrait and zoomLevelLandscape
+        $('#cordova_dialog .cordova-setting[data-name="zoomLevelPortrait"]').change(function() {
+            if ($(this).attr('type') === 'number') {
+                $('#cordova_dialog .cordova-setting[data-name="zoomLevelPortrait"][type="range"]').val($(this).val());
+            } else {
+                $('#cordova_dialog .cordova-setting[data-name="zoomLevelPortrait"][type="number"]').val($(this).val());
+            }
+        }).keyup(function () {
+            $(this).trigger('change');
+        });
+        $('#cordova_dialog .cordova-setting[data-name="zoomLevelLandscape"]').change(function() {
+            if ($(this).attr('type') === 'number') {
+                $('#cordova_dialog .cordova-setting[data-name="zoomLevelLandscape"][type="range"]').val($(this).val());
+            } else {
+                $('#cordova_dialog .cordova-setting[data-name="zoomLevelLandscape"][type="number"]').val($(this).val());
+            }
+        }).keyup(function () {
+            $(this).trigger('change');
+        });
 
         var that = this;
         $('#cordova_menu').click(function () {
             document.addEventListener('backbutton', that.onBackButton, false);
+
             // load settings
             $('#cordova_dialog .cordova-setting').each(function() {
+                var settingName = $(this).data('name');
                 if ($(this).attr('type') === 'checkbox') {
-                    $(this).prop('checked', that.settings[$(this).data('name')]);
-                    if ($(this).data('name') === 'recognition' && !that.settings.recognition) {
+                    $(this).prop('checked', that.settings[settingName]);
+                    if (settingName === 'recognition' && !that.settings.recognition) {
                         $('.speech').hide();
                     }
                 } else {
-                    $(this).val(that.settings[$(this).data('name')]);
+                    $(this).val(that.settings[settingName]);
                 }
             });
 
-            // todo read text2command instances
+            // read text2command instances
             if (typeof vis !== 'undefined' && vis.conn) {
                 vis.conn._socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.text2command.', endkey: 'system.adapter.text2command.\u9999'}, function (err, res) {
                     if (!err && res.rows.length) {
@@ -1631,15 +1650,21 @@ var app = {
                 }
             }).css({height: '2em'});
 
+            if (!that.projects.length && that.connected) that.readProjects();
+
             $('#cordova_dialog_bg').show();
             $('#cordova_dialog').show();
         });
     },
 
     onConnChange: function (connected) {
+        this.connected = connected;
         if (connected) {
             $('#cordova_connected').html('<span style="color: green">' + this.yes +'</span>');
-            if (!this.projects.length) this.readProjects();
+
+            // load projects only if menu is opened
+            if (!this.projects.length && $('#cordova_dialog').is(':visible')) this.readProjects();
+
             if (this._connectInterval) {
                 clearInterval(this._connectInterval);
                 this._connectInterval = null;

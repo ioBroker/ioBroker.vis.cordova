@@ -67,6 +67,12 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.4.2 (2016-07-16)
+- (bluefox) add text input to zoom values in settings
+
+### 0.4.1 (2016-07-12)
+- (nobody) add crosswalk browser
+
 ### 0.3.2 (2016-06-21)
 - (bluefox) replace src="/vis/..." too
 
