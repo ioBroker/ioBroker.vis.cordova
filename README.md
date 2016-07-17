@@ -67,6 +67,9 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.4.3 (2016-07-17)
+- (nobody) fix progressbar, regEx, img path sub in oid
+
 ### 0.4.2 (2016-07-16)
 - (bluefox) add text input to zoom values in settings
 

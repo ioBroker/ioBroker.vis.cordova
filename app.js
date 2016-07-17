@@ -142,14 +142,14 @@ var app = {
         responseWithTts: true,
         initialZoom:     '1'
     },
-    inBackground: false,
-    connection:   '',
-    projects:     [],
-    ssid:         null,
-    localDir:     null,
-    directory:    (cordova && cordova.file) ? cordova.file.dataDirectory : null,
-    speaking:     false,
-    connected:    false,
+    inBackground:   false,
+    connection:     '',
+    projects:       [],
+    ssid:           null,
+    localDir:       null,
+    directory:      (cordova && cordova.file) ? cordova.file.dataDirectory : null,
+    speaking:       false,
+    connected:      false,
 	totalFileCount: 0,
     // Application Constructor
     initialize:     function () {
@@ -636,7 +636,6 @@ var app = {
 		if (this.settings.substitutionUrl) {
 			// detect: this.settings.substitutionUrl/vis/, substitutionUrl/vis.0/, substitutionUrl/icon-blabla/, ...
 			var re = new RegExp('": "' + escapeRegExp (this.settings.substitutionUrl) + '\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/[^"^\']+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"', 'g');
-            var mm;
             m = data.match(re);
 			if (m) {
 				for (mm = 0; mm < m.length; mm++) {
@@ -853,7 +852,7 @@ var app = {
     },
     copyFilesToDevice: function (files, cb, total) {
         if (total === undefined) total = files;
-        if (this.totalFileCount< total.length)  this.totalFileCount = total.length;
+        if (this.totalFileCount < total.length)  this.totalFileCount = total.length;
         if (!files || !files.length) {
             if (cb) setTimeout(cb, 0);
             return;
@@ -898,7 +897,7 @@ var app = {
                 if (filename && filename.indexOf('vis-views.json') !== -1) {
                     this.viewExists = true;
                     data = this.replaceFilesInViews(data, total, files);
-					}
+                }
 
                 // remove sub-dirs
                 if (dest) {
@@ -1784,7 +1783,7 @@ var app = {
 	    var m;
         var newName;
         var mm;
-        if (typeof data==='string') {
+        if (typeof data === 'string') {
 		 	
 			// try to replace <img src="/vis.0/main...">
 			m = data.match(/src="\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
@@ -1851,7 +1850,7 @@ var app = {
 		console.log ('data: ' + data);
 	    var m;
         var newName;
-        if (typeof data==='string') {
+        if (typeof data === 'string') {
 		 	
 			// try to replace <img src="/vis.0/main...">
 			m = data.match(/^\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+$/g);
