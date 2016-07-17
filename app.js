@@ -461,7 +461,7 @@ var app = {
                 }.bind(this));
             }
 
-            if (!this.settings.project || this.settings.socketUrl == 'http://localhost:8084') {
+            if (!this.settings.project || this.settings.socketUrl === 'http://localhost:8082') {
                 $('#cordova_menu').trigger('click');
             }
 
@@ -1347,6 +1347,23 @@ var app = {
             '<tr><td class="cordova-settings-label">' + _('Connected') + ':</td></td><tr>' +
             '<tr><td class="cordova-settings-value"><div id="cordova_connected"></div></td></tr>' +
 
+            '<tr><td class="cordova-settings-label section-legend"><span>'      + _('WIFI') + '</span><div class="cordova_toggle" data-group="ssid">▶</div></td></tr>'+
+            '<tr class="cordova-setting-ssid"><td>' + _('WIFI SSID') + ':</td></tr>' +
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="ssid"       style="width: calc(100% - 4em)" id="cordova_ssid"/><button id="cordova_ssid_button" style="width: 3em; height: 2.3em;">' + _('Actual') + '</button></td></tr>'+
+
+            '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Socket')           + ':</td></tr>' +
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="socketUrl"  style="width: 100%"/></td></tr>'+
+
+            '<tr class="cordova-setting-ssid"><td  class="cordova-settings-label">' + _('WIFI User')             + ':</td></tr>' +
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="user"       style="width: 100%"/></td></tr>'+
+
+            '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Password')         + ':</td></tr>' +
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="password"   type="password" id="cordova-password" style="width: 100%"/></td></tr>'+
+
+            '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Password repeat')  + ':</td></tr>' +
+            '<tr class="cordova-setting-ssid"><td><input id="cordova-password-repeat" type="password"   style="width: 100%"/></td></tr>'+
+
+
             '<tr><td class="cordova-settings-label">' + _('Language')  + ':</td></tr>' +
             '<tr><td class="cordova-settings-value"><select data-name="systemLang" class="cordova-setting">' +
             '<option value="">' + _('System') + '</option>' +
@@ -1355,6 +1372,10 @@ var app = {
             '<option value="ru">русский</option>' +
             '</select></td></tr>' +
 
+
+            '<tr><td class="cordova-settings-label">' + _('Project')               + ':</td></tr>' +
+            '<tr><td class="cordova-settings-value"><select class="cordova-setting" data-name="project"     id="cordova_project" style="width: 100%"></select></td></tr>' +
+
             '<tr><td class="cordova-settings-label">' + _('Orientation')  + ':</td></tr>' +
             '<tr><td class="cordova-settings-value"><select data-name="lockorientation" class="cordova-setting">' +
             '<option value="0">auto</option>' +
@@ -1362,9 +1383,6 @@ var app = {
             '<option value="2">landscape</option>' +
             '</select></td></tr>' +			
 			
-            '<tr><td class="cordova-settings-label">' + _('Project')               + ':</td></tr>' +
-            '<tr><td class="cordova-settings-value"><select class="cordova-setting" data-name="project"     id="cordova_project" style="width: 100%"></select></td></tr>' +
-
             '<tr><td class="cordova-settings-label"><label for="noSleep">' + _('Prevent from sleep')       + ':</label></td></tr>' +
             '<tr><td><input id="noSleep" class="cordova-setting" data-name="noSleep" type="checkbox"/><label for="noSleep" class="checkbox">&#8226;</label></td></tr>'+
 
@@ -1380,9 +1398,6 @@ var app = {
  
             '<tr class="cordova-settings-label"><td>' + _('Substitution URL')       + ':</td></tr>' +
             '<tr class="cordova-setting-value"><td><input  class="cordova-setting" data-name="substitutionUrl" style="width: 100%"/></td></tr>' +
-			
-//            '<tr><td class="cordova-settings-label">' + _('Initial zoom')      + ':</td></tr>' +
-//            '<tr><td><input class="cordova-setting" data-name="initialZoom" style="width: 100%"/></td></tr>'+
 
             '<tr><td class="cordova-settings-label">' + _('Instance')              + ':</td></tr>' +
             '<tr><td><input  class="cordova-setting" data-name="instance"    style="width: 100%"/></td></tr>' +
@@ -1408,22 +1423,6 @@ var app = {
 
             '<tr class="cordova-setting-speech cordova-settings-label speech"><td><label for="responseWithTts">' + _('Response over TTS') + ':</label></td></tr>' +
             '<tr class="cordova-setting-speech speech"><td><input id="responseWithTts"    class="cordova-setting" data-name="responseWithTts" type="checkbox"/><label for="responseWithTts" class="checkbox">&#8226;</label></td></tr>' +
-
-            '<tr><td class="cordova-settings-label section-legend"><span>'      + _('WIFI') + '</span><div class="cordova_toggle" data-group="ssid">▶</div></td></tr>'+
-            '<tr class="cordova-setting-ssid"><td>' + _('WIFI SSID') + ':</td></tr>' +
-            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="ssid"       style="width: calc(100% - 4em)" id="cordova_ssid"/><button id="cordova_ssid_button" style="width: 3em; height: 2.3em;">' + _('Actual') + '</button></td></tr>'+
-
-            '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Socket')           + ':</td></tr>' +
-            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="socketUrl"  style="width: 100%"/></td></tr>'+
-
-            '<tr class="cordova-setting-ssid"><td  class="cordova-settings-label">' + _('WIFI User')             + ':</td></tr>' +
-            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="user"       style="width: 100%"/></td></tr>'+
-
-            '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Password')         + ':</td></tr>' +
-            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="password"   type="password" id="cordova-password" style="width: 100%"/></td></tr>'+
-
-            '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Password repeat')  + ':</td></tr>' +
-            '<tr class="cordova-setting-ssid"><td><input id="cordova-password-repeat" type="password"   style="width: 100%"/></td></tr>'+
 
             '<tr><td class="cordova-settings-label section-legend"><span>' + _('Cell')      + '</span><div class="cordova_toggle" data-group="cell">▶</div></td></tr>'+
             '<tr class="cordova-setting-cell"><td>' + _('Cell Socket')           + ':</td></tr>' +
@@ -1481,6 +1480,12 @@ var app = {
                     $(this).val(that.settings[settingName]);
                 }
             });
+
+            if (!that.settings.socketUrl || that.settings.socketUrl === 'http://localhost:8082') {
+                if (!$('.cordova-setting-ssid').is(':visible')) {
+                    $('.cordova_toggle[data-group="ssid"]').trigger('click');
+                }
+            }
 
             // read text2command instances
             if (typeof vis !== 'undefined' && vis.conn) {
