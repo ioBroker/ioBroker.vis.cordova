@@ -67,6 +67,9 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.4.4 (2016-07-18)
+- (bluefox) fix string escaped
+
 ### 0.4.3 (2016-07-17)
 - (nobody) fix progressbar, regEx, img path sub in oid
 
