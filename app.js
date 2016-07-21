@@ -1344,15 +1344,17 @@ var app = {
                 viewport_scale = this.settings.zoomLevelLandscape / 100;
                 // resize menu button
                 $('#cordova_menu').css({
-                    width:  Math.round(28 * this.settings.zoomLevelLandscape / 100),
-                    height: Math.round(22 * this.settings.zoomLevelLandscape / 100)
+                    width:  Math.round(2800 / this.settings.zoomLevelLandscape),
+                    height: Math.round(2200 / this.settings.zoomLevelLandscape),
+                    'font-size': Math.round(1600 / this.settings.zoomLevelLandscape) + 'px'
                 })
             } else {
                 viewport_scale = this.settings.zoomLevelPortrait / 100;
                 // resize menu button
                 $('#cordova_menu').css({
-                    width:  Math.round(28 * this.settings.zoomLevelPortrait / 100),
-                    height: Math.round(22 * this.settings.zoomLevelPortrait / 100)
+                    width:  Math.round(2800 / this.settings.zoomLevelPortrait),
+                    height: Math.round(2200 / this.settings.zoomLevelPortrait),
+                    'font-size': Math.round(1600 / this.settings.zoomLevelPortrait) + 'px'
                 })
             }
 
@@ -1396,8 +1398,21 @@ var app = {
     },
 
     installMenu:    function () {
+        var w;
+        var h;
+        var f;
+        if (window.orientation == 0 || window.orientation == 180) {
+            w = Math.round(2800 / this.settings.zoomLevelLandscape);
+            h = Math.round(2200 / this.settings.zoomLevelLandscape);
+            f = Math.round(1600 / this.settings.zoomLevelLandscape);
+        } else {
+            w = Math.round(2800 / this.settings.zoomLevelPortrait);
+            h = Math.round(2200 / this.settings.zoomLevelPortrait);
+            f = Math.round(1600 / this.settings.zoomLevelPortrait);
+        }
+
         // install menu button
-        $('body').append('<div id="cordova_menu" style="top: 0.5em; left: 0.5em; padding-left: 0.5em; padding-right: 0.5em; width: ' + (28 * this.settings.zoomLevelPortrait / 100) + 'px; height: ' + (22 * this.settings.zoomLevelPortrait / 100) + 'px; position: fixed; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 15002" id="cordova_menu">...</div>');
+        $('body').append('<div id="cordova_menu" style="top: 0.5em; left: 0.5em; text-align: center; font-size: ' + f + 'px;padding-left: 0.5em; padding-right: 0.5em; width: ' + w + 'px; height: ' + h + 'px; position: fixed; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 15002" id="cordova_menu">...</div>');
         $('body').append('<div id="cordova_dialog_bg" style="display: none"></div>' +
             '<div id="cordova_dialog">' +
             '<div style="padding-left: 1em; font-size: 2em; font-weight: bold">' + _('Settings') +
