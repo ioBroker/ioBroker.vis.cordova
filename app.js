@@ -1342,8 +1342,18 @@ var app = {
 
             if (window.orientation == 0 || window.orientation == 180) {
                 viewport_scale = this.settings.zoomLevelLandscape / 100;
+                // resize menu button
+                $('#cordova_menu').css({
+                    width:  Math.round(28 * this.settings.zoomLevelLandscape / 100),
+                    height: Math.round(22 * this.settings.zoomLevelLandscape / 100)
+                })
             } else {
                 viewport_scale = this.settings.zoomLevelPortrait / 100;
+                // resize menu button
+                $('#cordova_menu').css({
+                    width:  Math.round(28 * this.settings.zoomLevelPortrait / 100),
+                    height: Math.round(22 * this.settings.zoomLevelPortrait / 100)
+                })
             }
 
             // resize viewport
@@ -1387,14 +1397,14 @@ var app = {
 
     installMenu:    function () {
         // install menu button
-        $('body').append('<div id="cordova_menu" style="top: 0.5em; left: 0.5em; padding-left: 0.5em; padding-right: 0.5em; position: fixed; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 15002" id="cordova_menu">...</div>');
+        $('body').append('<div id="cordova_menu" style="top: 0.5em; left: 0.5em; padding-left: 0.5em; padding-right: 0.5em; width: ' + (28 * this.settings.zoomLevelPortrait / 100) + 'px; height: ' + (22 * this.settings.zoomLevelPortrait / 100) + 'px; position: fixed; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 15002" id="cordova_menu">...</div>');
         $('body').append('<div id="cordova_dialog_bg" style="display: none"></div>' +
             '<div id="cordova_dialog">' +
             '<div style="padding-left: 1em; font-size: 2em; font-weight: bold">' + _('Settings') +
             '<span style="padding-left: 1em; font-size: 0.5em" id="cordova_version"></span>' + '</div>' +
             '<table style="width: 100%; padding: 1em">' +
 
-            '<tr><td colspan="2"><div class="button-group">'            +
+            '<tr><td colspan="2"><div class="button-group">' +
             '<div class="left">' +
             '<button id="cordova_reload">&#8634;' + _('Reload')  + '</button>' +
             '<button id="cordova_resync">⇔' + _('Re-sync') + '</button>' +
@@ -1529,8 +1539,8 @@ var app = {
 
             // resize viewport
             $('meta[name=viewport]').attr('content',
-                'width=' + this.window.width + ',' +
-                'minimum-scale=, maximum-scale=1');
+                'width=' + that.window.width + ',' +
+                'minimum-scale=1, maximum-scale=1');
 
             // load settings
             $('#cordova_dialog .cordova-setting').each(function() {

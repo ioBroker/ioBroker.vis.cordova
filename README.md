@@ -1,4 +1,4 @@
-![Logo](admin/vis.png)
+![Logo](img/icon_small.png)
 ioBroker.vis.cordova
 ============
 
@@ -14,7 +14,7 @@ The ports and the ioBroker server must be reachable from mobile phone.
 
 Install app via [App Store](https://play.google.com/store/apps/details?id=net.iobroker.vis&hl=en). After starting the app for the first time the settings dialog should be opened automatically. To start work with an app see settings.
 
-To show settings press semi-transparent button in the top left corner.
+To show settings press semi-transparent button with "..." in the top left corner.
 ![Settings](img/menu.png)
 
 ## Settings
