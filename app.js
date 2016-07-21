@@ -54,9 +54,9 @@ $.extend(systemDictionary, {
         "ru": "Спать, если не активно"
     },
     "Fullscreen": {
-        "en": "Fullscreen",
+        "en": "Full screen",
         "de": "Vollbild",
-        "ru": "Fullscreen"
+        "ru": "Полноэкранный режим"
     },	
     "Cell":         {"en": "Cell Connection",   "de": "Mobile Verbindung",  "ru": "Мобильное соединение"},
     "Cell Socket":  {"en": "Socket URL",        "de": "Socket URL",         "ru": "Socket URL"},
@@ -113,11 +113,11 @@ $.extend(systemDictionary, {
         "de": "Einschlafen verhindern",
         "ru": "Не засыпать"
     },
-    "Text 2 speech":     {"en": "Text 2 speech",     "de": "Text 2 speech",     "ru": "Синтез речи"},
-    "Default room":      {"en": "Default room",      "de": "Default Raum",      "ru": "Комната по умолчанию"},
-    "Response over TTS": {"en": "Response over TTS", "de": "Antworten mit TTS", "ru": "Отвечать голосом"},
-    "Message":           {"en": "Message",           "de": "Meldung",           "ru": "Сообщение"},
-    "Discard changes?":  {"en": "Discard changes?",  "de": "Die Änderungen sind nicht gespeichert. Ignorieren?",  "ru": "Игнорировать изменения?"}
+    "Text2command":      {"en": "Text2command instance",    "de": "Text2command-Instanz",   "ru": "Экземпляр Text2command"},
+    "Default room":      {"en": "Default room",             "de": "Default Raum",           "ru": "Комната по умолчанию"},
+    "Response over TTS": {"en": "Response over TTS",        "de": "Antworten mit TTS",      "ru": "Отвечать голосом"},
+    "Message":           {"en": "Message",                  "de": "Meldung",                "ru": "Сообщение"},
+    "Discard changes?":  {"en": "Discard changes?",         "de": "Die Änderungen sind nicht gespeichert. Ignorieren?",  "ru": "Игнорировать изменения?"}
 });
 
 var app = {
@@ -549,11 +549,20 @@ var app = {
                 try {
                     // If WIFI and SSID is set
                     if (this.settings.socketUrlGSM && this.settings.ssid && navigator.wifi) {
+                        // convert into array of SSIDs
+                        if (typeof this.settings.ssid === 'string') {
+                            this.settings.ssid = this.settings.ssid.split(',');
+                            for (var s = this.settings.ssid.length - 1; s >= 0; s--) {
+                                this.settings.ssid[s] = this.settings.ssid[s].trim();
+                                if (!this.settings.ssid[s]) this.settings.ssid.splice(s, 1);
+                            }
+                        }
+
                         // read SSID info
                         delayed = true;
                         navigator.wifi.getWifiInfo(function (data) {
                             this.ssid = data.connection.SSID;
-                            if (this.settings.socketUrlGSM && this.settings.ssid && data.connection.SSID != this.settings.ssid) {
+                            if (this.settings.socketUrlGSM && this.settings.ssid && this.settings.ssid.indexOf(data.connection.SSID) === -1) {
                                 // other wifi network
                                 socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
                             } else {
@@ -848,6 +857,49 @@ var app = {
                 data = data.replace(m[mm], "src='" + this.directory + adapter + fn.replace(/\s/g, '_'));
             }
         }
+
+        // try to replace <img src='/vis.0/main...'>
+        m = data.match(/url\(['"]?\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+['"]?\)/g);
+        if (m) {
+            for (mm = 0; mm < m.length; mm++) {
+                //file:///data/data/net.iobroker.vis/files/main/vis-user.css
+                //cdvfile://localhost/persistent
+                var fn = m[mm].substring(4); // remove url(/
+                fn = fn.replace(/['")]+/g, '');
+                var originalFileName = fn;
+                var p  = fn.split('/');
+                var adapter = p.shift(); // remove vis.0 or whatever
+                if (!adapter) adapter = p.shift();
+                fn  = p.shift(); // keep only one subdirectory
+                fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
+
+                newName = originalFileName.replace('/vis.0/', '');
+
+                // files cannot be stored directly in root
+                if (adapter === 'vis.0' && fn.indexOf('/') !== -1) {
+                    adapter = '';
+                }
+
+                // add to files
+                var found = false;
+                for (var ff = 0; ff < total.length; ff++) {
+                    if (typeof total[ff] === 'string' && total[ff] === newName) {
+                        found = true;
+                        break;
+                    }
+                    if (typeof total[ff] === 'object' && total[ff].src === newName) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) { // if "vis.0/dir/otherProject.png"
+                    files.push({src: newName, dst: adapter + fn.replace(/\s/g, '_')});
+                }
+                // remove spaces in names because they will be %20
+                data = data.replace(m[mm], 'url(' + this.directory + adapter + fn.replace(/\s/g, '_') + ')');
+            }
+        }
+
         return data;
     },
     copyFilesToDevice: function (files, cb, total) {
@@ -896,6 +948,11 @@ var app = {
                 // modify vis-views.json
                 if (filename && filename.indexOf('vis-views.json') !== -1) {
                     this.viewExists = true;
+                    data = this.replaceFilesInViews(data, total, files);
+                }
+
+                // modify vis-user.css
+                if (filename && filename.indexOf('vis-user.css') !== -1) {
                     data = this.replaceFilesInViews(data, total, files);
                 }
 
@@ -1166,10 +1223,12 @@ var app = {
                         if (matched) {
                             this.recText.css('background: lightblue');
                             this.recText.html(text).show();
+
                             if (this.settings.defaultRoom) {
                                 text = text + ' [' + this.settings.defaultRoom + ']';
                                 if (!this.defaultRoomRegExp) this.defaultRoomRegExp = new RegExp('\\s\\[' + this.settings.defaultRoom + '\\]', 'i');
                             }
+
                             // restart recognition if text2command inactive
                             var timeout = setTimeout(function () {
                                 if (!this.settings.noCommInBackground || !this.inBackground) {
@@ -1392,9 +1451,9 @@ var app = {
             '<tr><td class="cordova-settings-label"><label for="fullscreen">' + _('Fullscreen')      + ':</label></td></tr>' +
             '<tr><td><input  id="fullscreen"      class="cordova-setting" data-name="fullscreen"   type="checkbox"/><label for="fullscreen" class="checkbox">&#8226;</label></td></tr>'+
             '<tr class="cordova-settings-label"><td>' + _('Zoom Level Portrait') + ':</td></tr>' +
-            '<tr class="cordova-settings-value"><td><input type="number" min="1" max="500" class="cordova-setting" data-name="zoomLevelPortrait" style="width: 80px"/><input type="range" min="1" max="500" class="cordova-setting" data-name="zoomLevelPortrait" style="width: calc(100% - 85px)"/></td></tr>' +
+            '<tr class="cordova-settings-value"><td><input type="number" min="20" max="500" class="cordova-setting" data-name="zoomLevelPortrait" style="width: 80px"/><input type="range" min="20" max="500" class="cordova-setting" data-name="zoomLevelPortrait" style="width: calc(100% - 85px)"/></td></tr>' +
             '<tr class="cordova-settings-label"><td>' + _('Zoom Level Landscape') + ':</td></tr>' +
-            '<tr class="cordova-settings-value"><td><input type="number" min="1" max="500" class="cordova-setting" data-name="zoomLevelLandscape" style="width: 80px"><input type="range" min="1" max="500" class="cordova-setting" data-name="zoomLevelLandscape" style="width: calc(100% - 85px)"/></td></tr>' +
+            '<tr class="cordova-settings-value"><td><input type="number" min="20" max="500" class="cordova-setting" data-name="zoomLevelLandscape" style="width: 80px"><input type="range" min="20" max="500" class="cordova-setting" data-name="zoomLevelLandscape" style="width: calc(100% - 85px)"/></td></tr>' +
  
             '<tr class="cordova-settings-label"><td>' + _('Substitution URL')       + ':</td></tr>' +
             '<tr class="cordova-setting-value"><td><input  class="cordova-setting" data-name="substitutionUrl" style="width: 100%"/></td></tr>' +
@@ -1412,7 +1471,7 @@ var app = {
             '<tr class="cordova-setting-speech cordova-settings-label speech"><td>' + _('Keyword')       + ':</td></tr>' +
             '<tr class="cordova-setting-speech speech"><td><input  class="cordova-setting" data-name="keyword"     style="width: 100%"/></td></tr>' +
 
-            '<tr class="cordova-setting-speech cordova-settings-label speech"><td>' + _('Text 2 speech') + ':</td></tr>' +
+            '<tr class="cordova-setting-speech cordova-settings-label speech"><td>' + _('Text2command') + ':</td></tr>' +
             '<tr class="cordova-setting-speech speech"><td><select id="text2command" class="cordova-setting" data-name="text2command" style="width: 100%"></select></td></tr>' +
 
             '<tr class="cordova-setting-speech cordova-settings-label speech"><td>' + _('Volume') + ':</td></tr>' +
@@ -1467,6 +1526,11 @@ var app = {
         var that = this;
         $('#cordova_menu').click(function () {
             document.addEventListener('backbutton', that.onBackButton, false);
+
+            // resize viewport
+            $('meta[name=viewport]').attr('content',
+                'width=' + this.window.width + ',' +
+                'minimum-scale=, maximum-scale=1');
 
             // load settings
             $('#cordova_dialog .cordova-setting').each(function() {
@@ -1548,6 +1612,8 @@ var app = {
 
             $('#cordova_cancel').unbind('click').click(function () {
                 document.removeEventListener('backbutton', that.onBackButton, false);
+                // reset view port scale
+                $(window).trigger('orientationchange');
                 $('#cordova_dialog_bg').hide();
                 $('#cordova_dialog').hide();
             }).css({height: '2em'});
@@ -1571,6 +1637,9 @@ var app = {
                 });
 
                 if (changed && !window.confirm(_('Discard changes?'))) return;
+
+                // reset view port scale
+                $(window).trigger('orientationchange');
 
                 $('#cordova_dialog_bg').hide();
                 $('#cordova_dialog').hide();
@@ -1599,6 +1668,7 @@ var app = {
                 //if (changed && !window.confirm(_('Discard changes?'))) return;
 
                 that.settings.resync = true;
+                
                 /*$('#cordova_dialog_bg').hide();
                 $('#cordova_dialog').hide();
                 that.saveSettings();
@@ -1616,6 +1686,9 @@ var app = {
                     window.alert(_('Cell password repeat does not equal to repeat'));
                     return;
                 }
+
+                // reset view port scale
+                $(window).trigger('orientationchange');
 
                 $('#cordova_dialog_bg').hide();
                 $('#cordova_dialog').hide();
@@ -1713,6 +1786,7 @@ var app = {
             }
         }
     },
+
     replaceFilePathJson: function (data) {
  		if (typeof data==='object') data=JSON.stringify(data); 
 		console.log ('data: ' + data);
@@ -1885,7 +1959,6 @@ var app = {
 		console.log ('data2: ' + data);
         return data;
     }
-	
 };
 
 function logout() {
