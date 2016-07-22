@@ -65,5 +65,6 @@ Die Ersetzung von Pfaden zur Laufzeit beschränkt sich zurzeit auf die folgenden
 - basic string (unescaped)
 - basic string src
 - basic json table
+
 Da die Werte erst zur Laufzeit übermittelt werden, sind die Dateien nur dann lokal vohanden, falls sie sich im Projektverzeichnis befinden oder bereits durch ein statisch konfiguriertes Widget referenziert wurden. Es findet kein Nachladen fehlender Bilder statt.
 Die als separate Adapter angebotenen Icon-Sammlungen sind kein Bestandteil der App. Falls Bilder aus diesen Sammlungen in der App angezeigt werden sollen, so müssen diese zuvor in das Projektverzeichnis kopiert werden.
