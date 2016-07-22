@@ -2,6 +2,10 @@
 ioBroker.vis.cordova
 ============
 
+[по русски](README.ru.md)
+
+[auf Deutsch](README.de.md)
+
 WEB visualisation for ioBroker platform as android App.
 
 This app is designed to run on mobile phones and tables. it stores the vis project and all images on the mobile phone to save the mobile traffic.
@@ -44,12 +48,14 @@ Following settings are active only if some SSID specified and the device is curr
 - *Cell Password* - same as *WIFI Password*, but will be used outside of home network.
 - *Cell Password repeat* - same as *WIFI Password repeat*, but will be used outside of home network.
 
+*Note*: the global CSS file will not be processed by application. To use these styles in specific project they should be copied into project CSS file.
+
 ### Project name and settings language
 - *Language* - language of the settings dialog. English, german and russian languages are supported. To activate changes press *OK* button.
 - *Project* - project name from ioBroker. If no project name shown, so there is no connection with iobroker or no one project is exist.
 
 ### Visualisation and behaviour
-- *Orientation* - Orientation of view: **auto**, **landscape** or **portrait**. if **auto* selected the orientation will be detected automatically.
+- *Orientation* - Orientation of view: **auto**, **landscape** or **portrait**. If **auto* selected the orientation will be detected automatically.
 - *Prevent from sleep* - if activated, the device will never go into sleep mode and display will be always on. (Does not work an all devices)
 - *Allow window move* - if pan and zoom via touch is allowed on the views.
 - *Full screen* - use full screen mode on devices with software buttons (home, settings, back).
@@ -140,6 +146,15 @@ With command in javascript adapter you can activate text to speech engine of And
 - include flot and rickshaw engines into app
 
 ## Changelog
+
+### 0.5.0 (2016-07-23)
+- (bluefox) replace fonts links too
+- (bluefox) create description
+- (bluefox) allow multiple SSIDs
+- (bluefox) reset zoom if settings opened
+- (bluefox) limit minimal zoom to 20%
+- (bluefox) replace paths in vis-user.css too
+- (bluefox) resize settings button according to scale
 
 ### 0.4.5 (2016-07-21)
 - (bluefox) support of multiple SSIDs divided by comma

@@ -81,7 +81,22 @@ $.extend(systemDictionary, {
         "en": "Orientation",
         "de": "Ausrichtung",
         "ru": "Ориенитация"
-    },	
+    },
+    "orientation_auto": {
+        "en": "auto",
+        "de": "Ausrichtung",
+        "ru": "авто"
+    },
+    "orientation_portrait": {
+        "en": "portrait",
+        "de": "vertikale",
+        "ru": "портретная"
+    },
+    "orientation_landscape": {
+        "en": "landscape",
+        "de": "horizontale",
+        "ru": "горизонтальная"
+    },
     "Zoom Level Portrait": {
         "en": "Zoom Level Portrait",
         "de": "Zoom Level Portrait",
@@ -1462,9 +1477,9 @@ var app = {
 
             '<tr><td class="cordova-settings-label">' + _('Orientation')  + ':</td></tr>' +
             '<tr><td class="cordova-settings-value"><select data-name="lockorientation" class="cordova-setting">' +
-            '<option value="0">auto</option>' +
-            '<option value="1">portrait</option>' +
-            '<option value="2">landscape</option>' +
+            '<option value="0">' + _('orientation_auto') + '</option>' +
+            '<option value="1">' + _('orientation_portrait') + '</option>' +
+            '<option value="2">' + _('orientation_landscape') + '</option>' +
             '</select></td></tr>' +			
 			
             '<tr><td class="cordova-settings-label"><label for="noSleep">' + _('Prevent from sleep')       + ':</label></td></tr>' +
