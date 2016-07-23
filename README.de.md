@@ -59,7 +59,7 @@ Folgende Inhalte werden kopiert:
 - Alle Dateien im ausgewählten Projektverzeichnis mit den Dateiendungen ```.png .jpg .jpeg .gif```
 - Alle Bilder mit den Dateiendungen ```.png .jpg .jpeg .gif``` sowie Dateien mit der Endung ```.wav .mp3 .bmp .svg```, welche sich ein einem Adapterverzeichnis unter [iobroker-datenverzeichnis]/files/ befinden und im View angegeben sind und bei denen im ersten Unterverzeichnis unter [iobroker-datenverzeichnis]/files/ ein "." im Verzeichnisnamen ist.
 
-Damit die App die Pfade richtig ersetzt, müssen die Dateien mit einem absoluten lokalen Pfad angegeben werden (z.B. /vis./main/img/test.png). Relative Pfadangaben werden nicht unterstützt. Wenn Pfade in den Widgets in HTML eingebettet ist, muss die Schreibweise genau dem folgenden Muster entsprechen ```<img src='/vis.0/main...'``` oder ```<img src="/vis.0/main..."```. Andere Schreibweisen werden nicht erkannt. 
+Damit die App die Pfade richtig ersetzt, müssen die Dateien mit einem absoluten lokalen Pfad angegeben werden (z.B. /vis./main/img/test.png). Relative Pfadangaben werden nicht unterstützt. Wenn Pfade in den Widgets in HTML eingebettet ist, muss die Schreibweise genau dem folgenden Muster entsprechen ```... src='/vis.0/main...'``` oder ```... src="/vis.0/main..."```. Andere Schreibweisen werden nicht erkannt. 
 Zusätzlich kann in den Einstellungen eine *Substitution URL* angegben werden. Hierbei handelt es sich um die externe URL des Webservers von VIS. Alle URL, die mit der angegebenen Zeichenfolge anfangen, werden ebenfalls so behandelt, als ob es lokale Dateien sind (z.B. ```https://[meine Domain]/visweb```).
 
 Die Ersetzung von Pfaden zur Laufzeit beschränkt sich zurzeit auf die folgenden Widgets:
@@ -68,7 +68,8 @@ Die Ersetzung von Pfaden zur Laufzeit beschränkt sich zurzeit auf die folgenden
 - basic json table
 
 Da die Werte erst zur Laufzeit übermittelt werden, sind die Dateien nur dann lokal vohanden, falls sie sich im Projektverzeichnis befinden oder bereits durch ein statisch konfiguriertes Widget referenziert wurden. Es findet kein Nachladen fehlender Bilder statt.
-Die als separate Adapter angebotenen Icon-Sammlungen sind kein Bestandteil der App. Falls Bilder aus diesen Sammlungen in der App angezeigt werden sollen, so müssen diese zuvor in das Projektverzeichnis kopiert werden.
+
+Die als separate Adapter angebotenen Icon-Sammlungen sind kein Bestandteil der App, aber die werden auch mitkopiert.
 
 Auf andere Ressourcen kann innerhalb der App zugegriffen werden, wenn diese in den Views mit einem vollständigen Pfad beginnend mit http:// oder https:// angegeben werden. Diese Dateien werden nicht bei der Synchronsitation lokal auf das Gerät geladen sondern erst bei der Anzeige der Views direkt vom jeweiligen Server.
 Sollte der Zugriff auf die Datei mittels http-Authentifizierung gesichert sein, so können die Credentials in der folgenden Form in der URL eingebettet werden:
@@ -80,7 +81,7 @@ Auch andere Adapter als VIS können Web-Inhalte bereitstellen. Diese Inhalte kö
 Zurzeit sind nur die Client-Bestandteile der folgenden Adapter in die App integriert:
 - Flot
 
-Um die lokale Version von Flot nutzen zu können, muss die Quelle des iFrame mit ```/lot/index.html?``` beginnen. 
+Um die lokale Version von Flot nutzen zu können, muss die Quelle des iFrame mit ```/flot/index.html?``` beginnen. 
 
 Andere Inhalte und auch die Inhalte anderer Server wie z.B. Webcams können ebenfalls angezeigt werden, wenn hierfür eine vollständige URL zum entsprechenden Server verwendet wird.
 

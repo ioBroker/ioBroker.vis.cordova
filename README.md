@@ -143,9 +143,13 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## TODO
 - enable automatically load of project files from ioBroker server (e.g. for home use)
-- include flot and rickshaw engines into app
 
 ## Changelog
+
+### 0.5.1 (2016-07-23)
+- (nobody) add flot to local files
+- (nobody) fix error with settings
+- (bluefox) add rickshaw to local files
 
 ### 0.5.0 (2016-07-23)
 - (bluefox) replace fonts links too

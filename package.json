@@ -1,7 +1,7 @@
 {
   "name": "iobroker.vis.cordova",
   "description": "Cordova APP for ioBroker.",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": {
     "name": "bluefox",
     "email": "dogafox@gmail.com"
@@ -56,6 +56,7 @@
     "iobroker.vis-rgraph": "*",
     "iobroker.vis-timeandweather": "*",
 	"iobroker.flot": "*",
+    "iobroker.rickshaw": "*",
     "cordova": "*"
   },
   "bugs": {

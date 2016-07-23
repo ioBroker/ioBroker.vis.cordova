@@ -53,6 +53,10 @@ module.exports = function (grunt) {
                             replacement: "ioBroker.flot version = '" + version + "';"
                         },
                         {
+                            match: /# ioBroker\.rickshaw version = *'[\.0-9]*';/g,
+                            replacement: "ioBroker.rickshaw version = '" + version + "';"
+                        },
+                        {
                             match: /# dev build [\.0-9]+/g,
                             replacement: '# dev build 0'
                         }
@@ -116,6 +120,14 @@ module.exports = function (grunt) {
                                 'www/flot/index.html'
                         ],
                         dest:    'www/flot'
+                    },
+                    {
+                        expand:  true,
+                        flatten: true,
+                        src:     [
+                            'www/rickshaw/index.html'
+                        ],
+                        dest:    'www/rickshaw'
                     }
                 ]
             }
@@ -187,7 +199,7 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-		 flot: {
+		    flot: {
                 files: [
                     // includes files within path
                     {
@@ -198,6 +210,20 @@ module.exports = function (grunt) {
                             '!edit.html'
                         ],
                         dest: 'www/flot'
+                    }
+                ]
+            },
+            rickshaw: {
+                files: [
+                    // includes files within path
+                    {
+                        expand: true,
+                        cwd: 'node_modules/iobroker.rickshaw/www/',
+                        src: [
+                            '**',
+                            '!edit.html'
+                        ],
+                        dest: 'www/rickshaw'
                     }
                 ]
             },
