@@ -542,7 +542,6 @@ var app = {
             this.settings.zoomLevelPortrait   = this.settings.zoomLevelPortrait     || 100;
             this.settings.zoomLevelLandscape  = this.settings.zoomLevelLandscape    || 100;
             this.settings.substitutionUrl     = this.settings.substitutionUrl       || '';
-
             if (this.settings.socketUrlGSM && navigator.network && navigator.network.connection.type != 'wifi') {
                 socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
             } else {
@@ -899,7 +898,8 @@ var app = {
                 data = data.replace(m[mm], 'url(' + this.directory + adapter + fn.replace(/\s/g, '_') + ')');
             }
         }
-
+		// set absolute path to local flot directory
+        data=data.replace(/\"\/flot\//g, '"file:///android_asset/www/flot/');
         return data;
     },
     copyFilesToDevice: function (files, cb, total) {
@@ -1554,7 +1554,7 @@ var app = {
 
             // resize viewport
             $('meta[name=viewport]').attr('content',
-                'width=' + that.window.width + ',' +
+                'width=' + (that.window ? that.window.width : window.innerWidth) + ',' +
                 'minimum-scale=1, maximum-scale=1');
 
             // load settings
@@ -1951,7 +1951,7 @@ var app = {
         return data;
     },
     replaceFilePathImg: function (data) {
-		console.log ('data: ' + data);
+		//console.log ('data: ' + data);
 	    var m;
         var newName;
         if (typeof data === 'string') {
@@ -1981,12 +1981,13 @@ var app = {
 				}
 			}
 			
-		console.log ('data2: ' + data);
+		//console.log ('data2: ' + data);
         return data;
     }
 };
 
 function logout() {
+   window.close(); // workaround for blocking windows
    navigator.app.exitApp();
 }
 
