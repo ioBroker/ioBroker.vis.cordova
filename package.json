@@ -55,7 +55,8 @@
     "iobroker.vis-plumb": "*",
     "iobroker.vis-rgraph": "*",
     "iobroker.vis-timeandweather": "*",
-    "cordova": "^6.2.0"
+	"iobroker.flot": "*",
+    "cordova": "*"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.vis.cordova/issues"

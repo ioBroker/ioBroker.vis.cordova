@@ -49,6 +49,10 @@ module.exports = function (grunt) {
                             replacement: '# ioBroker.vis Version ' + version
                         },
                         {
+                            match: /# ioBroker\.flot version = *'[\.0-9]*';/g,
+                            replacement: "ioBroker.flot version = '" + version + "';"
+                        },
+                        {
                             match: /# dev build [\.0-9]+/g,
                             replacement: '# dev build 0'
                         }
@@ -78,6 +82,10 @@ module.exports = function (grunt) {
                             match: /<script type="text\/javascript" src="_socket\/info\.js"><\/script>/,
                             replacement: ''
                         },
+						{
+                            match: /<script type="text\/javascript" src="\/_socket\/info\.js"><\/script>/,
+                            replacement: ''
+                        },
                         /*{
                             match: /<script type="text\/javascript" src="lib\/js\/quo\.standalone\.js"><\/script>/,
                             replacement: ''
@@ -85,6 +93,10 @@ module.exports = function (grunt) {
                         {
                             match: /<link rel="stylesheet" type="text\/css" href="css\/vis-common-user\.css" \/>/,
                             replacement: '<link rel="stylesheet" type="text/css" href="file:///data/data/net.iobroker.vis/files/vis-common-user.css" />'
+                        },
+						{
+                            match: /<script type="text\/javascript" src="\/lib\//g,
+                            replacement: '<script type="text/javascript" src="file:///android_asset/www/lib/'
                         }
                     ]
                 },
@@ -96,6 +108,14 @@ module.exports = function (grunt) {
                                 'www/index.html'
                         ],
                         dest:    'www'
+                    },
+					{
+                        expand:  true,
+                        flatten: true,
+                        src:     [
+                                'www/flot/index.html'
+                        ],
+                        dest:    'www/flot'
                     }
                 ]
             }
@@ -167,6 +187,21 @@ module.exports = function (grunt) {
                     }
                 ]
             },
+		 flot: {
+                files: [
+                    // includes files within path
+                    {
+                        expand: true,
+                        cwd: 'node_modules/iobroker.flot/www/',
+                        src: [
+                            '**',
+                            '!edit.html'
+                        ],
+                        dest: 'www/flot'
+                    }
+                ]
+            },
+
             web: {
                 files: [
                     {
