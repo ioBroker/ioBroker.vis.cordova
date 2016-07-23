@@ -19,6 +19,7 @@ Fast alle Einstellungen sind optional mit Ausnahme von "WIFI Socket" und "Projec
 ### Buttons
 - *Reload* - Läd die Web-Engine neu, als würde man die Schaltfläche "Aktualisieren" im Browser drücken.
 - *Re-Sync* - Wenn einige Änderungen an dem vis-Projekt vorgenommen wurden, wird es **nicht** automatisch in die App geladen. Dazu, muss die "Re-Sync" Taste gedrückt werden. Alle Projektdateien und Bilder werden auf dem Smartphone neu geladen. Das wird gemacht, um den mobilen Datenverkehr zu verringern und den Start der Anwendung zu beschleunigen. Das lesen der Dateien von der internen SD-Card ist viel schneller, als vom ioBroker Server.
+Wenn die Option *Schlafen, falls inaktiv* aktiviert ist, darf während der Synchronisation das Telefon nicht inaktiv werden, da ansonsten die Socket.io-Verbindung unterbrochen und die Synchronisation abgebrochen wird.
 - *OK* - Alle Änderungen speichern und die WEB-Engine neu starten. Es wird keine Synchronisation durchgeführt, wenn das Projekt noch nicht definiert wurde. Um Änderungen vom ioBroker vis-Projekt neu zu laden benutze die "Re-Sync" -Taste.
 - *Cancel* - Alle Änderungen verwerfen und Dialog schließen.
 
@@ -55,7 +56,7 @@ Folgende Einstellungen sind nur aktiv, wenn einige SSID angegeben sind und das G
 ### Zugriff auf Bilder und andere Ressourcen
 Die App kopiert bei der Synchronisation die Views des ausgewählten Projekts und alle darin referenzierten Bilder lokal auf das Mobiltelefon (Gerätespeicher).
 Folgende Inhalte werden kopiert:
-- Alle Dateien im ausgewählten Projektverzeichnis
+- Alle Dateien im ausgewählten Projektverzeichnis mit den Dateiendungen ```.png .jpg .jpeg .gif```
 - Alle Bilder mit den Dateiendungen ```.png .jpg .jpeg .gif``` sowie Dateien mit der Endung ```.wav .mp3 .bmp .svg```, welche sich ein einem Adapterverzeichnis unter [iobroker-datenverzeichnis]/files/ befinden und im View angegeben sind und bei denen im ersten Unterverzeichnis unter [iobroker-datenverzeichnis]/files/ ein "." im Verzeichnisnamen ist.
 
 Damit die App die Pfade richtig ersetzt, müssen die Dateien mit einem absoluten lokalen Pfad angegeben werden (z.B. /vis./main/img/test.png). Relative Pfadangaben werden nicht unterstützt. Wenn Pfade in den Widgets in HTML eingebettet ist, muss die Schreibweise genau dem folgenden Muster entsprechen ```<img src='/vis.0/main...'``` oder ```<img src="/vis.0/main..."```. Andere Schreibweisen werden nicht erkannt. 
@@ -68,3 +69,24 @@ Die Ersetzung von Pfaden zur Laufzeit beschränkt sich zurzeit auf die folgenden
 
 Da die Werte erst zur Laufzeit übermittelt werden, sind die Dateien nur dann lokal vohanden, falls sie sich im Projektverzeichnis befinden oder bereits durch ein statisch konfiguriertes Widget referenziert wurden. Es findet kein Nachladen fehlender Bilder statt.
 Die als separate Adapter angebotenen Icon-Sammlungen sind kein Bestandteil der App. Falls Bilder aus diesen Sammlungen in der App angezeigt werden sollen, so müssen diese zuvor in das Projektverzeichnis kopiert werden.
+
+Auf andere Ressourcen kann innerhalb der App zugegriffen werden, wenn diese in den Views mit einem vollständigen Pfad beginnend mit http:// oder https:// angegeben werden. Diese Dateien werden nicht bei der Synchronsitation lokal auf das Gerät geladen sondern erst bei der Anzeige der Views direkt vom jeweiligen Server.
+Sollte der Zugriff auf die Datei mittels http-Authentifizierung gesichert sein, so können die Credentials in der folgenden Form in der URL eingebettet werden:
+```https://[username]:[password]@[meine Domain]/vis.0/main/...```
+
+### Verwendung von Web-Modulen anderer Adapter als VIS
+Auch andere Adapter als VIS können Web-Inhalte bereitstellen. Diese Inhalte können innerhalb der VIS-Views in iFrames angezeigt werden. Dies trifft insbesondere auf die beiden Adapter Flot und Rickshaw Charts zu. 
+
+Zurzeit sind nur die Client-Bestandteile der folgenden Adapter in die App integriert:
+- Flot
+
+Um die lokale Version von Flot nutzen zu können, muss die Quelle des iFrame mit ```/lot/index.html?``` beginnen. 
+
+Andere Inhalte und auch die Inhalte anderer Server wie z.B. Webcams können ebenfalls angezeigt werden, wenn hierfür eine vollständige URL zum entsprechenden Server verwendet wird.
+
+### Beenden der App
+Die App kann wie bei Android überlich über die Home-Taste verlassen werden. In diesem Fall läuft sie jedoch im Hintergrund weiter und verbraucht weiterhin Datenvolumen und Akku.  Durch die Option *Schlafen, falls inaktiv* kann der Verbrauch reduziert werden. In diesem Fall wird die Socket.io-Verbindung jedoch jedes mal unterbrochen, wenn die App inaktiv wird.
+Zusätzlich bietet die App eine Möglichkeit, diese vollständig zu beenden. Hierfür ist in den Views ein basic static link-Widget einzufügen, welches als Link den folgenden Text enthält: ```javascript:logout ()```
+
+
+
