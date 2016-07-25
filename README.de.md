@@ -55,20 +55,20 @@ Mobile Verbindung
 - *Schlafen, falls inaktiv* - Wenn die vis App nicht angezeigt aber noch immer im Hintergrund ausgeführt wird, kann mit dieser Option die Kommunikationsverbindung zum Server unterbrochen werden. In diesem Fall werden keine Aktualisierungen oder Kommandos an die App gesendet, bis die App wieder aktiviert wird. Nach der Aktivierung der App erfolgt ein erneuter Verbindungsaufbau und Abruf der Werte vom Server.
 
 ### Spracherkennung
-In der App kann eine Spracherkennung aktiviert werden. Wenn diese Option aktiv ist, versucht die App durchgehend Kommandos zu erkennen. Um falsch erkannte Kommandos aus normalen Unterhaltungen zu vermeiden wird ein Schlüsselwort zur Einleitung von Kommandos verwendet. Die Schlüsselworte können in dne Einstellungen eingegeben werden.
+In der App kann eine Spracherkennung aktiviert werden. Wenn diese Option aktiv ist, versucht die App durchgehend Kommandos zu erkennen. Um falsch erkannte Kommandos aus normalen Unterhaltungen zu vermeiden wird ein Schlüsselwort zur Einleitung von Kommandos verwendet. Die Schlüsselworte können in den Einstellungen eingegeben werden.
 Bitte wählen sie ein Wort aus, dass gut erkannt werden kann und im normalen Sprachgebrauch nicht allzu gebräuchlich ist.
 
 ioBroker verwendet den text2command adapter zur Auswertung der empfangenden Kommandos. Eine Instanz dieses Adapters muss hierfür auf dem Server installiert und eingerichtet sein. Bitte lesen sie die Beschreibung für diesen Adapter unter [github](https://github.com/ioBroker/ioBroker.text2command) oder (iobroker.net)[http://iobroker.net].
 
-*Bemerkung*: Wenn keine Offline-Spracherkennung aktiviert ist, wird die gesamte Sprachaufzeichung an die Google Server gesende. Anleitungen zur Aktivierung der Offline-Spracherkennung finden sie unter [link](http://stackandroid.com/tutorial/how-to-enable-offline-speech-to-text-in-android/).
+*Bemerkung*: Wenn keine Offline-Spracherkennung aktiviert ist, wird die gesamte Sprachaufzeichung an die Google Server gesendet. Anleitungen zur Aktivierung der Offline-Spracherkennung finden sie unter [link](http://stackandroid.com/tutorial/how-to-enable-offline-speech-to-text-in-android/).
 
-*Bemerkung*: Bei aktivierter Spracherkennung erzeugt das Mobiltelefon alle 10.15 Sekunden einen Ton. Um dies zu verhindern wird die Benachrichtigungslautstärke auf 0 gesetzt. Sie können weiterhin die Textausgabe mit "text2speech" verwenden und mit dem "playSound" Kommando Audio-Ausgaben erzeugen.
+*Bemerkung*: Bei aktivierter Spracherkennung erzeugt das Mobiltelefon alle 10-15 Sekunden einen Ton. Um dies zu verhindern wird die Benachrichtigungslautstärke auf 0 gesetzt. Sie können weiterhin die Textausgabe mit "text2speech" verwenden und mit dem "playSound" Kommando Audio-Ausgaben erzeugen.
 
 - *Spracherkennung aktiviert* - legt fest, ob die Spracherkennung aktiviert wurde
 - *Schlüsselwort* - Wenn im erkannten Satz oder Wort das angegebene Schlüsselwort gefunden wird, erfolgt die Weiterleitung des empfangenden Texts an die "text2command" Instanz zur weiteren Analyse. Es ist nicht erforderlich, dass das Schlüsselwort zu Beginn des Satzes gesagt wird.
 - *Text2command-Instanz* - Nummer der text2command Instanz auf dem Server. Im Normalfall 0.
-- *Sprachlautstärke* - Lautstärle für Antworen und für text-to-speech Kommandos. Für die restliche Zeit wird die Lautstärke auf 0 gesetzt.
-- *Default Raum* - Legt das Mobiltelefonauf einen spezifischen Raum fest. Wenn hier ein Raum angegeben wird ist es nicht mehr erforderlich, im Kommando den Raum anzugeben. in sleeping room.  Statt "Schalte das Licht im Schlafzimmer an" reicht es, "Schalte das Licht an" zu sagen. Wenn text2command keinen Raum im erkannten Text finden kann, wird der konfigurierte Default Raum verwendet.
+- *Sprachlautstärke* - Lautstärke für Antworten und für text-to-speech Kommandos. Für die restliche Zeit wird die Lautstärke auf 0 gesetzt.
+- *Default Raum* - Legt das Mobiltelefon auf einen spezifischen Raum fest. Wenn hier ein Raum angegeben wird ist es nicht mehr erforderlich, im Kommando den Raum anzugeben. in sleeping room.  Statt "Schalte das Licht im Schlafzimmer an" reicht es, "Schalte das Licht an" zu sagen. Wenn text2command keinen Raum im erkannten Text finden kann, wird der konfigurierte Default Raum verwendet.
 - *Antworten mit TTS* - wenn diese Option aktiviert wurde werden Antworten mit Hilfe der text-to-speech engine ausgegeben. Hierfür muss im Mobiltelefon eine  TTS Engine eingerichtet sein.
 
 ### Visualisierung und Verhalten
@@ -86,7 +86,7 @@ Folgende Inhalte werden kopiert:
 - Alle Bilder mit den Dateiendungen ```.png .jpg .jpeg .gif``` sowie Dateien mit der Endung ```.wav .mp3 .bmp .svg```, welche sich ein einem Adapterverzeichnis unter [iobroker-Datenverzeichnis]/files/ befinden und im View angegeben sind und bei denen im ersten Unterverzeichnis unter [iobroker-Datenverzeichnis]/files/ ein "." im Verzeichnisnamen ist.
 
 Damit die App die Pfade richtig ersetzt, müssen die Dateien mit einem absoluten lokalen Pfad angegeben werden (z.B. /vis.0/main/img/test.png). Relative Pfadangaben werden nicht unterstützt. Wenn Pfade in den Widgets in HTML eingebettet ist, muss die Schreibweise genau dem folgenden Muster entsprechen ```... src='/vis.0/main...'``` oder ```... src="/vis.0/main..."```. Andere Schreibweisen werden nicht erkannt. 
-Zusätzlich kann in den Einstellungen eine *Substitution URL* angegben werden. Hierbei handelt es sich um die externe URL des Webservers von VIS. Alle URL, die mit der angegebenen Zeichenfolge anfangen, werden ebenfalls so behandelt, als ob es lokale Dateien sind (z.B. ```https://[meine Domain]/visweb```).
+Zusätzlich kann in den Einstellungen eine *Substitution URL* angegeben werden. Hierbei handelt es sich um die externe URL des Webservers von VIS. Alle URL, die mit der angegebenen Zeichenfolge anfangen, werden ebenfalls so behandelt, als ob es lokale Dateien sind (z.B. ```https://[meine Domain]/visweb```).
 
 Die Ersetzung von Pfaden zur Laufzeit beschränkt sich zurzeit auf die folgenden Widgets:
 - basic string (unescaped)
@@ -95,9 +95,9 @@ Die Ersetzung von Pfaden zur Laufzeit beschränkt sich zurzeit auf die folgenden
 
 Da die Werte erst zur Laufzeit übermittelt werden, sind die Dateien nur dann lokal vorhanden, falls sie sich im Projektverzeichnis befinden oder bereits durch ein statisch konfiguriertes Widget referenziert wurden. Es findet kein Nachladen fehlender Bilder statt.
 
-Die als separate Adapter angebotenen Icon-Sammlungen sind kein Bestandteil der App, aber die werden auch mitkopiert, wenn die Dateien in den View referenziert werden.
+Die als separate Adapter angebotenen Icon-Sammlungen sind kein Bestandteil der App, aber die werden auch mit kopiert, wenn die Dateien in den View referenziert werden.
 
-Auf andere Ressourcen kann innerhalb der App zugegriffen werden, wenn diese in den Views mit einem vollständigen Pfad beginnend mit http:// oder https:// angegeben werden. Diese Dateien werden nicht bei der Synchronsitation lokal auf das Gerät geladen sondern erst bei der Anzeige der Views direkt vom jeweiligen Server.
+Auf andere Ressourcen kann innerhalb der App zugegriffen werden, wenn diese in den Views mit einem vollständigen Pfad beginnend mit http:// oder https:// angegeben werden. Diese Dateien werden nicht bei der Synchronsitation lokal auf das Gerät geladen, sondern erst bei der Anzeige der Views direkt vom jeweiligen Server.
 Sollte der Zugriff auf die Datei mittels http-Authentifizierung gesichert sein, so können die Credentials in der folgenden Form in der URL eingebettet werden:
 ```https://[username]:[password]@[meine Domain]/vis.0/main/...```
 
