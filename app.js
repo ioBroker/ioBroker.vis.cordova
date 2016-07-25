@@ -166,6 +166,9 @@ var app = {
     speaking:       false,
     connected:      false,
 	totalFileCount: 0,
+	exitApp:		false,
+	intval:	    setInterval(function (){app.exitApp = false}, 1000),
+	
     // Application Constructor
     initialize:     function () {
         if (this.settings.systemLang.indexOf('-') != -1) {
@@ -179,9 +182,22 @@ var app = {
     //
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
-    onBackButton:   function () {
+    onBackButtonSettings:   function () {
         $('#cordova_cancel').trigger('click');
     },
+    onBackButtonGeneral:   function (e) {
+        e.preventDefault();
+        if (app.exitApp) {
+            clearInterval(app.intval);
+            logout();
+        }
+        else {
+            app.exitApp = true;
+            history.back(1);
+        } 
+    },
+
+	
     bindEvents:     function () {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
         document.addEventListener('pause', this.onDevicePause.bind(this), false);
@@ -420,7 +436,8 @@ var app = {
     },
 
     onDeviceReady:  function () {
-        this.receivedEvent('deviceready');
+		this.receivedEvent('deviceready');
+		document.addEventListener("backbutton",this.onBackButtonGeneral , false);
         this.settings.socketUrl = this.settings.socketUrl.toLowerCase();
 
         if (!this.settings.socketUrl.match(/^http:\/\/|^https:\/\//i)) {
@@ -432,7 +449,6 @@ var app = {
             this.readLocalFile('main/imgavSony.png', function (error, result) {
                 if (error) console.error(error);
                 if (!result || this.settings.resync) {
-
                 }
             }.bind(this));
         }.bind(this));*/
@@ -1565,7 +1581,7 @@ var app = {
 
         var that = this;
         $('#cordova_menu').click(function () {
-            document.addEventListener('backbutton', that.onBackButton, false);
+            document.addEventListener('backbutton', that.onBackButtonSettings, false);
 
             // resize viewport
             $('meta[name=viewport]').attr('content',
@@ -1651,7 +1667,7 @@ var app = {
             });
 
             $('#cordova_cancel').unbind('click').click(function () {
-                document.removeEventListener('backbutton', that.onBackButton, false);
+                document.removeEventListener('backbutton', that.onBackButtonSettings, false);
                 // reset view port scale
                 $(window).trigger('orientationchange');
                 $('#cordova_dialog_bg').hide();
@@ -1659,7 +1675,7 @@ var app = {
             }).css({height: '2em'});
 
             $('#cordova_reload').unbind('click').click(function () {
-                document.removeEventListener('backbutton', that.onBackButton, false);
+                document.removeEventListener('backbutton', that.onBackButtonSettings, false);
                 var changed = false;
                 // save settings
                 $('#cordova_dialog .cordova-setting').each(function() {
@@ -1687,7 +1703,7 @@ var app = {
             }).css({height: '2em'});
 
             $('#cordova_resync').unbind('click').click(function () {
-                document.removeEventListener('backbutton', that.onBackButton, false);
+                document.removeEventListener('backbutton', that.onBackButtonSettings, false);
                 var changed = false;
 
                 // save settings
@@ -1717,7 +1733,7 @@ var app = {
             }).css({height: '2em'});
 
             $('#cordova_ok').unbind('click').click(function () {
-                document.removeEventListener('backbutton', that.onBackButton, false);
+                document.removeEventListener('backbutton', that.onBackButtonSettings, false);
                 if ($('#cordova-password').val() != $('#cordova-password-repeat').val()) {
                     window.alert(_('WIFI password repeat does not equal to repeat'));
                     return;
