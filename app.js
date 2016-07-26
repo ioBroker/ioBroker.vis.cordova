@@ -167,7 +167,6 @@ var app = {
     connected:      false,
 	totalFileCount: 0,
 	exitApp:		false,
-	intval:	    setInterval(function (){app.exitApp = false}, 1000),
 	
     // Application Constructor
     initialize:     function () {
@@ -186,13 +185,14 @@ var app = {
         $('#cordova_cancel').trigger('click');
     },
     onBackButtonGeneral:   function (e) {
+		var that=this;
         e.preventDefault();
-        if (app.exitApp) {
-            clearInterval(app.intval);
+        if (that.exitApp) {
             logout();
         }
         else {
-            app.exitApp = true;
+            that.exitApp = true;
+			setTimeout(function (){that.exitApp = false}, 1000),
             history.back(1);
         } 
     },
@@ -437,7 +437,7 @@ var app = {
 
     onDeviceReady:  function () {
 		this.receivedEvent('deviceready');
-		document.addEventListener("backbutton",this.onBackButtonGeneral , false);
+		document.addEventListener('backbutton',this.onBackButtonGeneral , false);
         this.settings.socketUrl = this.settings.socketUrl.toLowerCase();
 
         if (!this.settings.socketUrl.match(/^http:\/\/|^https:\/\//i)) {
@@ -1581,6 +1581,7 @@ var app = {
 
         var that = this;
         $('#cordova_menu').click(function () {
+			document.removeEventListener("backbutton",that.onBackButtonGeneral, false);
             document.addEventListener('backbutton', that.onBackButtonSettings, false);
 
             // resize viewport
@@ -1668,6 +1669,7 @@ var app = {
 
             $('#cordova_cancel').unbind('click').click(function () {
                 document.removeEventListener('backbutton', that.onBackButtonSettings, false);
+				document.addEventListener('backbutton',that.onBackButtonGeneral, false);
                 // reset view port scale
                 $(window).trigger('orientationchange');
                 $('#cordova_dialog_bg').hide();
@@ -1676,6 +1678,7 @@ var app = {
 
             $('#cordova_reload').unbind('click').click(function () {
                 document.removeEventListener('backbutton', that.onBackButtonSettings, false);
+				document.addEventListener('backbutton',that.onBackButtonGeneral, false);
                 var changed = false;
                 // save settings
                 $('#cordova_dialog .cordova-setting').each(function() {
@@ -1704,6 +1707,7 @@ var app = {
 
             $('#cordova_resync').unbind('click').click(function () {
                 document.removeEventListener('backbutton', that.onBackButtonSettings, false);
+				document.addEventListener('backbutton',that.onBackButtonGeneral, false);
                 var changed = false;
 
                 // save settings
