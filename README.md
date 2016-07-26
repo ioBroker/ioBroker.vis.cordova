@@ -120,7 +120,13 @@ Other content and also the content of other servers such as Webcams can also be 
 
 ### Exit of the App
 The app can be closed with the home button. However, in this case, the app runs in the background and continues to consume data volume and battery. The option *Sleep in background* can reduce the consumption. In this case, the socket.io connection is interrupted when the app is inactive.
+If you close the app by pressing the back button trice within one second, the app will be stopped completely.
 In addition, the app provides a way to terminate completely. For this purpose, you can insert a basic static link widget in your views containing the following link: ```javascript:logout ()```
+You find here such a Widget to import in VIS:
+
+```
+[{"tpl":"tplIconLink","data":{"visibility-cond":"==","visibility-val":1,"href":"javascript:logout ();","target":"_self","text":"","views":null,"gestures-offsetX":0,"gestures-offsetY":0,"signals-cond-0":"==","signals-val-0":true,"signals-icon-0":"/vis/signals/lowbattery.png","signals-icon-size-0":0,"signals-blink-0":false,"signals-horz-0":0,"signals-vert-0":0,"signals-hide-edit-0":false,"signals-cond-1":"==","signals-val-1":true,"signals-icon-1":"/vis/signals/lowbattery.png","signals-icon-size-1":0,"signals-blink-1":false,"signals-horz-1":0,"signals-vert-1":0,"signals-hide-edit-1":false,"signals-cond-2":"==","signals-val-2":true,"signals-icon-2":"/vis/signals/lowbattery.png","signals-icon-size-2":0,"signals-blink-2":false,"signals-horz-2":0,"signals-vert-2":0,"signals-hide-edit-2":false,"src":"/icons-material-png/action/ic_exit_to_app_black_48dp.png","name":"","class":""},"style":{"left":"1232px","top":"755px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"34px","height":"32px"},"widgetSet":"jqui"}]
+```
 
 
 ## How to build

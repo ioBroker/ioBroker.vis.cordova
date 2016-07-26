@@ -113,4 +113,67 @@ Andere Inhalte und auch die Inhalte anderer Server wie z.B. Webcams können eben
 
 ### Beenden der App
 Die App kann wie bei Android üblich über die Home-Taste verlassen werden. In diesem Fall läuft sie jedoch im Hintergrund weiter und verbraucht weiterhin Datenvolumen und Akku.  Durch die Option *Schlafen, falls inaktiv* kann der Verbrauch reduziert werden. In diesem Fall wird die Socket.io-Verbindung jedoch jedes mal unterbrochen, wenn die App inaktiv wird.
+Die App kann auch durch zweimaliges schnelles Drücken auf die Zurücktaste geschlossen werden. In diesem Fall wird die App vollständig geschlossen.
 Zusätzlich bietet die App eine Möglichkeit, diese vollständig zu beenden. Hierfür ist in den Views ein basic static link-Widget einzufügen, welches als Link den folgenden Text enthält: ```javascript:logout ()```
+
+Nachfolgend befindet sich ein entsprechendes Widget zum Import in VIS:
+
+```
+[{"tpl":"tplIconLink","data":{"visibility-cond":"==","visibility-val":1,"href":"javascript:logout ();","target":"_self","text":"","views":null,"gestures-offsetX":0,"gestures-offsetY":0,"signals-cond-0":"==","signals-val-0":true,"signals-icon-0":"/vis/signals/lowbattery.png","signals-icon-size-0":0,"signals-blink-0":false,"signals-horz-0":0,"signals-vert-0":0,"signals-hide-edit-0":false,"signals-cond-1":"==","signals-val-1":true,"signals-icon-1":"/vis/signals/lowbattery.png","signals-icon-size-1":0,"signals-blink-1":false,"signals-horz-1":0,"signals-vert-1":0,"signals-hide-edit-1":false,"signals-cond-2":"==","signals-val-2":true,"signals-icon-2":"/vis/signals/lowbattery.png","signals-icon-size-2":0,"signals-blink-2":false,"signals-horz-2":0,"signals-vert-2":0,"signals-hide-edit-2":false,"src":"/icons-material-png/action/ic_exit_to_app_black_48dp.png","name":"","class":""},"style":{"left":"1232px","top":"755px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"34px","height":"32px"},"widgetSet":"jqui"}]
+```
+## Benutzerspezifische Anpassungen der App
+Die in diesem Abschnitt beschriebenen Änderungen sind nur für fortgeschrittene Benutzer gedacht, die diese Änderungen auf eigene Gefahr durchführen. 
+
+Die Änderungen erfolgen ausschließlich über Javascript oder Anpassungen in der Projektdatei in VIS. Sollte die App aufgrund fehlerhafter Änderungen nicht mehr funktionieren, so können die lokalen Projektdateien durch Löschen der Anwendungsdaten in den Android Systemeinstellungen gelöscht und die Anwendung hierdurch wieder zurückgesetzt werden.
+
+### Ausblenden des Menü-Button
+Die App blendet oben links einen transparenten Schalter mit drei Punkten ein, um auf die Einstellungsseite zu gelangen. 
+
+Wenn die folgenden Zeilen im VIS-Editor unter **Skripte** eingetragen wird, wird die Fläche ausgeblendet, sobald die Views in der App geladen wurden:
+
+```
+// Menu ausblenden
+if (typeof app !== 'undefined'){
+    $('#cordova_menu').hide();
+  }
+```
+Um auf die Einstellungsseite zu gelangen, muss das Drücken des Schalters nun direkt nach dem Start der App erfolgen, solange der Schalter angezeigt wird. Alternativ kann ein eigenes Widget zum Aufruf der Einstellungsseite in den Views platziert werden.
+
+### Eigener Menü-Button
+Das folgende Widget ruft die Einstellungsseite auf, wenn der View innerhalb der App angezeigt wird:
+
+```
+[{"tpl":"tplIconLink","data":{"visibility-cond":"==","visibility-val":1,"href":"javascript:$('#cordova_menu').trigger('click');","target":"_self","text":"","views":null,"gestures-offsetX":0,"gestures-offsetY":0,"signals-cond-0":"==","signals-val-0":true,"signals-icon-0":"/vis/signals/lowbattery.png","signals-icon-size-0":0,"signals-blink-0":false,"signals-horz-0":0,"signals-vert-0":0,"signals-hide-edit-0":false,"signals-cond-1":"==","signals-val-1":true,"signals-icon-1":"/vis/signals/lowbattery.png","signals-icon-size-1":0,"signals-blink-1":false,"signals-horz-1":0,"signals-vert-1":0,"signals-hide-edit-1":false,"signals-cond-2":"==","signals-val-2":true,"signals-icon-2":"/vis/signals/lowbattery.png","signals-icon-size-2":0,"signals-blink-2":false,"signals-horz-2":0,"signals-vert-2":0,"signals-hide-edit-2":false,"src":"/icons-material-svg/action/ic_build_48px.svg","name":"","gestures-swiping-delta":"-1","class":""},"style":{"left":"1087px","top":"761px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"29px","height":"28px"},"widgetSet":"jqui"}]
+```
+
+### View-Wechsel durch horizontales Streichen über den aktuellen View (swipe)
+Das nachfolgende Javascript ist im VIS-Editor unter **Skripte** eingetragen und im Array die eigenen Views in der Reihenfolge einzutragen, in der der Wechsel erfolgen soll. 
+
+Eine Streichbewegung über den View von rechts nach links wechselt zu dem View, der im Array hinter dem aktuellen View steht.
+Eine Streichbewegung über den View von links nach rechts wechselt zu dem View, der im Array vor dem aktuellen View steht.
+Wenn das Array-Ende bzw. der Anfang erreicht ist, wird wieder mit dem ersten bzw. letzen Eintrag fortgefahren.
+
+```
+var viewOrder = ['View 1','View 2','View 3','View 4','View 5','View 6'];
+
+$(document).on("swipe",function(event){
+
+  event.preventDefault();
+  if (event.originalEvent.touch.delta.x<-200 && event.originalEvent.touch.delta.y>-30&& event.originalEvent.touch.delta.y<30) {
+    if (viewOrder.indexOf (vis.activeView)<viewOrder.length -2)
+      vis.changeView (viewOrder [viewOrder.indexOf (vis.activeView)+1]);
+     else
+      vis.changeView (viewOrder [0]);
+  }
+   else if (event.originalEvent.touch.delta.x>200 && event.originalEvent.touch.delta.y>-30 && event.originalEvent.touch.delta.y<30)  {
+    if (viewOrder.indexOf (vis.activeView)>0)
+      vis.changeView (viewOrder [viewOrder.indexOf (vis.activeView)-1]);
+     else
+      vis.changeView (viewOrder [viewOrder.length - 1]);
+
+   }
+});
+
+```
+
+Wichtig ist, mit der Streichbewegung nicht auf einem Widget sondern möglichst auf dem Hintergrund zu starten, um nicht versehentlich eine Änderung auszulösen.
