@@ -129,7 +129,7 @@ Die Änderungen erfolgen ausschließlich über Javascript oder Anpassungen in de
 ### Ausblenden des Menü-Button
 Die App blendet oben links einen transparenten Schalter mit drei Punkten ein, um auf die Einstellungsseite zu gelangen. 
 
-Wenn die folgenden Zeilen im VIS-Editor unter * Skripte * eingetragen wird, wird die Fläche ausgeblendet, sobald die Views in der App geladen wurden:
+Wenn die folgenden Zeilen im VIS-Editor unter ** Skripte ** eingetragen wird, wird die Fläche ausgeblendet, sobald die Views in der App geladen wurden:
 
 ```
 // Menu ausblenden
@@ -147,7 +147,7 @@ Das folgende Widget ruft die Einstellungsseite auf, wenn der View innerhalb der 
 ```
 
 ### View-Wechsel durch horizontales Streichen über den aktuellen View (swipe)
-Das nachfolgende Javascript ist im VIS-Editor unter * Skripte * eingetragen und im Array die eigenen Views in der Reihenfolge einzutragen, in der der Wechsel erfolgen soll. 
+Das nachfolgende Javascript ist im VIS-Editor unter ** Skripte ** eingetragen und im Array die eigenen Views in der Reihenfolge einzutragen, in der der Wechsel erfolgen soll. 
 
 Eine Streichbewegung über den View von rechts nach links wechselt zu dem View, der im Array hinter dem aktuellen View steht.
 Eine Streichbewegung über den View von links nach rechts wechselt zu dem View, der im Array vor dem aktuellen View steht.
