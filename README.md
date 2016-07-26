@@ -34,7 +34,7 @@ If the option * Sleep in background * is activated, the phone must be active dur
 ### Connectivity
 App can detect via SSID name if the mobile phone in the home (trusted) network or outside of home network and use for home and outside connection the different socket URLs and login data.
 
-Normally in the home network there is no authentication and connection is via HTTP (unsecure) but from outside network the connection goes via https (secure) and with login/password.
+Normally in the home network there is no authentication and connection is via HTTP (insecure) but from outside network the connection goes via https (secure) and with login/password.
 
 - *Connected* - shows if the app is connected with ioBroker server.
 - *WIFI SSID* - name or names (divided by comma) of home SSID to use home credentials for authentication and home URL for connection.
@@ -113,8 +113,9 @@ Other adapters as VIS can also deliver web content. This content can be displaye
 
 Currently, only the client components of the following adapters are integrated in the app:
 - Flot
+- Rickshaw
 
-To use the local version of Flot, the source of the iframe must start with ```/flot/index.html?```. 
+To use the local version of Flot, the source of the iframe must start with ```/flot/index.html?```.
 
 Other content and also the content of other servers such as Webcams can also be shown inside the app, if this is a full URL is used to the server.
 
@@ -125,24 +126,13 @@ In addition, the app provides a way to terminate completely. For this purpose, y
 You find here such a Widget to import in VIS:
 
 ```
-[{"tpl":"tplIconLink","data":{"visibility-cond":"==","visibility-val":1,"href":"javascript:logout ();","target":"_self","text":"","views":null,"gestures-offsetX":0,"gestures-offsetY":0,"signals-cond-0":"==","signals-val-0":true,"signals-icon-0":"/vis/signals/lowbattery.png","signals-icon-size-0":0,"signals-blink-0":false,"signals-horz-0":0,"signals-vert-0":0,"signals-hide-edit-0":false,"signals-cond-1":"==","signals-val-1":true,"signals-icon-1":"/vis/signals/lowbattery.png","signals-icon-size-1":0,"signals-blink-1":false,"signals-horz-1":0,"signals-vert-1":0,"signals-hide-edit-1":false,"signals-cond-2":"==","signals-val-2":true,"signals-icon-2":"/vis/signals/lowbattery.png","signals-icon-size-2":0,"signals-blink-2":false,"signals-horz-2":0,"signals-vert-2":0,"signals-hide-edit-2":false,"src":"/icons-material-png/action/ic_exit_to_app_black_48dp.png","name":"","class":""},"style":{"left":"1232px","top":"755px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"34px","height":"32px"},"widgetSet":"jqui"}]
+[{"tpl":"tplIconLink","data":{"href":"javascript:logout ();","target":"_self","text":"","views":null,"src":"/icons-material-png/action/ic_exit_to_app_black_48dp.png","name":"","class":""},"style":{"left":"10px","top":"10px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"34px","height":"32px"},"widgetSet":"jqui"}]
 ```
 
-
-## How to build
+or in vis versions newer as 0.10.6
 
 ```
-npm install 
-grunt release
-or 
-grunt build
-```
-
-Output is in ```ioBroker.vis.cordova\platforms\android\build\outputs\apk```
-
-To test it on android Handy:
-```
-cordova run android
+[{"tpl":"tplHtmlLogout","data":{"html":"<button>Exit</button>","in_app_close":true},"style":{"left":"10px","top":"10px"},"widgetSet":"basic"}]
 ```
 
 ## Control interface
@@ -251,7 +241,7 @@ With command in javascript adapter you can activate text to speech engine of And
 - (bluefox) allow pictures from other projects
 - (blufeox) change storage to external
 - (bluefox) change settings dialog
-- (bluefox) allow set system volume for speach
+- (bluefox) allow set system volume for speech
 
 ### 0.0.8 (2015-02-23)
 - (bluefox) fix "hide on condition"
@@ -269,10 +259,10 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ![CC BY-NC License](https://github.com/GermanBluefox/DashUI/raw/master/images/cc-nc-by.png)
 
-It is **prohibited** to publish this app or modifications of this app in any kind of mobile application stores (Google App Store, Amazon App Store, ...). 
-Even if the name of the app is modified and it is free of charge you **may not** publish it.
+It is **prohibited** to publish this app or modifications of this app in any kind of mobile application stores (Google App Store, Amazon App Store, ...) or make possible to download the app from some online resources (forums, web sites, ...).
+Even if the name of the app is modified and it is free of charge you **may not** publish it or let others to use it.
 
 Short content:
 Licensees may copy, distribute, display and perform the work and make derivative works based on it only if they give the author or licensor the credits in the manner specified by these.
-Licensees may copy, distribute, display, and perform the work and make derivative works based on it only for noncommercial purposes.
-(Free for non-commercial use).
+Licensees may copy, distribute, display, and perform the work and make derivative works based on it only for personal purposes.
+(Free for personal use).

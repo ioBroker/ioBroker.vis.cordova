@@ -60,25 +60,67 @@ WEB визуализация для платформы ioBroker как прил�
 - *Зум при гор. положении* - тоже самое, что *Зум при верт. положении* только для горизонтального положения.
 
 ### Другие настройки
-- *Замена URL* - if your vis project uses the links for images from some local network URL, that differs from ioBroker URL, you can specify here this URL and all images from this server, that used in the vis project, will be loaded on the mobile phone too.
-- *Идентификатор* - Unique instance ID of this VIS. It is required to send targeted commands to only this vis instance. (See [Control interface](#control-interface) for details)
-- *Спать, если не активно* - If vis app is not shown (but runs in background) you can stop any communication from the vis app to the ioBroker server. In this case the state updates and commands from ioBroker will not be delivered to app if the app runs in background.
+- *Замена URL* - если ваш vis проект содержит ссылки на изображения с локального сетевого URL, но отличного от iobroker URL, то вы можете прописать здесь этот URL и все изображения с этого сервера, которые используются в vis проекте, будут тоже загружены на мобильный телефон.
+- *Идентификатор* - Уникальный ID этого VIS проекта на конкретном мобильном устройстве, если необходимо посылать команды только на этот vis проект. (Описание команд можно найти здесь [Команды интерфейса](#контрольный интерфейс))
+- *Спать, если не активно* - Если vis приложение не показано (но бежит в фоне), то можно прекратить любую коммуникацию vis приложения с iobroker сервером. В этом случае изменения состояний и команды от iobroker не будут доставлены приложению, если приложение бежит в фоновом режиме.
 
 ### Распознавание речи
-You can activate speech recognition from the application. If this option is activated, the app will constantly tries to recognise some commands. To determine if you are speaking with app or with someone else the key word or key phrase can be specified.
-Please select some word that can be good recognised and not used in everyday use.
+Вы можете активировать распознавание речи из приложения. Если эта функция активирована, то приложение будет постоянно пытается распознавать команды. Чтобы определить, говорите ли вы с приложением или с кем-нибудь еще, необходимо указать ключевое слово или фразу.
+Выберите такое слово, которое может быть хорошо распознано и не используется в повседневном быте.
 
-To detect commands in recognised text the text2command adapter will be used. Please read description of this adapter on [github](https://github.com/ioBroker/ioBroker.text2command) or on (iobroker.net)[http://iobroker.net].
-Of course one instance of text2command adapter must be installed.
+Для распознавания команд из текста используется драйвер text2command. Описание этого адаптера можно найти здесь [github](https://github.com/ioBroker/ioBroker.text2command) или на #01[http://iobroker.net].
+Конечно один экземпляр драйвера text2command должен быть установлен и сконфигурирован.
 
 *Заметка*: при распознавании обычно вся записанная речь отсылается на сервера google если не включена оффлайн распознавание. В настройках андроид можно включить оффлайн распознавание так: Настройки->Язык и клавиатура->Голосовой ввод Google->Распознавание речи офлайн, там выбрать языки и загрузить.
 
-*Заметка*: в режиме распознавания система andorid воспроизводит громкий звуковой сигнал каждые 10-15 секунд. Что бы сигнала не было слышно, громкость звука выставляется на 0. При ответе голосом от или при использовании команд "tts"/"playSound" громкость будет выставлятся на предустановленную в натройках и убиратся по окончании проигрывания.
+*Заметка*: в режиме распознавания система android воспроизводит громкий звуковой сигнал каждые 10-15 секунд. Что бы сигнала не было слышно, громкость звука выставляется на 0. При ответе голосом от или при использовании команд "tts"/"playSound" громкость будет выставлятся на предустановленную в натройках и убиратся по окончании проигрывания.
 
 - *Распознавание речи активно* - активировать распознавание речи средством операционной системы телефона.
-- *Ключевое слово* - If in the recognised sentence this word (or phrase) will be found, this text will be sent to "text2command" instance for analyse. It is not required to have keyword on the start of the sentance. You can omit key word in this case all phrases will be sent to text2command for analyse.
+- *Ключевое слово* - Если в распознанном предложении будет найдено это слово (или фраза), то текст будет отправлен "text2command" для анализа. Не обязательно иметь ключевое слово в начале предложения. Вы можете пренебречь ключевым словом, но в этом случае все фразы будут отправлятся text2command для анализа.
 - *Экземпляр Text2command* - номер экземпляра драйвера text2command. Обычно 0.
 - *Громкость речи* - громкость для ответов голосом. Всё остальное время громкость будет установлена на 0.
 - *Комната по умолчанию* - если телефон или планшет постоянно находится в одной комнате, то нет необходимости говорить "Включи свет в кабинете", если планшет находится в кабинете. Можно просто сказать "Включи свет". Что бы это было возможно, нужно задать комнату по умолчанию. Имя комнаты по умолчанию будет использоватся каждый раз, если в сообщении не найдено имя комнаты.
 - *Отвечать голосом* - активирует ответы от text2command голосом. Для этого должна быть настроена TTS система на телефоне.
 
+### Access to images and other resources
+The App copies the view file of the selected project and all referenced images during the synchronization to the phone (internal memory). There is no automatic update so you have to restart the re-synchronization manually.
+The following content will be copied to the phone:
+- The view files and all other files in the directory of the chosen vis project with one of the following file extensions: ```.png .jpg .jpeg .gif```
+- All image files with file extension ```.png .jpg .jpeg .gif``` and files with file extension ```.wav .mp3 .bmp .svg```, which are in a adapter directory below [iobroker data directory]/files/ and which are referenced inside the view definition file of the chosen vis project. The fist sub directory below [iobroker data directory]/files/ must contain the char "." in his name otherwise the files inside will not be copied.
+
+To allow the app to replace the paths correctly, the files must be specified with an absolute local path (for example, /vis.0/main/img/test.png). Relative paths are not supported. If paths to resources are embedded in HTML inside widgets, the syntax must be exactly match the following pattern  ```... src='/vis.0/main...'``` or ```... src ="/vis.0/main..."```. Other notations are not recognized.
+Additionally you can configure an *Substitution URL* in the settings dialog. This URL points to the external URL of the Web server of VIS or another local web server. All found references to URL found in the view definition which starts with the configured Test are downloaded to the device and the URL will be changed to the local path during the synchronization. Please note that this substitution is not implemented for embedded links in html code(e.g. ```https://[your domain]/visweb```).
+
+The replacement of paths at runtime is currently limited to the following widgets:
+- basic string (unescaped)
+- basic string src
+- basic json table
+
+Since the values are transmitted at runtime, the files are only transferred to the device if they are located in the project directory or have been referenced by another statically configured widget. There is no load mechanism of missing pictures.
+The icon collections offered as separate ioBroker adapter are not part of the app, but will also be copied during the synchronization phase if the images are referenced in the views.
+
+Your can access other resources within the app if you use full paths starting with http:// or https://. These files are not loaded locally during the synchronization but loaded directly from the respective server via http:// or https:// if the view is shown in the app.
+If you use a reverse proxy with http authentication, the credentials can be embedded in the URLin the following form:
+```https://[username]:[password]@[my domain]/vis.0/main/...```
+
+
+### Using Web modules of other adapters as VIS
+Other adapters as VIS can also deliver web content. This content can be displayed within the vis views in iframes. This is particularly true for the adapters Flot and Rickshaw charts.
+
+Currently, only the client components of the following adapters are integrated in the app:
+- Flot
+- Rickshaw
+
+To use the local version of Flot, the source of the iframe must start with ```/flot/index.html?```.
+
+Other content and also the content of other servers such as Webcams can also be shown inside the app, if this is a full URL is used to the server.
+
+### Exit of the App
+The app can be closed with the home button. However, in this case, the app runs in the background and continues to consume data volume and battery. The option *Sleep in background* can reduce the consumption. In this case, the socket.io connection is interrupted when the app is inactive.
+If you close the app by pressing the back button trice within one second, the app will be stopped completely.
+In addition, the app provides a way to terminate completely. For this purpose, you can insert a basic static link widget in your views containing the following link: ```javascript:logout ()```
+You find here such a Widget to import in VIS:
+
+```
+[{"tpl":"tplIconLink","data":{"visibility-cond":"==","visibility-val":1,"href":"javascript:logout ();","target":"_self","text":"","views":null,"gestures-offsetX":0,"gestures-offsetY":0,"signals-cond-0":"==","signals-val-0":true,"signals-icon-0":"/vis/signals/lowbattery.png","signals-icon-size-0":0,"signals-blink-0":false,"signals-horz-0":0,"signals-vert-0":0,"signals-hide-edit-0":false,"signals-cond-1":"==","signals-val-1":true,"signals-icon-1":"/vis/signals/lowbattery.png","signals-icon-size-1":0,"signals-blink-1":false,"signals-horz-1":0,"signals-vert-1":0,"signals-hide-edit-1":false,"signals-cond-2":"==","signals-val-2":true,"signals-icon-2":"/vis/signals/lowbattery.png","signals-icon-size-2":0,"signals-blink-2":false,"signals-horz-2":0,"signals-vert-2":0,"signals-hide-edit-2":false,"src":"/icons-material-png/action/ic_exit_to_app_black_48dp.png","name":"","class":""},"style":{"left":"1232px","top":"755px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"34px","height":"32px"},"widgetSet":"jqui"}]
+```

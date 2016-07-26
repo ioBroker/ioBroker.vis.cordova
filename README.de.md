@@ -13,7 +13,7 @@ Die Ports und der ioBroker Server muss vom Mobiltelefon erreichbar sein.
 Installiere die App über App Store. Nachdem die Anwendung zum ersten Mal starten sollte der Einstellungsdialog automatisch geöffnet werden. Um die Arbeit mit der App zu starten öffne die Einstellungen.
 
 Um die Einstellungen anzuzeigen, drücke die halbtransparenten Schaltfläche in der linken oberen Ecke.
-! [Settings] (img / menu.png)
+![Settings](img/menu.png)
 
 ## Einstellungen
 Fast alle Einstellungen sind optional mit Ausnahme von "WIFI Socket" und "Project".
@@ -85,7 +85,7 @@ Folgende Inhalte werden kopiert:
 - Alle Dateien im ausgewählten Projektverzeichnis mit den Dateiendungen ```.png .jpg .jpeg .gif```
 - Alle Bilder mit den Dateiendungen ```.png .jpg .jpeg .gif``` sowie Dateien mit der Endung ```.wav .mp3 .bmp .svg```, welche sich ein einem Adapterverzeichnis unter [iobroker-Datenverzeichnis]/files/ befinden und im View angegeben sind und bei denen im ersten Unterverzeichnis unter [iobroker-Datenverzeichnis]/files/ ein "." im Verzeichnisnamen ist.
 
-Damit die App die Pfade richtig ersetzt, müssen die Dateien mit einem absoluten lokalen Pfad angegeben werden (z.B. /vis.0/main/img/test.png). Relative Pfadangaben werden nicht unterstützt. Wenn Pfade in den Widgets in HTML eingebettet ist, muss die Schreibweise genau dem folgenden Muster entsprechen ```... src='/vis.0/main...'``` oder ```... src="/vis.0/main..."```. Andere Schreibweisen werden nicht erkannt. 
+Damit die App die Pfade richtig ersetzt, müssen die Dateien mit einem absoluten lokalen Pfad angegeben werden (z.B. /vis.0/main/img/test.png). Relative Pfadangaben werden nicht unterstützt. Wenn Pfade in den Widgets in HTML eingebettet ist, muss die Schreibweise genau dem folgenden Muster entsprechen ```... src='/vis.0/main...'``` oder ```... src="/vis.0/main..."```. Andere Schreibweisen werden nicht erkannt.
 Zusätzlich kann in den Einstellungen eine *Substitution URL* angegeben werden. Hierbei handelt es sich um die externe URL des Webservers von VIS. Alle URL, die mit der angegebenen Zeichenfolge anfangen, werden ebenfalls so behandelt, als ob es lokale Dateien sind (z.B. ```https://[meine Domain]/visweb```).
 
 Die Ersetzung von Pfaden zur Laufzeit beschränkt sich zurzeit auf die folgenden Widgets:
@@ -102,12 +102,13 @@ Sollte der Zugriff auf die Datei mittels http-Authentifizierung gesichert sein, 
 ```https://[username]:[password]@[meine Domain]/vis.0/main/...```
 
 ### Verwendung von Web-Modulen anderer Adapter als VIS
-Auch andere Adapter als VIS können Web-Inhalte bereitstellen. Diese Inhalte können innerhalb der VIS-Views in iFrames angezeigt werden. Dies trifft insbesondere auf die beiden Adapter Flot und Rickshaw Charts zu. 
+Auch andere Adapter als VIS können Web-Inhalte bereitstellen. Diese Inhalte können innerhalb der VIS-Views in iFrames angezeigt werden. Dies trifft insbesondere auf die beiden Adapter Flot und Rickshaw Charts zu.
 
 Zurzeit sind nur die Client-Bestandteile der folgenden Adapter in die App integriert:
 - Flot
+- Rickshaw
 
-Um die lokale Version von Flot nutzen zu können, muss die Quelle des iFrame mit ```/flot/index.html?``` beginnen. 
+Um die lokale Version von Flot nutzen zu können, muss die Quelle des iFrame mit ```/flot/index.html?``` beginnen.
 
 Andere Inhalte und auch die Inhalte anderer Server wie z.B. Webcams können ebenfalls angezeigt werden, wenn hierfür eine vollständige URL zum entsprechenden Server verwendet wird.
 
@@ -119,35 +120,41 @@ Zusätzlich bietet die App eine Möglichkeit, diese vollständig zu beenden. Hie
 Nachfolgend befindet sich ein entsprechendes Widget zum Import in VIS:
 
 ```
-[{"tpl":"tplIconLink","data":{"visibility-cond":"==","visibility-val":1,"href":"javascript:logout ();","target":"_self","text":"","views":null,"gestures-offsetX":0,"gestures-offsetY":0,"signals-cond-0":"==","signals-val-0":true,"signals-icon-0":"/vis/signals/lowbattery.png","signals-icon-size-0":0,"signals-blink-0":false,"signals-horz-0":0,"signals-vert-0":0,"signals-hide-edit-0":false,"signals-cond-1":"==","signals-val-1":true,"signals-icon-1":"/vis/signals/lowbattery.png","signals-icon-size-1":0,"signals-blink-1":false,"signals-horz-1":0,"signals-vert-1":0,"signals-hide-edit-1":false,"signals-cond-2":"==","signals-val-2":true,"signals-icon-2":"/vis/signals/lowbattery.png","signals-icon-size-2":0,"signals-blink-2":false,"signals-horz-2":0,"signals-vert-2":0,"signals-hide-edit-2":false,"src":"/icons-material-png/action/ic_exit_to_app_black_48dp.png","name":"","class":""},"style":{"left":"1232px","top":"755px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"34px","height":"32px"},"widgetSet":"jqui"}]
+[{"tpl":"tplIconLink","data":{"href":"javascript:logout ();","target":"_self","text":"","views":null,"src":"/icons-material-png/action/ic_exit_to_app_black_48dp.png","name":"","class":""},"style":{"left":"10px","top":"10px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"34px","height":"32px"},"widgetSet":"jqui"}]
 ```
+
+oder mit vis > 0.10.6
+
+```
+[{"tpl":"tplHtmlLogout","data":{"html":"<button>Schließen</button>","in_app_close":true},"style":{"left":"10px","top":"10px"},"widgetSet":"basic"}]
+```
+
 ## Benutzerspezifische Anpassungen der App
-Die in diesem Abschnitt beschriebenen Änderungen sind nur für fortgeschrittene Benutzer gedacht, die diese Änderungen auf eigene Gefahr durchführen. 
+Die in diesem Abschnitt beschriebenen Änderungen sind nur für fortgeschrittene Benutzer gedacht, die diese Änderungen auf eigene Gefahr durchführen.
 
 Die Änderungen erfolgen ausschließlich über Javascript oder Anpassungen in der Projektdatei in VIS. Sollte die App aufgrund fehlerhafter Änderungen nicht mehr funktionieren, so können die lokalen Projektdateien durch Löschen der Anwendungsdaten in den Android Systemeinstellungen gelöscht und die Anwendung hierdurch wieder zurückgesetzt werden.
 
 ### Ausblenden des Menü-Button
-Die App blendet oben links einen transparenten Schalter mit drei Punkten ein, um auf die Einstellungsseite zu gelangen. 
+Die App blendet oben links einen transparenten Schalter mit drei Punkten ein, um auf die Einstellungsseite zu gelangen.
 
 Wenn die folgenden Zeilen im VIS-Editor unter **Skripte** eingetragen wird, wird die Fläche ausgeblendet, sobald die Views in der App geladen wurden:
 
 ```
 // Menu ausblenden
-if (typeof app !== 'undefined'){
-    $('#cordova_menu').hide();
-  }
+if (typeof app !== 'undefined') $('#cordova_menu').hide();
 ```
+
 Um auf die Einstellungsseite zu gelangen, muss das Drücken des Schalters nun direkt nach dem Start der App erfolgen, solange der Schalter angezeigt wird. Alternativ kann ein eigenes Widget zum Aufruf der Einstellungsseite in den Views platziert werden.
 
 ### Eigener Menü-Button
 Das folgende Widget ruft die Einstellungsseite auf, wenn der View innerhalb der App angezeigt wird:
 
 ```
-[{"tpl":"tplIconLink","data":{"visibility-cond":"==","visibility-val":1,"href":"javascript:$('#cordova_menu').trigger('click');","target":"_self","text":"","views":null,"gestures-offsetX":0,"gestures-offsetY":0,"signals-cond-0":"==","signals-val-0":true,"signals-icon-0":"/vis/signals/lowbattery.png","signals-icon-size-0":0,"signals-blink-0":false,"signals-horz-0":0,"signals-vert-0":0,"signals-hide-edit-0":false,"signals-cond-1":"==","signals-val-1":true,"signals-icon-1":"/vis/signals/lowbattery.png","signals-icon-size-1":0,"signals-blink-1":false,"signals-horz-1":0,"signals-vert-1":0,"signals-hide-edit-1":false,"signals-cond-2":"==","signals-val-2":true,"signals-icon-2":"/vis/signals/lowbattery.png","signals-icon-size-2":0,"signals-blink-2":false,"signals-horz-2":0,"signals-vert-2":0,"signals-hide-edit-2":false,"src":"/icons-material-svg/action/ic_build_48px.svg","name":"","gestures-swiping-delta":"-1","class":""},"style":{"left":"1087px","top":"761px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"29px","height":"28px"},"widgetSet":"jqui"}]
+[{"tpl":"tplIconLink","data":{"href":"javascript:$('#cordova_menu').trigger('click');","target":"_self","text":"","src":"/icons-material-svg/action/ic_build_48px.svg","name":"","gestures-swiping-delta":"-1","class":""},"style":{"left":"1087px","top":"761px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"29px","height":"28px"},"widgetSet":"jqui"}]
 ```
 
 ### View-Wechsel durch horizontales Streichen über den aktuellen View (swipe)
-Das nachfolgende Javascript ist im VIS-Editor unter **Skripte** eingetragen und im Array die eigenen Views in der Reihenfolge einzutragen, in der der Wechsel erfolgen soll. 
+Das nachfolgende Javascript ist im VIS-Editor unter **Skripte** eingetragen und im Array die eigenen Views in der Reihenfolge einzutragen, in der der Wechsel erfolgen soll.
 
 Eine Streichbewegung über den View von rechts nach links wechselt zu dem View, der im Array hinter dem aktuellen View steht.
 Eine Streichbewegung über den View von links nach rechts wechselt zu dem View, der im Array vor dem aktuellen View steht.
@@ -156,21 +163,20 @@ Wenn das Array-Ende bzw. der Anfang erreicht ist, wird wieder mit dem ersten bzw
 ```
 var viewOrder = ['View 1','View 2','View 3','View 4','View 5','View 6'];
 
-$(document).on("swipe",function(event){
+$(document).on('swipe', function (event){
 
   event.preventDefault();
-  if (event.originalEvent.touch.delta.x<-200 && event.originalEvent.touch.delta.y>-30&& event.originalEvent.touch.delta.y<30) {
-    if (viewOrder.indexOf (vis.activeView)<viewOrder.length -2)
-      vis.changeView (viewOrder [viewOrder.indexOf (vis.activeView)+1]);
+  if (event.originalEvent.touch.delta.x < -200 && event.originalEvent.touch.delta.y > -30 && event.originalEvent.touch.delta.y < 30) {
+    if (viewOrder.indexOf(vis.activeView) < viewOrder.length - 2)
+      vis.changeView(viewOrder[viewOrder.indexOf(vis.activeView) + 1]);
      else
-      vis.changeView (viewOrder [0]);
-  }
-   else if (event.originalEvent.touch.delta.x>200 && event.originalEvent.touch.delta.y>-30 && event.originalEvent.touch.delta.y<30)  {
-    if (viewOrder.indexOf (vis.activeView)>0)
-      vis.changeView (viewOrder [viewOrder.indexOf (vis.activeView)-1]);
+      vis.changeView(viewOrder[0]);
+  } else
+  if (event.originalEvent.touch.delta.x > 200 && event.originalEvent.touch.delta.y > -30 && event.originalEvent.touch.delta.y < 30) {
+    if (viewOrder.indexOf(vis.activeView) > 0)
+      vis.changeView(viewOrder[viewOrder.indexOf(vis.activeView) - 1]);
      else
-      vis.changeView (viewOrder [viewOrder.length - 1]);
-
+      vis.changeView(viewOrder[viewOrder.length - 1]);
    }
 });
 

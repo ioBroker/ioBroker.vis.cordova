@@ -3,7 +3,24 @@
 /** @namespace __dirname */
 /* jshint -W097 */// jshint strict:false
 /*jslint node: true */
-"use strict";
+'use strict';
+
+// ## How to build
+//
+// ```
+// npm install
+// grunt release
+// or
+// grunt build
+// ```
+//
+// Output is in ```ioBroker.vis.cordova\platforms\android\build\outputs\apk```
+//
+// To test it on android Handy:
+// ```
+// cordova run android
+// ```
+
 
 module.exports = function (grunt) {
 
