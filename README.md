@@ -159,7 +159,7 @@ Commands:
 
     "control.data" must have id of dialog widget, e.g. "w00056".
 * popup - opens a new browser window. Link must be specified in "control.data", e.g. http://google.com
-* playSound - play sound file. The link to file is specified in "control.data", e.g. http://www.modular-planet.de/fx/marsians/Marsiansrev.mp3.
+* playSound - play sound file. The link to file is specified in "control.data", e.g. http://www.modular-planet.de/fx/marsians/Marsiansrev.mp3 .
   You can upload your own file in vis and let it play as for instance "/vis.0/main/img/myFile.mp3".
 * tts - text 2 speech. *data* - consist phrase, that must be spoken.
 
@@ -181,6 +181,12 @@ With command in javascript adapter you can activate text to speech engine of And
 - enable automatically load of project files from ioBroker server (e.g. for home use)
 
 ## Changelog
+
+### 0.5.2 (2016-07-29)
+* (nobody) exit app by back button
+* (nobody) very much documentation
+* (bluefox) update license file
+* (bluefox) translate description to Russian
 
 ### 0.5.1 (2016-07-23)
 - (nobody) add flot to local files

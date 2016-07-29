@@ -2,7 +2,7 @@
 
 WEB-Visualisierung für ioBroker Plattform als Android-App.
 
-Diese Die App ist konzipiert für Smartphone und Tablet. Das vis-Projekt und alle Bilder werden auf dem Smartphone gespeichert um den mobilen Datenverkehr zu verringern.
+Diese App ist konzipiert für Smartphone und Tablet. Das Vis-Projekt und alle Bilder werden auf dem Smartphone gespeichert um den mobilen Datenverkehr zu verringern.
 
 ## Verwendung
 Diese App benötigt einen installierten, aktivierten Web-Adapter oder socket-io-Adapter und einen installierten vis-Adapter. Bei aktiviertem Web-Server, muss das interne Socket-IO-Interface aktiviert sein.
@@ -10,74 +10,75 @@ In Vis sollte ein Projekt vorhanden sein, z.B. "Main".
 
 Die Ports und der ioBroker Server muss vom Mobiltelefon erreichbar sein.
 
-Installiere die App über App Store. Nachdem die Anwendung zum ersten Mal starten sollte der Einstellungsdialog automatisch geöffnet werden. Um die Arbeit mit der App zu starten öffne die Einstellungen.
+Installiert wird die App über den App Store. Nachdem die Anwendung zum ersten Mal startet, sollte der Einstellungsdialog automatisch geöffnet werden. Um die Arbeit mit der App zu starten öffne die Einstellungen.
 
 Um die Einstellungen anzuzeigen, drücke die halbtransparenten Schaltfläche in der linken oberen Ecke.
-![Settings](img/menu.png)
+![Einstellungen](img/menu.png)
 
 ## Einstellungen
-Fast alle Einstellungen sind optional mit Ausnahme von "WIFI Socket" und "Project".
+Fast alle Einstellungen sind optional mit Ausnahme von "WIFI Socket" und "Projekt".
 
 ### Buttons
-- *Neuladen* - Läd die Web-Engine neu, als würde man die Schaltfläche "Aktualisieren" im Browser drücken.
-- *Re-Sync* - Wenn einige Änderungen an dem vis-Projekt vorgenommen wurden, wird es **nicht** automatisch in die App geladen. Dazu, muss die "Re-Sync" Taste gedrückt werden. Alle Projektdateien und Bilder werden auf dem Smartphone neu geladen. Das wird gemacht, um den mobilen Datenverkehr zu verringern und den Start der Anwendung zu beschleunigen. Das lesen der Dateien von der internen SD-Card ist viel schneller, als vom ioBroker Server.
+- *Neu laden* - Lädt die Web-Engine neu, als würde man die Schaltfläche "Aktualisieren" im Browser drücken.
+- *Re-Sync* - Wenn einige Änderungen an dem Vis-Projekt vorgenommen wurden, wird es **nicht** automatisch in die App geladen. Dazu, muss die "Re-Sync" Taste gedrückt werden. Alle Projektdateien und Bilder werden auf dem Smartphone neu geladen. Das wird gemacht, um den mobilen Datenverkehr zu verringern und den Start der Anwendung zu beschleunigen. Das Lesen der Dateien von der internen SD-Card ist viel schneller, als vom ioBroker Server.
 Wenn die Option *Schlafen, falls inaktiv* aktiviert ist, darf während der Synchronisation das Telefon nicht inaktiv werden, da ansonsten die Socket.io-Verbindung unterbrochen und die Synchronisation abgebrochen wird.
-- *OK* - Alle Änderungen speichern und die WEB-Engine neu starten. Es wird keine Synchronisation durchgeführt, wenn das Projekt noch nicht definiert wurde. Um Änderungen vom ioBroker vis-Projekt neu zu laden benutze die "Re-Sync" -Taste.
+- *OK* - Alle Änderungen speichern und die WEB-Engine neu starten. Es wird keine Synchronisation durchgeführt, wenn das Projekt noch nicht definiert wurde. Um Änderungen vom ioBroker Vis-Projekt neu zu laden benutzen Sie die "Re-Sync" -Taste.
 - *Abbrechen* - Alle Änderungen verwerfen und Dialog schließen.
 
 ### Konnektivität
-App kann über SSID-Namen erkennen, ob das Smartphone im Heimnetzwerk oder außerhalb des Heimnetzwerkes ist und benutzt für das Heimnetzwerk und für Außerhalb verschiedenen Socket-URLs und Login-Daten.
+Die App kann über den SSID-Namen erkennen, ob das Smartphone im Heimnetzwerk oder außerhalb des Heimnetzwerkes ist und benutzt für das Heimnetzwerk und für Außerhalb verschiedenen Socket-URLs und Login-Daten.
 
 Normalerweise gibt es im Heimnetzwerk keine Authentifizierung und die Verbindung läuft über HTTP (unsicher). Im externen Netzwerk geht die Verbindung über https (verschlüsselt) und mit Login / Passwort.
 
 - *Verbunden* - zeigt an, ob die App mit ioBroker Server verbunden ist.
 WiFi Verbindung
-- *SSID Name* - Namen oder die Namen (geteilt durch Komma) der Heimnetzwerk SSID. Es wird für die Verbindung die Anmeldeinformationen und die Home-URL des Heimnetzwerks verwendet.
-- *Socket URL* - URL wie ```http://192.168.0.5:8082```. Es ist wichtig, http oder https zu Beginn zu haben, dadurch kann die App zwischen sicheren und unsicheren Verbindungen unterscheiden. Port ist auch wichtig. Normalerweise 8082 für *Web* oder 8084 für *socketio*.
-- *Anwender* - wenn für die Socket-Kommunikation die Authentifizierung aktiviert ist, tragen Sie hier den Benutzernamen von iobroker ein. Benutzer müssen zunächst über die "admin" Schnittstelle erstellt werden. Der Benutzer "admin" existiert immer und kann nicht gelöscht werden.
+- *SSID Name* - Der oder die Namen (geteilt durch Komma) der Heimnetzwerk SSID. Es wird für die Verbindung die Anmeldeinformationen und die Home-URL des Heimnetzwerks verwendet.
+- *Socket URL* - URL wie z.B. ```http://192.168.0.5:8082```. Es ist wichtig, http oder https zu Beginn zu haben, dadurch kann die App zwischen sicheren und unsicheren Verbindungen unterscheiden. Der Port ist auch wichtig. Normalerweise 8082 für *Web* oder 8084 für *socketio*.
+- *Anwender* - Wenn für die Socket-Kommunikation die Authentifizierung aktiviert ist, tragen Sie hier den Benutzernamen von iobroker ein. Benutzer müssen zunächst über die "admin" Schnittstelle erstellt werden. Der Benutzer "admin" existiert immer und kann nicht gelöscht werden.
 - *Kennwort* - Benutzer-Passwort, wie in ioBroker gesetzt
 - *Kennwort-Wiederholung* - Wiederholung des Benutzer-Passworts
 
 Folgende Einstellungen sind nur aktiv, wenn einige SSID angegeben sind und das Gerät sich derzeit außerhalb dieser SSID befindet.
 Mobile Verbindung
-- *Socket URL* - das gleiche wie *WIFI Socket*, wird aber außerhalb des Heimnetzes verwendet.
-- *Anwender* - das gleiche wie *WIFI Anwender*, wird aber außerhalb des Heimnetzes verwendet.
-- *Kennwort* - das gleiche wie *WIFI Password*, wird aber außerhalb des Heimnetzes verwendet.
-- *Kennwort-Wiederholung* - das gleiche wie *WIFI Password repeat*, wird aber außerhalb des Heimnetzes verwendet.
+- *Socket URL* - Das Gleiche wie *WIFI Socket*, wird aber außerhalb des Heimnetzes verwendet.
+- *Anwender* - Das Gleiche wie *WIFI Anwender*, wird aber außerhalb des Heimnetzes verwendet.
+- *Kennwort* - Das Gleiche wie *WIFI Password*, wird aber außerhalb des Heimnetzes verwendet.
+- *Kennwort-Wiederholung* - das gleiche wie *WIFI Kennwort wiederholen*, wird aber außerhalb des Heimnetzes verwendet.
 
 ### Projektname und Spracheinstellungen
-- *Language/Sprache* - Sprache der Einstellungs-Dialog. Englisch, Deutsch und Russisch werden unterstützt. Um die Änderungen zu aktivieren, * OK * Taste drücken.
+- *Language/Sprache* - Sprache des Einstellungs-Dialogs. Englisch, Deutsch und Russisch werden unterstützt. Um die Änderungen zu aktivieren, * OK * Taste drücken.
 - *Projekt* - Projektname von ioBroker. Wenn kein Projektname angezeigt wird, besteht keine Verbindung mit iobroker oder es existiert kein Projekt.
 
 ### Andere Einstellungen
-- *Austausch URL* - wenn das vis Projekt Links auf statische Inhalte auf anderen lokalen Servern hat oder vollständige URL verwendet, kann in diesem Feld der Anfang einer lokalen URL angegeben werden. Alle Dateien, die mit dieser URL beginnen, werden während der Synchronisation auf das Telefon geladen und die Pfade angepasst.
-- *Instanz* - Eindeutige Kennung (instance ID) der in der App laufenden VIS-Instanz. Diese ID wird benötigt, um beim Versenden von Kommandos vom ioBroker Server die App eindeutig adressieren zu können. (Weitere Informationen finden sie unter [Control interface](#control-interfac))
-- *Schlafen, falls inaktiv* - Wenn die vis App nicht angezeigt aber noch immer im Hintergrund ausgeführt wird, kann mit dieser Option die Kommunikationsverbindung zum Server unterbrochen werden. In diesem Fall werden keine Aktualisierungen oder Kommandos an die App gesendet, bis die App wieder aktiviert wird. Nach der Aktivierung der App erfolgt ein erneuter Verbindungsaufbau und Abruf der Werte vom Server.
+- *Ersatz URL* - Wenn Ihr vis Projekt Links für Bilder aus einer lokalen Netzwerk URL verwendet (die von der ioBroker URL abweicht), können Sie hier diese URL angeben und alle Bilder die im Vis-Projekt verwendet werden, werden von diesem Server auf das Smartphone geladen.
+- *Instanz* - Eindeutige Instanz-ID dieses VIS. Diese ist erforderlich um gezielt Befehle nur zu dieser Vis Instanz zu senden. (Siehe [Control interface](#control-interface) für weitere Details)
+- *Schlafen im Hintergrund* - Wenn die Vis App nicht angezeigt wird (aber im Hintergrund läuft), kann die Kommunikation zum iobroker Server gestoppt werden. In diesem Fall werden die Statusaktualisierungen und Befehle von ioBroker nicht zur App übertragen, auch wenn die App im Hintergrund läuft.
 
 ### Spracherkennung
-In der App kann eine Spracherkennung aktiviert werden. Wenn diese Option aktiv ist, versucht die App durchgehend Kommandos zu erkennen. Um falsch erkannte Kommandos aus normalen Unterhaltungen zu vermeiden wird ein Schlüsselwort zur Einleitung von Kommandos verwendet. Die Schlüsselworte können in den Einstellungen eingegeben werden.
-Bitte wählen sie ein Wort aus, dass gut erkannt werden kann und im normalen Sprachgebrauch nicht allzu gebräuchlich ist.
+Sie können die Spracherkennung in der Anwendung aktivieren. Wenn diese Option aktiviert ist, wird von der App kontinuierlich versucht Befehle zu erkennen. Um festzustellen, ob Sie mit der App oder mit jemand anderem sprechen, kann ein Schlüsselwort festgelegt werden.
+Bitte wählen Sie ein Wort, das gut erkannt werden kann und nicht im täglichen Gebrauch verwendet wird.
 
-ioBroker verwendet den text2command adapter zur Auswertung der empfangenden Kommandos. Eine Instanz dieses Adapters muss hierfür auf dem Server installiert und eingerichtet sein. Bitte lesen sie die Beschreibung für diesen Adapter unter [github](https://github.com/ioBroker/ioBroker.text2command) oder (iobroker.net)[http://iobroker.net].
+Zur Erkennung von Befehlen im erkannten Text wird der text2command Adapter verwendet. Bitte lesen Sie die Beschreibungen dieses Adapters auf [github] (https://github.com/ioBroker/ioBroker.text2command) oder (iobroker.net)[http://iobroker.net].
+Natürlich muss eine Instanz des text2command Adapters installiert werden.
 
-*Bemerkung*: Wenn keine Offline-Spracherkennung aktiviert ist, wird die gesamte Sprachaufzeichung an die Google Server gesendet. Anleitungen zur Aktivierung der Offline-Spracherkennung finden sie unter [link](http://stackandroid.com/tutorial/how-to-enable-offline-speech-to-text-in-android/).
+*Hinweis*: In diesem Fall werden alle Stimmen auf die Google-Server gesendet, wenn keine Offline-Spracherkennung aktiviert ist. Aktivierungsanweisung finden Sie hier:(http://stackandroid.com/tutorial/how-to ... n-android/).
 
-*Bemerkung*: Bei aktivierter Spracherkennung erzeugt das Mobiltelefon alle 10-15 Sekunden einen Ton. Um dies zu verhindern wird die Benachrichtigungslautstärke auf 0 gesetzt. Sie können weiterhin die Textausgabe mit "text2speech" verwenden und mit dem "playSound" Kommando Audio-Ausgaben erzeugen.
+*Hinweis*: Im Erkennungsmodus "Piept" Android alle 10-15 Sekunden. Zur Unterdrückung wird die Lautstärke auf 0 gesetzt. Sie können trotzdem "Text2Speech" benutzen, um Befehle und Sätze zu sprechen oder die Audio Wiedergabe zu starten.
 
-- *Spracherkennung aktiviert* - legt fest, ob die Spracherkennung aktiviert wurde
-- *Schlüsselwort* - Wenn im erkannten Satz oder Wort das angegebene Schlüsselwort gefunden wird, erfolgt die Weiterleitung des empfangenden Texts an die "text2command" Instanz zur weiteren Analyse. Es ist nicht erforderlich, dass das Schlüsselwort zu Beginn des Satzes gesagt wird.
-- *Text2command-Instanz* - Nummer der text2command Instanz auf dem Server. Im Normalfall 0.
-- *Sprachlautstärke* - Lautstärke für Antworten und für text-to-speech Kommandos. Für die restliche Zeit wird die Lautstärke auf 0 gesetzt.
-- *Default Raum* - Legt das Mobiltelefon auf einen spezifischen Raum fest. Wenn hier ein Raum angegeben wird ist es nicht mehr erforderlich, im Kommando den Raum anzugeben. in sleeping room.  Statt "Schalte das Licht im Schlafzimmer an" reicht es, "Schalte das Licht an" zu sagen. Wenn text2command keinen Raum im erkannten Text finden kann, wird der konfigurierte Default Raum verwendet.
-- *Antworten mit TTS* - wenn diese Option aktiviert wurde werden Antworten mit Hilfe der text-to-speech engine ausgegeben. Hierfür muss im Mobiltelefon eine  TTS Engine eingerichtet sein.
+- *Spracherkennung aktiv* - Spracherkennung aktivieren oder deaktivieren.
+- *Stichwort* - Wenn im erkannten Satz dieses Wort (oder Satz) gefunden wird, wird dieser Text auf die "text2command" Instanz geschickt. Es ist nicht erforderlich das Schlüsselwort am Anfang des Satzes zu verwenden. Wird auf das Schlüsselwort verzichtet, werden alle Wörter an die text2command Instanz gesendet.
+- *Text2command Instanz* - Zahl der text2command Instanz. Normalerweise 0.
+- *Lautstärke* - Lautstärke für die Antworten und für die Text-to-Speech-Befehle. Ansonsten wird die Lautstärke auf 0 gesetzt.
+- *Standard-Raum* - Wenn Ihr mobiles Gerät in einem bestimmten Raum befestigt ist, z.B. im Schlafzimmer ist es nicht notwendig, jedes Mal "Schalte das Licht im Schlafzimmer an" zu sagen. Es sollte reichen "" das Licht einschalten " zu sagen. Um das zu aktivieren kann ein Standart Raum Name definiert werden. Wenn text2command keinen Raumnamen in dem Satz findet, wird für die Befehlsausführung der Standardraumnamen verwendet.
+- *Antwort über TTS* - Wenn aktiviert, werden die Antworten von text2command über die Text-to-Speech-Engine ausgegeben. Natürlich muss eine TTS-Engine auf dem Android-Gerät installiert und aktiviert werden.
 
 ### Visualisierung und Verhalten
-- *Orientation* - Ausrichtung des Views: **auto**, **landscape** oder **portrait**. wenn **auto** ausgewählt ist, wird die Ausrichtung automatisch erkannt.
-- *Prevent from sleep* - wenn aktiviert, wird das Gerät nie in den Ruhemodus gehen und das Display bleibt immer an. (Funktioniert nicht auf allen Geräten)
-- *Allow Window Move* - wenn aktiviert, Schwenken und Zoomen auf den Views ist erlaubt.
-- *Full screen* - Verwenden Sie den Vollbildmodus auf Geräte mit Software-Tasten (Home, Settings, Back).
-- *Zoom Level Portrait* - Zoom in Prozent im Portrait-Modus. Nicht zu gering einstellen, sonst kann der Einstellungsdialog nicht mehr aufgerufen werden. Die Standardeinstellung ist 100% und kann nicht unter 20% festgelegt werden.
-- *Zoom Level Landscape* - das gleiche wie *Zoom Level Portrait*, für die Landscape Ansicht.
+- *Ausrichtung* - Ausrichtung des Views: **auto**, **landscape** oder **portrait**. Wenn **auto** ausgewählt ist, wird die Ausrichtung automatisch erkannt.
+- *Verhindere Schlafmodus* - Wenn aktiviert, wird das Gerät nie in den Ruhemodus versetzt und das Display bleibt immer an. (Funktioniert nicht auf allen Geräten)
+- *Erlaube Fenster Verschiebung* - Wenn aktiviert, ist Schwenken und Zoomen auf den Views erlaubt.
+- *Vollbild* - Verwenden Sie den Vollbildmodus auf Geräten mit Software-Tasten (Home, Einstellungen, Zurück).
+- *Zoom Stufe Portrait* - Zoom in Prozent im Portrait-Modus. Nicht zu gering einstellen, sonst kann der Einstellungsdialog nicht mehr aufgerufen werden. Die Standardeinstellung ist 100% und kann nicht unter 20% festgelegt werden.
+- *Zoom Stufe Landscape* - Das Gleiche wie *Zoom Stufe Portrait*, für die Landscape Ansicht.
 
 ### Zugriff auf Bilder und andere Ressourcen
 Die App kopiert bei der Synchronisation die Views des ausgewählten Projekts und alle darin referenzierten Bilder lokal auf das Mobiltelefon (Gerätespeicher).
@@ -183,3 +184,43 @@ $(document).on('swipe', function (event){
 ```
 
 Wichtig ist, mit der Streichbewegung nicht auf einem Widget sondern möglichst auf dem Hintergrund zu starten, um nicht versehentlich eine Änderung auszulösen.
+
+## Steuerschnittstelle
+Vis erstellt 3 Variablen:
+
+- Control.instance - Hier wird die Browser-Instanz geschrieben oder FFFFFFFF wenn jeder Browser gesteuert werden soll.
+- Control.data - Parameter für den Befehl. Siehe spezielle Befehlsbeschreibung.
+- Control.command - Befehlsname. Wird diese Variable geschrieben, wird der Befehl ausgelöst. Das bedeutet, bevor der Befehl geschrieben wird, müssen "Instanz" und "Daten" mit Daten gefüllt werden.
+
+Befehle:
+
+* Alarm - Zeigt ein Alarmfenster in Vis. "Control.data" hat folgendes Format "Meldung, Titel, jquery-Symbol". Titel und jquery-Symbol sind optional. Den Icon-Namen finden Sie [hier] (http://jqueryui.com/themeroller/). Um ein Symbol anzuzeigen "ui-icon-info" schreibe ```Message;;info``` .
+* Change - Umschalten auf das gewünschte View. In "Control.data" muß der Name des Views stehen. Sie können den Projektname auch als "Projekt / View" festlegen. Standardprojekt ist "main".
+* Refresh - Vis neu laden, zum Beispiel nachdem das Projekt geändert wurde.
+* Reload - Das Gleiche wie Refresh.
+* Dialog - Dialogfenster anzeigen. Dialog muss im View existieren. Ein Dialog von z.B.:
+
+- "static - HTML - Dialog",
+- "static - Icon - Dialog",
+- "container - HTML - view in jqui Dialog",
+- "container - ext cmd - view in jqui Dialog",
+- "container - Icon - view in jqui Dialog",
+- "container - Button - view in jqui Dialog".
+
+"Control.data" muss die ID des Dialog-Widgets haben, z.B. "W00056".
+* Popup - Öffnet ein neues Browserfenster. Der Link muss in "control.data" angegeben werden, zum Beispiel http://google.com
+* Playsound - Spiele Sounddatei ab. Der Link zur Datei wird in "control.data" angegeben, z.B. http://www.modular-planet.de/fx/marsians/Marsiansrev.mp3
+Sie können Ihre eigene Datei in Vis laden und dann abspielen zum Beispiel "/vis.0/main/img/myFile.mp3".
+* Tts - Text 2 Speech * Daten * - bestehender Ausdruck, der gesprochen werden soll.
+
+Wenn der Benutzer das View ändert oder beim Start werden die Variablen durch Vis gefüllt 
+
+- "Control.instance": Browser-Instanz und ack = true
+- "Control.data": Projekt und Anzeigename in Form "Projekt / View", z.B. "Main / view" (und ack = true)
+- "Control.command": "changedView" und ack = true
+
+Sie können die JSON-String oder ein Objekt in control.command als ```{instance: 'AABBCCDD', command: 'cmd', data: 'ddd'}``` schreiben. In diesem Fall werden die Instanz und die Daten vom JSON Objekt genommen.
+
+Mit einem Befehl im Javascript-Adapter können Sie die Text-to-Speech-Engine von Android aktivieren:
+
+```SetState ( 'vis.0.control.command', '{" Beispiel ":" * "," Daten ":" etwas sagen "," Befehl ":" tts "}');```
