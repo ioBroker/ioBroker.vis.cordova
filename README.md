@@ -182,6 +182,11 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.6.0 (2016-09-01)
+* (bluefox) new cordova module version 6.3.1
+* (bluefox) add dwd, kodi widgets
+* (bluefox) update vis, justgauge, bars
+
 ### 0.5.2 (2016-07-29)
 * (nobody) exit app by back button
 * (nobody) very much documentation
