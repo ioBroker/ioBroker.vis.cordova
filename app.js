@@ -49,12 +49,33 @@ $.extend(systemDictionary, {
         "ru": "Повтор пароля"
     },
     "Actual":       {"en": "<=",                "de": "<=",                 "ru": "<="},
+    "Device name":  {"en": "Device name",       "de": "Gerätname",          "ru": "Имя устройства"},
+    "Battery and location": {
+        "en": "Battery and location",
+        "de": "Batterie und Position",
+        "ru": "Зарядка и координаты"
+    },
+    "Report battery status": {
+        "en": "Report battery status",
+        "de": "Teile Batteriezustand mit",
+        "ru": "Сообщать уровень заряда батареи"
+    },
+    "Position poll interval (sec)": {
+        "en": "Position poll interval (sec)",
+        "de": "Abfrageintervall für Position (Sek)",
+        "ru": "Инетрвал опроса координат (сек)"
+    },
+    "High accuracy position": {
+        "en": "High accuracy position",
+        "de": "Hohe Genauigkeit",
+        "ru": "Точность позиционирования"
+    },
     "Sleep in background": {
         "en": "Sleep in background",
         "de": "Schlafen, falls inaktiv",
         "ru": "Спать, если не активно"
     },
-    "Fullscreen": {
+    "Fullscreen":   {
         "en": "Full screen",
         "de": "Vollbild",
         "ru": "Полноэкранный режим"
@@ -153,10 +174,13 @@ var app = {
         volume:         80,
         zoomLevelPortrait: 100,
         zoomLevelLandscape: 100,
-        substitutionUrl : '',
+        substitutionUrl: '',
         noCommInBackground: false,
         responseWithTts: true,
-        initialZoom:     '1'
+        deviceName:      'app',
+        geoInterval:     0,
+        geoHighAccuracy: true,
+        readBattery:     true
     },
     inBackground:   false,
     connection:     '',
@@ -167,6 +191,9 @@ var app = {
     speaking:       false,
     connected:      false,
     totalFileCount: 0,
+    lastBatteryStatus: null,
+    lastPosition:   null,
+    geoTimer:       null,
     exitApp:		false,
 
     // Application Constructor
@@ -197,7 +224,6 @@ var app = {
             history.back(1);
         }
     },
-
 
     bindEvents:     function () {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -441,6 +467,10 @@ var app = {
 
         // install listener on go-back button
         document.addEventListener('backbutton', this.onBackButtonGeneral, false);
+        if (this.settings.readBattery) {
+            window.addEventListener('batterystatus', this.onBatteryStatus, false);
+        }
+        this.settings.geoInterval = parseInt(this.settings.geoInterval, 10);
 
         this.settings.socketUrl = this.settings.socketUrl.toLowerCase();
 
@@ -533,7 +563,7 @@ var app = {
             this.manageDisplayRotation();
 
             function successFunction() {
-                console.info('It worked!');
+                //console.info('It worked!');
             }
 
             function errorFunction(error) {
@@ -634,6 +664,314 @@ var app = {
         }
     },
 
+    // creates vis states for battery and geolocation
+    createStates:   function (cb) {
+        var that = this;
+        var count = 0;
+        if (this.settings.readBattery) {
+            count++;
+            vis.conn.getObject(vis.conn.namespace + '.' + this.settings.deviceName + '.battery.isPlugged', function (err, obj) {
+                if (!obj) {
+                    vis.conn._socket.emit('setObject', vis.conn.namespace + '.' + that.settings.deviceName + '.battery.isPlugged', {
+                        common: {
+                            name: 'If device ' + that.settings.deviceName + ' plugged in',
+                            type: 'boolean',
+                            role: 'indicator.plugged',
+                            write: false,
+                            read:  true
+                        },
+                        type: 'state',
+                        native: {}
+                    },function (err, obj) {
+                        vis.conn.getObject(vis.conn.namespace + '.' + that.settings.deviceName + '.battery.level', function (err, obj) {
+                            if (!obj) {
+                                vis.conn._socket.emit('setObject', vis.conn.namespace + '.' + that.settings.deviceName + '.battery.level', {
+                                    common: {
+                                        name: 'Battery status for ' + that.settings.deviceName,
+                                        type: 'number',
+                                        role: 'battery',
+                                        write: false,
+                                        read:  true,
+                                        min:   0,
+                                        max:   100,
+                                        unit:  '%'
+                                    },
+                                    type: 'state',
+                                    native: {}
+                                },function (err, obj) {
+                                    if (!--count) {
+                                        cb && cb();
+                                    }
+                                });
+                            } else if (!--count) {
+                                cb && cb();
+                            }
+                        });
+                    });
+                } else if (!--count) {
+                    cb && cb();
+                }
+            });
+        }
+
+        if (this.settings.geoInterval) {
+            count++;
+            vis.conn.getObject(vis.conn.namespace + '.' + this.settings.deviceName + '.coords.latitude', function (err, obj) {
+                if (!obj) {
+                    vis.conn._socket.emit('setObject', vis.conn.namespace + '.' + that.settings.deviceName + '.coords.latitude', {
+                        common: {
+                            name: 'Latitude of ' + that.settings.deviceName,
+                            type: 'number',
+                            role: 'gps.latitude',
+                            unit: '°',
+                            write: false,
+                            read:  true
+                        },
+                        type: 'state',
+                        native: {}
+                    },function (err, obj) {
+                        var prefix = vis.conn.namespace + '.' + that.settings.deviceName + '.coords.';
+                        vis.conn.getObject(prefix + 'longitude', function (err, obj) {
+                            if (!obj) {
+                                vis.conn._socket.emit('setObject', prefix + 'longitude', {
+                                    common: {
+                                        name: 'Longitude of ' + that.settings.deviceName,
+                                        type: 'number',
+                                        role: 'gps.longitude',
+                                        unit: '°',
+                                        write: false,
+                                        read:  true
+                                    },
+                                    type: 'state',
+                                    native: {}
+                                },function (err, obj) {
+                                    if (!--count) {
+                                        prefix = null;
+                                        cb && cb();
+                                    }
+                                });
+                            } else if (!--count) {
+                                prefix = null;
+                                cb && cb();
+                            }
+                        });
+                        count++;
+                        vis.conn.getObject(prefix + 'altitude', function (err, obj) {
+                            if (!obj) {
+                                vis.conn._socket.emit('setObject', prefix + 'altitude', {
+                                    common: {
+                                        name: 'Altitude of ' + that.settings.deviceName,
+                                        type: 'number',
+                                        role: 'gps.altitude',
+                                        unit: 'm',
+                                        write: false,
+                                        read:  true
+                                    },
+                                    type: 'state',
+                                    native: {}
+                                }, function (err, obj) {
+                                    if (!--count) {
+                                        prefix = null;
+                                        cb && cb();
+                                    }
+                                });
+                            } else if (!--count) {
+                                prefix = null;
+                                cb && cb();
+                            }
+                        });
+                        count++;
+                        vis.conn.getObject(prefix + 'accuracy', function (err, obj) {
+                            if (!obj) {
+                                vis.conn._socket.emit('setObject', prefix + 'accuracy', {
+                                    common: {
+                                        name: 'Accuracy of position for ' + that.settings.deviceName,
+                                        type: 'number',
+                                        role: 'gps.accuracy.position',
+                                        unit: 'm',
+                                        write: false,
+                                        read:  true
+                                    },
+                                    type: 'state',
+                                    native: {}
+                                }, function (err, obj) {
+                                    if (!--count) {
+                                        prefix = null;
+                                        cb && cb();
+                                    }
+                                });
+                            } else if (!--count) {
+                                prefix = null;
+                                cb && cb();
+                            }
+                        });
+                        count++;
+                        vis.conn.getObject(prefix + 'altitudeAccuracy', function (err, obj) {
+                            if (!obj) {
+                                vis.conn._socket.emit('setObject', prefix + 'altitudeAccuracy', {
+                                    common: {
+                                        name: 'Altitude accuracy of position for ' + that.settings.deviceName,
+                                        type: 'number',
+                                        role: 'gps.accuracy.altitude',
+                                        unit: 'm',
+                                        write: false,
+                                        read:  true
+                                    },
+                                    type: 'state',
+                                    native: {}
+                                }, function (err, obj) {
+                                    if (!--count) {
+                                        prefix = null;
+                                        cb && cb();
+                                    }
+                                });
+                            } else if (!--count) {
+                                prefix = null;
+                                cb && cb();
+                            }
+                        });
+                        count++;
+                        vis.conn.getObject(prefix + 'heading', function (err, obj) {
+                            if (!obj) {
+                                vis.conn._socket.emit('setObject', prefix + 'heading', {
+                                    common: {
+                                        name: 'Heading for ' + that.settings.deviceName,
+                                        type: 'number',
+                                        role: 'gps.heading',
+                                        unit: '°',
+                                        write: false,
+                                        read:  true
+                                    },
+                                    type: 'state',
+                                    native: {}
+                                }, function (err, obj) {
+                                    if (!--count) {
+                                        prefix = null;
+                                        cb && cb();
+                                    }
+                                });
+                            } else if (!--count) {
+                                prefix = null;
+                                cb && cb();
+                            }
+                        });
+                        count++;
+                        vis.conn.getObject(prefix + 'speed', function (err, obj) {
+                            if (!obj) {
+                                vis.conn._socket.emit('setObject', prefix + 'speed', {
+                                    common: {
+                                        name: 'Speed for ' + that.settings.deviceName,
+                                        type: 'number',
+                                        role: 'gps.speed',
+                                        unit: 'm/s',
+                                        write: false,
+                                        read:  true
+                                    },
+                                    type: 'state',
+                                    native: {}
+                                }, function (err, obj) {
+                                    if (!--count) {
+                                        prefix = null;
+                                        cb && cb();
+                                    }
+                                });
+                            } else if (!--count) {
+                                prefix = null;
+                                cb && cb();
+                            }
+                        });
+                        count++;
+                        vis.conn.getObject(prefix + 'speedKm', function (err, obj) {
+                            if (!obj) {
+                                vis.conn._socket.emit('setObject', prefix + 'speedKm', {
+                                    common: {
+                                        name: 'Speed for ' + that.settings.deviceName,
+                                        type: 'number',
+                                        role: 'gps.speed',
+                                        unit: 'km/h',
+                                        write: false,
+                                        read:  true
+                                    },
+                                    type: 'state',
+                                    native: {}
+                                }, function (err, obj) {
+                                    if (!--count) {
+                                        prefix = null;
+                                        cb && cb();
+                                    }
+                                });
+                            } else if (!--count) {
+                                prefix = null;
+                                cb && cb();
+                            }
+                        });
+                    });
+                } else if (!--count && cb) cb();
+            });
+        }
+    },
+    onBatteryStatus: function (status) {
+        var that = app;
+        if (!status) return;
+        that.lastBatteryStatus = JSON.parse(JSON.stringify(status));
+        if (!that.connected) return;
+
+        var prefix = vis.conn.namespace + '.' + that.settings.deviceName + '.battery.';
+        vis.conn.setState(prefix + 'isPlugged', {val: status.isPlugged, ack: true});
+        vis.conn.setState(prefix + 'level', {val: status.level, ack: true});
+    },
+    onLocation: function (position) {
+        if (!position || !position.coords) return;
+        var that = app;
+        that.lastPosition = JSON.parse(JSON.stringify(position));
+        if (!that.connected) return;
+
+        var prefix = vis.conn.namespace + '.' + that.settings.deviceName + '.coords.';
+        var ts = position.timestamp;
+        vis.conn.setState(prefix + 'latitude',     {ts: ts, ack: true, val: position.coords.latitude});
+        vis.conn.setState(prefix + 'longitude',    {ts: ts, ack: true, val: position.coords.longitude});
+        vis.conn.setState(prefix + 'altitude',     {ts: ts, ack: true, val: position.coords.altitude});
+        vis.conn.setState(prefix + 'accuracy',     {ts: ts, ack: true, val: position.coords.accuracy});
+        vis.conn.setState(prefix + 'altitudeAccuracy', {ts: ts, ack: true, val: position.coords.altitudeAccuracy});
+        vis.conn.setState(prefix + 'heading',      {ts: ts, ack: true, val: position.coords.heading});
+        vis.conn.setState(prefix + 'speed',        {ts: ts, ack: true, val: position.coords.speed});
+        if (position.coords.speed !== null && position.coords.speed !== undefined) {
+            vis.conn.setState(prefix + 'speedKm',        {ts: ts, ack: true, val: position.coords.speed * 3.6});
+        } else {
+            vis.conn.setState(prefix + 'speedKm',        {ts: ts, ack: true, val: null});
+        }
+    },
+    startStopPollPosition: function (isStart) {
+        if (isStart && this.settings.geoInterval && navigator && navigator.geolocation && navigator.geolocation.getCurrentPosition) {
+            if (this.settings.geoInterval < 30) this.settings.geoInterval = 30;
+
+            if (!this.geoTimer) {
+                this.geoTimer = setInterval(function () {
+                    navigator.geolocation.getCurrentPosition(app.onLocation, function (error) {
+                        console.error(error);
+                    });
+                }, this.settings.geoInterval * 1000);
+            }
+            if (!this.geoWatchID) {
+                this.geoWatchID = navigator.geolocation.watchPosition(this.onLocation, function (error) {
+                    console.error(error);
+                }, {
+                    enableHighAccuracy: !!this.settings.geoHighAccuracy,
+                    maximumAge:         3000,
+                    timeout:            5000
+                });
+            }
+        } else {
+            if (this.geoTimer) {
+                clearInterval(this.geoTimer);
+                this.geoTimer = null;
+            }
+            if (this.geoWatchID) {
+                navigator.geolocation.clearWatch(this.geoWatchID);
+                this.geoWatchID = null;
+            }
+        }
+    },
     readProjectsHelper: function (project, cb) {
         vis.conn.readFile(project + '/vis-views.json', function (error, data, filename) {
             if (cb) {
@@ -1397,12 +1735,6 @@ var app = {
                 'width=' + this.window.width + ',' +
                 'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale);
         }.bind(this);
-        // resize viewport
-        //this.settings.initialZoom = parseFloat(this.settings.initialZoom) || 1;
-
-        //$('meta[name=viewport]').attr('content',
-        //    'width=' + this.window.width + ',' +
-        //    'minimum-scale=' + (this.settings.initialZoom || 1) + ', initial-scale=' + (this.settings.initialZoom || 1) + ', maximum-scale=' + (this.settings.initialZoom || 1));
 
         var viewport_scale;
 
@@ -1543,7 +1875,7 @@ var app = {
             '<tr class="cordova-setting-speech speech"><td><input id="responseWithTts"    class="cordova-setting" data-name="responseWithTts" type="checkbox"/><label for="responseWithTts" class="checkbox">&#8226;</label></td></tr>' +
 
             '<tr><td class="cordova-settings-label section-legend"><span>' + _('Cell')      + '</span><div class="cordova_toggle" data-group="cell">▶</div></td></tr>'+
-            '<tr class="cordova-setting-cell"><td>' + _('Cell Socket')           + ':</td></tr>' +
+            '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell Socket')           + ':</td></tr>' +
             '<tr class="cordova-setting-cell"><td><input  class="cordova-setting" data-name="socketUrlGSM" style="width: 100%"/></td></tr>'+
 
             '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell User')             + ':</td></tr>' +
@@ -1554,6 +1886,19 @@ var app = {
 
             '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell Password repeat')  + ':</td></tr>' +
             '<tr class="cordova-setting-cell"><td><input id="cordova-password-repeat-gsm" type="password" style="width: 100%"/></td></tr>'+
+
+            '<tr><td class="cordova-settings-label section-legend"><span>' + _('Battery and location')      + '</span><div class="cordova_toggle" data-group="battery">▶</div></td></tr>'+
+            '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('Device name')           + ':</td></tr>' +
+            '<tr class="cordova-setting-battery"><td><input  class="cordova-setting" data-name="deviceName" style="width: 100%"/></td></tr>'+
+
+            '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('Report battery status')             + ':</td></tr>' +
+            '<tr class="cordova-setting-battery"><td><input id="readBattery" class="cordova-setting" data-name="readBattery" type="checkbox"/><label for="readBattery" class="checkbox">&#8226;</label></td></tr>'+
+
+            '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('Position poll interval (sec)')         + ':</td></tr>' +
+            '<tr class="cordova-setting-battery"><td><input type="number" min="0" max="1800" class="cordova-setting" data-name="geoInterval" style="width: 100%"></td></tr>'+
+
+            '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('High accuracy position')             + ':</td></tr>' +
+            '<tr class="cordova-setting-battery"><td><input id="geoHighAccuracy" class="cordova-setting" data-name="geoHighAccuracy" type="checkbox"/><label for="geoHighAccuracy" class="checkbox">&#8226;</label></td></tr>'+
 
             '</select></td></tr>'+
             '</table></div>');
@@ -1577,6 +1922,16 @@ var app = {
                 $('#cordova_dialog .cordova-setting[data-name="zoomLevelLandscape"][type="range"]').val($(this).val());
             } else {
                 $('#cordova_dialog .cordova-setting[data-name="zoomLevelLandscape"][type="number"]').val($(this).val());
+            }
+        }).keyup(function () {
+            $(this).trigger('change');
+        });
+
+        $('#cordova_dialog .cordova-setting[data-name="geoInterval"]').change(function() {
+            if ($(this).attr('type') === 'number') {
+                $('#cordova_dialog .cordova-setting[data-name="geoInterval"][type="range"]').val($(this).val());
+            } else {
+                $('#cordova_dialog .cordova-setting[data-name="geoInterval"][type="number"]').val($(this).val());
             }
         }).keyup(function () {
             $(this).trigger('change');
@@ -1654,6 +2009,7 @@ var app = {
             $('.cordova-setting-ssid').hide();
             $('.cordova-setting-cell').hide();
             $('.cordova-setting-speech').hide();
+            $('.cordova-setting-battery').hide();
 
             $('#cordova-password-repeat').val($('#cordova-password').val());
             $('#cordova-password-repeat-gsm').val($('#cordova-password-gsm').val());
@@ -1803,6 +2159,7 @@ var app = {
 
     onConnChange: function (connected) {
         this.connected = connected;
+        this.startStopPollPosition(connected);
         if (connected) {
             $('#cordova_connected').html('<span style="color: green">' + this.yes +'</span>');
 
@@ -1817,6 +2174,10 @@ var app = {
                 clearInterval(this._countInterval);
                 this._countInterval = null;
             }
+
+            this.createStates();
+            this.onLocation(this.lastPosition);
+            this.onBatteryStatus(this.lastBatteryStatus);
         } else {
             $('#cordova_connected').html('<span style="color: red">'   + this.no +'</span>');
 

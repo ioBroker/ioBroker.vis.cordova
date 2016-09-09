@@ -328,6 +328,25 @@ module.exports = [
         "clobbers": [
             "AndroidFullScreen"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-battery-status/www/battery.js",
+        "id": "cordova-plugin-battery-status.battery",
+        "clobbers": [
+            "navigator.battery"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-geolocation/www/android/geolocation.js",
+        "id": "cordova-plugin-geolocation.geolocation",
+        "clobbers": [
+            "navigator.geolocation"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-geolocation/www/PositionError.js",
+        "id": "cordova-plugin-geolocation.PositionError",
+        "runs": true
     }
 ];
 module.exports.metadata = 
@@ -346,7 +365,10 @@ module.exports.metadata =
     "cordova.custom.plugins.exitapp": "1.0.0",
     "com.phonegap.plugins.OrientationLock": "0.1",
     "cordova-plugin-crosswalk-webview": "1.8.0",
-    "cordova-plugin-fullscreen": "1.1.0"
+    "cordova-plugin-fullscreen": "1.1.0",
+    "cordova-plugin-battery-status": "1.1.2",
+    "cordova-plugin-compat": "1.0.0",
+    "cordova-plugin-geolocation": "2.2.0"
 };
 // BOTTOM OF METADATA
 });

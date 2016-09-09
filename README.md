@@ -86,6 +86,32 @@ Of course one instance of text2command adapter must be installed.
 - *Default room* - if your mobile device is fixed in some specific room, e.g. in sleeping room. There is no need to sy every time "Switch the light on in sleeping room", it is should be enough to say ""Switch the light on". To enable that the default room name can be specified. If text2command does not find any room name in the phrase it will take default room name for command execution.
 - *Response over TTS* - if activated the answers from text2command will be synthesised via text-to-speech engine. Of course some TTS Engine must be installed and activated on android device.
 
+### Battery and location
+There is a possibility to report position and battery status to server. 
+
+- *Device name* - device name is used to create states on server (see below).
+- *Report battery status* - if battery status must be reported to server or not. Only changes of battery level or plugged state will be reported. No cyclic update.
+- *Position poll interval (sec)* - If position should be reported to server. Position is reported on change and cyclic. To disable report of position set interval to zero. (E.g. to save the battery)
+- *High accuracy position* - If position must be high accuracy or not. In high accuracy mode more battery drain.
+
+Following states will be created if battery status reporting is activated:
+- vis.0.<deviceName>.battery.level - the battery charge percentage.
+- vis.0.<deviceName>.battery.isPlugged - a boolean that indicates whether the device is plugged in.
+
+Battery status will be updated when the battery charge percentage changes by at least 1 percent, or when the device is plugged in or unplugged. 
+
+Following states will be created if position poll interval is not zero:
+- vis.0.<deviceName>.coords.latitude - latitude in decimal degrees.
+- vis.0.<deviceName>.coords.longitude - longitude in decimal degrees.
+- vis.0.<deviceName>.coords.accuracy - accuracy level of the latitude and longitude coordinates in meters.
+
+Following states are not available on all devices:
+- vis.0.<deviceName>.coords.altitude - height of the position in meters above the ellipsoid.
+- vis.0.<deviceName>.coords.altitudeAccuracy - accuracy level of the altitude coordinate in meters..
+- vis.0.<deviceName>.coords.heading - direction of travel, specified in degrees counting clockwise relative to the true north.
+- vis.0.<deviceName>.coords.speed - current ground speed of the device, specified in meters per second.
+- vis.0.<deviceName>.coords.speedKm - current ground speed of the device, specified in km per hours.
+
 ### Access to images and other resources
 The App copies the view file of the selected project and all referenced images during the synchronization to the phone (internal memory). There is no automatic update so you have to restart the re-synchronization manually.
 The following content will be copied to the phone:
@@ -181,6 +207,10 @@ With command in javascript adapter you can activate text to speech engine of And
 - enable automatically load of project files from ioBroker server (e.g. for home use)
 
 ## Changelog
+
+### 0.7.0 (2016-09-09)
+* (bluefox) add geolocation
+* (bluefox) add report of battery status
 
 ### 0.6.0 (2016-09-01)
 * (bluefox) new cordova module version 6.3.1

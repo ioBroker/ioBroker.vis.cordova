@@ -48,7 +48,17 @@
         },
         "cordova-plugin-fullscreen": {
             "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-battery-status": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-geolocation": {
+            "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
-    "dependent_plugins": {}
+    "dependent_plugins": {
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        }
+    }
 }

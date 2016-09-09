@@ -75,6 +75,14 @@
                         {
                             "xml": "<feature name=\"AndroidFullScreen\"><param name=\"android-package\" value=\"com.mesmotronic.plugins.FullScreenPlugin\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Battery\"><param name=\"android-package\" value=\"org.apache.cordova.batterystatus.BatteryListener\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Geolocation\"><param name=\"android-package\" value=\"org.apache.cordova.geolocation.Geolocation\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -100,6 +108,18 @@
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.BATTERY_STATS\" />",
                             "count": 1
                         }
                     ],
@@ -176,6 +196,15 @@
             "PACKAGE_NAME": "net.iobroker.vis"
         },
         "cordova-plugin-fullscreen": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-battery-status": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-geolocation": {
             "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
@@ -509,6 +538,25 @@
             "clobbers": [
                 "AndroidFullScreen"
             ]
+        },
+        {
+            "file": "plugins/cordova-plugin-battery-status/www/battery.js",
+            "id": "cordova-plugin-battery-status.battery",
+            "clobbers": [
+                "navigator.battery"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-geolocation/www/android/geolocation.js",
+            "id": "cordova-plugin-geolocation.geolocation",
+            "clobbers": [
+                "navigator.geolocation"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-geolocation/www/PositionError.js",
+            "id": "cordova-plugin-geolocation.PositionError",
+            "runs": true
         }
     ],
     "plugin_metadata": {
@@ -525,6 +573,9 @@
         "cordova.custom.plugins.exitapp": "1.0.0",
         "com.phonegap.plugins.OrientationLock": "0.1",
         "cordova-plugin-crosswalk-webview": "1.8.0",
-        "cordova-plugin-fullscreen": "1.1.0"
+        "cordova-plugin-fullscreen": "1.1.0",
+        "cordova-plugin-battery-status": "1.1.2",
+        "cordova-plugin-compat": "1.0.0",
+        "cordova-plugin-geolocation": "2.2.0"
     }
 }
