@@ -72,6 +72,32 @@ Natürlich muss eine Instanz des text2command Adapters installiert werden.
 - *Standard-Raum* - Wenn Ihr mobiles Gerät in einem bestimmten Raum befestigt ist, z.B. im Schlafzimmer ist es nicht notwendig, jedes Mal "Schalte das Licht im Schlafzimmer an" zu sagen. Es sollte reichen "" das Licht einschalten " zu sagen. Um das zu aktivieren kann ein Standart Raum Name definiert werden. Wenn text2command keinen Raumnamen in dem Satz findet, wird für die Befehlsausführung der Standardraumnamen verwendet.
 - *Antwort über TTS* - Wenn aktiviert, werden die Antworten von text2command über die Text-to-Speech-Engine ausgegeben. Natürlich muss eine TTS-Engine auf dem Android-Gerät installiert und aktiviert werden.
 
+### Batterie und Standort
+Es gibt eine Möglichkeit, dem Server die Position und den Batteriestatus zu melden.
+
+- *Gerätename* - Der Gerätename wird verwendet, um den Status auf dem Server zu erzeugen (siehe unten).
+- *Melde Batteriestatus* - Angabe, ob der Batteriestatus an den Server gemeldet werden soll, oder nicht. Nur Änderungen des Batteriestandes oder der angeschlossene Zustand der Batterie werden gemeldet; keine zyklische Aktualisierung.
+- *Sendeintervall der Position (in Sekunden)* - Angabe, ob die Postion an den Server gemeldet werden soll. Die Position wird sowohl nach einer Änderung als auch zyklisch übertragen. Um die Meldung der Position zu beenden, setze das Intervall auf Null (z.B. aus Energiespargründen).
+- *Postion mit hoher Genauigkeit* - Angabe, ob die Position mit hoher Genauigkeit erfolgen muss, oder nicht. Eine hohe Genauigkeit führt zu einem erhöhten Energieverbrauch.
+
+Die folgenden Zustände werden erzeugt, wenn eine Meldung des Batteriestatus aktiviert ist:
+- vis.0.<Gerätename>.battery.level - Batterieladezustand in Prozent.
+- vis.0.<Gerätename>.battery.isPlugged - Angabe als boolscher Wert, ob das Gerät mit dem Stromnetz verbunden ist.
+
+Der Batteriezustand wird aktualisiert, wenn sich der Ladezustand der Batterie um mindestens 1 % verändert oder wenn das Gerät angeschlossen oder abgesteckt wurde.
+
+Die folgenden Zustände werden erzeugt, wenn das Sendeintervall der Position nicht Null beträgt:
+- vis.0.<Gerätename>.coords.latitude - Breitengrad als Dezimalwert.
+- vis.0.<Gerätename>.coords.longitude - Längengrad als Dezimalwert.
+- vis.0.<Gerätename>.coords.accuracy - Grad der Genauigkeit für Breiten- und Längengrad in Metern.
+
+Die folgenden Zustände sind nicht auf allen Geräten verfügbar:
+- vis.0.<Gerätename>.coords.altitude - Höhe der Position über dem Referenzellipsoid in Metern.
+- vis.0.<Gerätename>.coords.altitudeAccuracy - Genauigkeit der Höhe in Metern.
+- vis.0.<Gerätename>.coords.heading - Bewegungsrichtung im Uhrzeigersinn bezogen auf den geographischen Norden in Grad.
+- vis.0.<Gerätename>.coords.speed - aktuelle Geschwindigkeit des Geräts in m/s.
+- vis.0.<Gerätename>.coords.speedKm - aktuelle Geschwindigkeit des Geräts in km/h.
+
 ### Visualisierung und Verhalten
 - *Ausrichtung* - Ausrichtung des Views: **auto**, **landscape** oder **portrait**. Wenn **auto** ausgewählt ist, wird die Ausrichtung automatisch erkannt.
 - *Verhindere Schlafmodus* - Wenn aktiviert, wird das Gerät nie in den Ruhemodus versetzt und das Display bleibt immer an. (Funktioniert nicht auf allen Geräten)
