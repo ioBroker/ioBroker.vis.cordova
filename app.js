@@ -471,9 +471,9 @@ var app = {
         this.receivedEvent('deviceready');
 
         // allow unsecure certificates
-        if (cordova.plugins.certificates) {
+        /*if (cordova.plugins.certificates) {
             cordova.plugins.certificates.trustUnsecureCerts(true);
-        }
+        }*/
 
         // install listener on go-back button
         document.addEventListener('backbutton', this.onBackButtonGeneral, false);

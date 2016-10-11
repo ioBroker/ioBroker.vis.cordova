@@ -59,6 +59,7 @@
     background-color: #D1DCE8;
     box-shadow: 0 0 10px #314861;
     border-color: #2a4e55;
+    color: black;
 }
 
 #cordova_dialog input,
