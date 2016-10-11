@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="net.iobroker.vis" version="0.7.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="net.iobroker.vis" version="0.8.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>ioBroker.vis</name>
     <description>
         ioBroker.vis runtime for ioBroker.
@@ -25,6 +25,7 @@
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     <preference name="iosPersistentFileLocation" value="Library" />
     <preference name="BackupWebStorage" value="none" />
+    <preference name="xwalkVersion" value="18" />
     <platform name="android">
         <allow-intent href="market:*" />
     </platform>

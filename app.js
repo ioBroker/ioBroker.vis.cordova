@@ -154,7 +154,12 @@ $.extend(systemDictionary, {
     "Default room":      {"en": "Default room",             "de": "Default Raum",           "ru": "Комната по умолчанию"},
     "Response over TTS": {"en": "Response over TTS",        "de": "Antworten mit TTS",      "ru": "Отвечать голосом"},
     "Message":           {"en": "Message",                  "de": "Meldung",                "ru": "Сообщение"},
-    "Discard changes?":  {"en": "Discard changes?",         "de": "Die Änderungen sind nicht gespeichert. Ignorieren?",  "ru": "Игнорировать изменения?"}
+    "Discard changes?":  {"en": "Discard changes?",         "de": "Die Änderungen sind nicht gespeichert. Ignorieren?",  "ru": "Игнорировать изменения?"},
+    "Invalid username or password": {
+        "en": "Invalid username or password",
+        "de": "Username oder Kennwort ist flash",
+        "ru": "Неправильные имя пользователя или пароль"
+    }
 });
 
 var app = {
@@ -465,6 +470,11 @@ var app = {
     onDeviceReady:  function () {
         this.receivedEvent('deviceready');
 
+        // allow unsecure certificates
+        if (cordova.plugins.certificates) {
+            cordova.plugins.certificates.trustUnsecureCerts(true);
+        }
+
         // install listener on go-back button
         document.addEventListener('backbutton', this.onBackButtonGeneral, false);
         if (this.settings.readBattery) {
@@ -664,6 +674,9 @@ var app = {
         }
     },
 
+    onAuthError:    function (err) {
+        window.alert(_('Invalid username or password'));
+    },
     // creates vis states for battery and geolocation
     createStates:   function (cb) {
         var that = this;
@@ -988,18 +1001,24 @@ var app = {
             this.projects = [];
             $('#cordova_project').html('');
             vis.conn.readDir('/vis.0', function (error, files) {
+                if (error) {
+                    alert('Cannot read projects: ' + error);
+                }
                 var count = 0;
-                for (var f = 0; f < files.length; f++) {
-                    if (files[f].isDir) {
-                        count++;
-                        this.readProjectsHelper(files[f].file, function (project) {
-                            if (project) {
-                                this.projects.push(project);
-                                $('#cordova_project').append('<option value="' + project + '" ' + (project == this.settings.project ? 'selected' : '') + '>' + project + '</option>');
-                            }
-                        }.bind(this));
+                if (files) {
+                    for (var f = 0; f < files.length; f++) {
+                        if (files[f].isDir) {
+                            count++;
+                            this.readProjectsHelper(files[f].file, function (project) {
+                                if (project) {
+                                    this.projects.push(project);
+                                    $('#cordova_project').append('<option value="' + project + '" ' + (project == this.settings.project ? 'selected' : '') + '>' + project + '</option>');
+                                }
+                            }.bind(this));
+                        }
                     }
                 }
+
                 if (!--count && cb) cb();
             }.bind(this));
         } else {

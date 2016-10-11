@@ -93,10 +93,12 @@
     "cordova-plugin-crosswalk-webview": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-crosswalk-webview"
+            "id": "cordova-plugin-crosswalk-webview@2.1.0"
         },
         "is_top_level": true,
-        "variables": {}
+        "variables": {
+            "XWALK_VERSION": "18"
+        }
     },
     "cordova.custom.plugins.exitapp": {
         "source": {
