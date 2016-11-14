@@ -1,7 +1,7 @@
 {
   "name": "iobroker.vis.cordova",
   "description": "Cordova APP for ioBroker.",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "author": {
     "name": "bluefox",
     "email": "dogafox@gmail.com"
@@ -43,8 +43,9 @@
 	"iobroker.kodi": "*",
     "iobroker.rickshaw": "*",
     "iobroker.web": "*",
-    "iobroker.vis": "ioBroker/ioBroker.vis",
+    "iobroker.vis": "*",
     "iobroker.vis-bars": "*",
+    "ioBroker.vis-canvas-gauges": "*",
     "iobroker.vis-colorpicker": "*",
     "iobroker.vis-fancyswitch": "*",
     "ioBroker.vis-google-fonts": "*",
@@ -60,7 +61,7 @@
     "iobroker.vis-rgraph": "*",
     "iobroker.vis-timeandweather": "*",
     "iobroker.yr": "*",
-    "cordova": "^6.3.1"
+    "cordova": "^6.4.0"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.vis.cordova/issues"
