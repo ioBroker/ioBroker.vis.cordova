@@ -208,6 +208,9 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.8.2 (2016-12-25)
+* (bluefox) add hue widgets
+
 ### 0.7.0 (2016-09-09)
 * (bluefox) add geolocation
 * (bluefox) add report of battery status
