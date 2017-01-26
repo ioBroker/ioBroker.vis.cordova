@@ -82,45 +82,86 @@ WEB визуализация для платформы ioBroker как прил�
 - *Комната по умолчанию* - если телефон или планшет постоянно находится в одной комнате, то нет необходимости говорить "Включи свет в кабинете", если планшет находится в кабинете. Можно просто сказать "Включи свет". Что бы это было возможно, нужно задать комнату по умолчанию. Имя комнаты по умолчанию будет использоватся каждый раз, если в сообщении не найдено имя комнаты.
 - *Отвечать голосом* - активирует ответы от text2command голосом. Для этого должна быть настроена TTS система на телефоне.
 
-### Access to images and other resources
-The App copies the view file of the selected project and all referenced images during the synchronization to the phone (internal memory). There is no automatic update so you have to restart the re-synchronization manually.
-The following content will be copied to the phone:
-- The view files and all other files in the directory of the chosen vis project with one of the following file extensions: ```.png .jpg .jpeg .gif```
-- All image files with file extension ```.png .jpg .jpeg .gif``` and files with file extension ```.wav .mp3 .bmp .svg```, which are in a adapter directory below [iobroker data directory]/files/ and which are referenced inside the view definition file of the chosen vis project. The fist sub directory below [iobroker data directory]/files/ must contain the char "." in his name otherwise the files inside will not be copied.
+### Доступ к изображениям и другим ресурсам
 
-To allow the app to replace the paths correctly, the files must be specified with an absolute local path (for example, /vis.0/main/img/test.png). Relative paths are not supported. If paths to resources are embedded in HTML inside widgets, the syntax must be exactly match the following pattern  ```... src='/vis.0/main...'``` or ```... src ="/vis.0/main..."```. Other notations are not recognized.
-Additionally you can configure an *Substitution URL* in the settings dialog. This URL points to the external URL of the Web server of VIS or another local web server. All found references to URL found in the view definition which starts with the configured Test are downloaded to the device and the URL will be changed to the local path during the synchronization. Please note that this substitution is not implemented for embedded links in html code(e.g. ```https://[your domain]/visweb```).
+Приложение копирует view файл выбранного проекта и все связанные
+с ним изображения при синхронизации в телефон (внутренняя память).
+Функция автоматического обновления отсутствует, поэтому вам самим
+придется перезапустить синхронизацию вручную.
 
-The replacement of paths at runtime is currently limited to the following widgets:
+В телефон будут скопированы:
+
+- view файлы и все остальные файлы в папке выбранного проекта с расширениями: .png .jpg .jpeg .gif
+- все файлы изображений с расширением .png .jpg .jpeg .gif и файлы с расширением .wav .mp3 .bmp .svg, которые находятся в папке драйвера [iobroker data directory]/files/ и на которые ссылаются в описании view файла выбранного vis проекта. Первая часть ссылки [iobroker data directory]/files/ в  своем названии должна содержать знак &quot;.&quot; в противном случае, внутренние файлы не будут скопированы.
+
+Чтобы приложение правильно заменило ссылки, файлы должны быть 
+определены в виде абсолютной ссылки (например, /vis.0/main/img/test.png).
+Относительные ссылки не поддерживаются. Если ссылки на ресурсы,
+внедрены в виде HTML внутри виджетов, то тогда синтаксис должен в
+точности соответствовать следующему шаблону  ```... src='/vis.0/main...'```
+или ```... src ="/vis.0/main..."```. Другие обозначения не распознаются. Кроме
+того, вы можете настроить URL подстановки в диалоге настроек. Этот URL
+указывает на внешний URL-адрес веб-сервера VIS или другой локальный
+веб-сервер. Все найденные ссылки на URL присутствуют в view файле,
+который вместе с настроенным Test стартует при загрузке на устройство,
+меняя URL на локальный путь при синхронизации. Обратите внимание, что
+эта замена не реализована для встроенных ссылок в HTML-коде (например
+```https://[your domain]/visweb```).
+
+Замена ссылок во время выполнения, в настоящее время
+ограничивается следующими виджетами:
+
 - basic string (unescaped)
 - basic string src
 - basic json table
 
-Since the values are transmitted at runtime, the files are only transferred to the device if they are located in the project directory or have been referenced by another statically configured widget. There is no load mechanism of missing pictures.
-The icon collections offered as separate ioBroker adapter are not part of the app, but will also be copied during the synchronization phase if the images are referenced in the views.
+Поскольку значения передаются во время выполнения, файлы
+передаются устройству только если они находятся в папке проекта или
+ссылаются на другой статически настроенный виджет. Механизм загрузки
+отсутствующих картинок отсутствует. Коллекции иконок, предлагаемые в
+качестве отдельного драйвера ioBroker не являются частью приложения, но
+также будут скопированы во время синхронизации, если изображения
+определены в views.
 
-Your can access other resources within the app if you use full paths starting with http:// or https://. These files are not loaded locally during the synchronization but loaded directly from the respective server via http:// or https:// if the view is shown in the app.
-If you use a reverse proxy with http authentication, the credentials can be embedded in the URLin the following form:
+Вы можете получить доступ к другим ресурсам в пределах
+приложения, если будете использовать полные пути, начинающиеся с http:// или https://. 
+Эти файлы не загружаются локально при синхронизации, но
+загружаются непосредственно с соответствующего сервера через http: // или
+https://, если view отображено в приложении. Если вы используете обратный
+прокси-сервер с проверкой подлинности по http, то тогда учетные данные
+могут быть внедрены в URL в следующей форме:
+
 ```https://[username]:[password]@[my domain]/vis.0/main/...```
 
+Применение веб-модулей других драйверов типа VIS
+Другие драйвера типа VIS также могут поставлять веб-данные. Эти
+данные могут быть отображены внутри VIS view в iframe. Это особенно
+актуально для драйверов Flot и Rickshaw схем.
+На текущий момент внедрены в приложение только клиентские части
+следующих драйверов:
 
-### Using Web modules of other adapters as VIS
-Other adapters as VIS can also deliver web content. This content can be displayed within the vis views in iframes. This is particularly true for the adapters Flot and Rickshaw charts.
-
-Currently, only the client components of the following adapters are integrated in the app:
 - Flot
 - Rickshaw
 
-To use the local version of Flot, the source of the iframe must start with ```/flot/index.html?```.
+При использовании локальной версии Flot, источник iframe должен
+начинаться с ```/flot/index.html?```.
 
-Other content and also the content of other servers such as Webcams can also be shown inside the app, if this is a full URL is used to the server.
+Другие данные, в том числе и данные с различных серверов,
+например, с веб-камер также могут быть отображены в приложении, при
+условии, что используется полный URL для сервера.
 
-### Exit of the App
-The app can be closed with the home button. However, in this case, the app runs in the background and continues to consume data volume and battery. The option *Sleep in background* can reduce the consumption. In this case, the socket.io connection is interrupted when the app is inactive.
-If you close the app by pressing the back button trice within one second, the app will be stopped completely.
-In addition, the app provides a way to terminate completely. For this purpose, you can insert a basic static link widget in your views containing the following link: ```javascript:logout ()```
-You find here such a Widget to import in VIS:
+### Выход из приложения
 
+Приложение можно закрыть с помощью кнопки «Home». Но тогда в
+этом случае приложение будет работать в фоновом режиме и продолжит
+потреблять ресурсы памяти и аккумулятора. Опция «Sleep» в фоновом
+режиме поможет уменьшить потребление. В этом случае socket.io
+соединение прерывается, когда приложение неактивно.
+Чтобы полностью завершить приложение необходимо трижды нажать
+на кнопку «Back» в течении одной секунды. Кроме того, приложение
+позволяет экстренно завершится. Для этого вам нужно вставить простую
+статическую ссылку виджет в вашем view, содержащем следующую ссылку:
+javascript:logout (). Здесь вы найдете такой виджет для импорта в VIS:
 ```
 [{"tpl":"tplIconLink","data":{"visibility-cond":"==","visibility-val":1,"href":"javascript:logout ();","target":"_self","text":"","views":null,"gestures-offsetX":0,"gestures-offsetY":0,"signals-cond-0":"==","signals-val-0":true,"signals-icon-0":"/vis/signals/lowbattery.png","signals-icon-size-0":0,"signals-blink-0":false,"signals-horz-0":0,"signals-vert-0":0,"signals-hide-edit-0":false,"signals-cond-1":"==","signals-val-1":true,"signals-icon-1":"/vis/signals/lowbattery.png","signals-icon-size-1":0,"signals-blink-1":false,"signals-horz-1":0,"signals-vert-1":0,"signals-hide-edit-1":false,"signals-cond-2":"==","signals-val-2":true,"signals-icon-2":"/vis/signals/lowbattery.png","signals-icon-size-2":0,"signals-blink-2":false,"signals-horz-2":0,"signals-vert-2":0,"signals-hide-edit-2":false,"src":"/icons-material-png/action/ic_exit_to_app_black_48dp.png","name":"","class":""},"style":{"left":"1232px","top":"755px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"34px","height":"32px"},"widgetSet":"jqui"}]
 ```
