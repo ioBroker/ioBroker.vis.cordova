@@ -208,6 +208,9 @@ With command in javascript adapter you can activate text to speech engine of And
 
 ## Changelog
 
+### 0.8.3 (2017-02-07)
+* (bluefox) add private policy
+
 ### 0.8.2 (2016-12-25)
 * (bluefox) add hue widgets
 
@@ -296,7 +299,7 @@ With command in javascript adapter you can activate text to speech engine of And
 
 
 ## License
- Copyright (c) 2016 bluefox https://github.com/GermanBluefox
+ Copyright (c) 2016-2017 bluefox https://github.com/GermanBluefox
  Creative Common Attribution-NonCommercial (CC BY-NC)
 
  http://creativecommons.org/licenses/by-nc/4.0/

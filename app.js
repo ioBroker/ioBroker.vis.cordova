@@ -159,7 +159,8 @@ $.extend(systemDictionary, {
         "en": "Invalid username or password",
         "de": "Username oder Kennwort ist flash",
         "ru": "Неправильные имя пользователя или пароль"
-    }
+    },
+    "show_policy":       {"en": "Show me User Data Policy", "de": "Datenschutz und Sicherheit Richtlinien", "ru": "Конфиденциальность и безопасность"}
 });
 
 var app = {
@@ -1722,16 +1723,19 @@ var app = {
     },
 
     manageDisplayRotation: function () {
+        var orientation = window.orientation !== undefined ? window.orientation : window.screen.orientation.angle;
+
         // Manage rotation
         this.window = {
-            orientation: window.orientation,
+            orientation: orientation,
             width:       window.innerWidth,
             height:      window.innerHeight
         };
         window.onorientationchange = function () {
             var viewport_scale;
+            var orientation = window.orientation !== undefined ? window.orientation : window.screen.orientation.angle;
 
-            if (window.orientation == 0 || window.orientation == 180) {
+            if (orientation === 0 || orientation === 180) {
                 viewport_scale = this.settings.zoomLevelLandscape / 100;
                 // resize menu button
                 $('#cordova_menu').css({
@@ -1757,7 +1761,7 @@ var app = {
 
         var viewport_scale;
 
-        if (window.orientation == 0 || window.orientation == 180) {
+        if (orientation === 0 || orientation === 180) {
             viewport_scale = this.settings.zoomLevelLandscape / 100;
         } else {
             viewport_scale = this.settings.zoomLevelPortrait / 100;
@@ -1786,7 +1790,8 @@ var app = {
         var w;
         var h;
         var f;
-        if (window.orientation == 0 || window.orientation == 180) {
+        var orientation = window.orientation !== undefined ? window.orientation : window.screen.orientation.angle;
+        if (orientation === 0 || orientation === 180) {
             w = Math.round(2800 / this.settings.zoomLevelLandscape);
             h = Math.round(2200 / this.settings.zoomLevelLandscape);
             f = Math.round(1600 / this.settings.zoomLevelLandscape);
@@ -1816,21 +1821,21 @@ var app = {
             '<tr><td class="cordova-settings-label">' + _('Connected') + ':</td></td><tr>' +
             '<tr><td class="cordova-settings-value"><div id="cordova_connected"></div></td></tr>' +
 
-            '<tr><td class="cordova-settings-label section-legend"><span>'      + _('WIFI') + '</span><div class="cordova_toggle" data-group="ssid">▶</div></td></tr>'+
+            '<tr><td class="cordova-settings-label section-legend"><span>'      + _('WIFI') + '</span><div class="cordova_toggle" data-group="ssid">▶</div></td></tr>' +
             '<tr class="cordova-setting-ssid"><td>' + _('WIFI SSID') + ':</td></tr>' +
-            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="ssid"       style="width: calc(100% - 4em)" id="cordova_ssid"/><button id="cordova_ssid_button" style="width: 3em; height: 2.3em;">' + _('Actual') + '</button></td></tr>'+
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="ssid"       style="width: calc(100% - 4em)" id="cordova_ssid"/><button id="cordova_ssid_button" style="width: 3em; height: 2.3em;">' + _('Actual') + '</button></td></tr>' +
 
             '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Socket')           + ':</td></tr>' +
-            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="socketUrl"  style="width: 100%"/></td></tr>'+
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="socketUrl"  style="width: 100%"/></td></tr>' +
 
             '<tr class="cordova-setting-ssid"><td  class="cordova-settings-label">' + _('WIFI User')             + ':</td></tr>' +
-            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="user"       style="width: 100%"/></td></tr>'+
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="user"       style="width: 100%"/></td></tr>' +
 
             '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Password')         + ':</td></tr>' +
-            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="password"   type="password" id="cordova-password" style="width: 100%"/></td></tr>'+
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="password"   type="password" id="cordova-password" style="width: 100%"/></td></tr>' +
 
             '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Password repeat')  + ':</td></tr>' +
-            '<tr class="cordova-setting-ssid"><td><input id="cordova-password-repeat" type="password"   style="width: 100%"/></td></tr>'+
+            '<tr class="cordova-setting-ssid"><td><input id="cordova-password-repeat" type="password"   style="width: 100%"/></td></tr>' +
 
 
             '<tr><td class="cordova-settings-label">' + _('Language')  + ':</td></tr>' +
@@ -1853,13 +1858,13 @@ var app = {
             '</select></td></tr>' +
 
             '<tr><td class="cordova-settings-label"><label for="noSleep">' + _('Prevent from sleep')       + ':</label></td></tr>' +
-            '<tr><td><input id="noSleep" class="cordova-setting" data-name="noSleep" type="checkbox"/><label for="noSleep" class="checkbox">&#8226;</label></td></tr>'+
+            '<tr><td><input id="noSleep" class="cordova-setting" data-name="noSleep" type="checkbox"/><label for="noSleep" class="checkbox">&#8226;</label></td></tr>' +
 
             '<tr><td class="cordova-settings-label"><label for="allowMove">' + _('Allow window move')      + ':</label></td></tr>' +
-            '<tr><td><input  id="allowMove"      class="cordova-setting" data-name="allowMove"   type="checkbox"/><label for="allowMove" class="checkbox">&#8226;</label></td></tr>'+
+            '<tr><td><input  id="allowMove"      class="cordova-setting" data-name="allowMove"   type="checkbox"/><label for="allowMove" class="checkbox">&#8226;</label></td></tr>' +
 
             '<tr><td class="cordova-settings-label"><label for="fullscreen">' + _('Fullscreen')      + ':</label></td></tr>' +
-            '<tr><td><input  id="fullscreen"      class="cordova-setting" data-name="fullscreen"   type="checkbox"/><label for="fullscreen" class="checkbox">&#8226;</label></td></tr>'+
+            '<tr><td><input  id="fullscreen"      class="cordova-setting" data-name="fullscreen"   type="checkbox"/><label for="fullscreen" class="checkbox">&#8226;</label></td></tr>' +
             '<tr class="cordova-settings-label"><td>' + _('Zoom Level Portrait') + ':</td></tr>' +
             '<tr class="cordova-settings-value"><td><input type="number" min="20" max="500" class="cordova-setting" data-name="zoomLevelPortrait" style="width: 80px"/><input type="range" min="20" max="500" class="cordova-setting" data-name="zoomLevelPortrait" style="width: calc(100% - 85px)"/></td></tr>' +
             '<tr class="cordova-settings-label"><td>' + _('Zoom Level Landscape') + ':</td></tr>' +
@@ -1872,11 +1877,11 @@ var app = {
             '<tr><td><input  class="cordova-setting" data-name="instance"    style="width: 100%"/></td></tr>' +
 
             '<tr><td class="cordova-settings-label"><label for="noCommInBackground">' + _('Sleep in background')   + ':</label></td></tr>' +
-            '<tr><td><input  id="noCommInBackground" class="cordova-setting" data-name="noCommInBackground" type="checkbox"/><label for="noCommInBackground" class="checkbox">&#8226;</label></td></tr>'+
+            '<tr><td><input  id="noCommInBackground" class="cordova-setting" data-name="noCommInBackground" type="checkbox"/><label for="noCommInBackground" class="checkbox">&#8226;</label></td></tr>' +
 
-            '<tr><td class="cordova-settings-label section-legend"><span>'      + _('Speech recognition') + '</span><div class="cordova_toggle" data-group="speech">▶</div></td></tr>'+
+            '<tr><td class="cordova-settings-label section-legend"><span>'      + _('Speech recognition') + '</span><div class="cordova_toggle" data-group="speech">▶</div></td></tr>' +
             '<tr class="cordova-setting-speech"><td class="cordova-settings-label"><label for="recognition">' + _('Speech recognition active') + ':</label></td></tr>' +
-            '<tr class="cordova-setting-speech"><td><input  id="recognition" class="cordova-setting" data-name="recognition" type="checkbox"/><label for="recognition" class="checkbox">&#8226;</label></td></tr>'+
+            '<tr class="cordova-setting-speech"><td><input  id="recognition" class="cordova-setting" data-name="recognition" type="checkbox"/><label for="recognition" class="checkbox">&#8226;</label></td></tr>' +
 
             '<tr class="cordova-setting-speech cordova-settings-label speech"><td>' + _('Keyword')       + ':</td></tr>' +
             '<tr class="cordova-setting-speech speech"><td><input  class="cordova-setting" data-name="keyword"     style="width: 100%"/></td></tr>' +
@@ -1893,64 +1898,68 @@ var app = {
             '<tr class="cordova-setting-speech cordova-settings-label speech"><td><label for="responseWithTts">' + _('Response over TTS') + ':</label></td></tr>' +
             '<tr class="cordova-setting-speech speech"><td><input id="responseWithTts"    class="cordova-setting" data-name="responseWithTts" type="checkbox"/><label for="responseWithTts" class="checkbox">&#8226;</label></td></tr>' +
 
-            '<tr><td class="cordova-settings-label section-legend"><span>' + _('Cell')      + '</span><div class="cordova_toggle" data-group="cell">▶</div></td></tr>'+
+            '<tr><td class="cordova-settings-label section-legend"><span>' + _('Cell')      + '</span><div class="cordova_toggle" data-group="cell">▶</div></td></tr>' +
             '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell Socket')           + ':</td></tr>' +
-            '<tr class="cordova-setting-cell"><td><input  class="cordova-setting" data-name="socketUrlGSM" style="width: 100%"/></td></tr>'+
+            '<tr class="cordova-setting-cell"><td><input  class="cordova-setting" data-name="socketUrlGSM" style="width: 100%"/></td></tr>' +
 
             '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell User')             + ':</td></tr>' +
-            '<tr class="cordova-setting-cell"><td><input class="cordova-setting" data-name="userGSM"    style="width: 100%"/></td></tr>'+
+            '<tr class="cordova-setting-cell"><td><input class="cordova-setting" data-name="userGSM"    style="width: 100%"/></td></tr>' +
 
             '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell Password')         + ':</td></tr>' +
-            '<tr class="cordova-setting-cell"><td><input class="cordova-setting" data-name="passwordGSM" type="password" id="cordova-password-gsm" style="width: 100%"/></td></tr>'+
+            '<tr class="cordova-setting-cell"><td><input class="cordova-setting" data-name="passwordGSM" type="password" id="cordova-password-gsm" style="width: 100%"/></td></tr>' +
 
             '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell Password repeat')  + ':</td></tr>' +
-            '<tr class="cordova-setting-cell"><td><input id="cordova-password-repeat-gsm" type="password" style="width: 100%"/></td></tr>'+
+            '<tr class="cordova-setting-cell"><td><input id="cordova-password-repeat-gsm" type="password" style="width: 100%"/></td></tr>' +
 
-            '<tr><td class="cordova-settings-label section-legend"><span>' + _('Battery and location')      + '</span><div class="cordova_toggle" data-group="battery">▶</div></td></tr>'+
+            '<tr><td class="cordova-settings-label section-legend"><span>' + _('Battery and location')      + '</span><div class="cordova_toggle" data-group="battery">▶</div></td></tr>' +
             '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('Device name')           + ':</td></tr>' +
-            '<tr class="cordova-setting-battery"><td><input  class="cordova-setting" data-name="deviceName" style="width: 100%"/></td></tr>'+
+            '<tr class="cordova-setting-battery"><td><input  class="cordova-setting" data-name="deviceName" style="width: 100%"/></td></tr>' +
 
             '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('Report battery status')             + ':</td></tr>' +
-            '<tr class="cordova-setting-battery"><td><input id="readBattery" class="cordova-setting" data-name="readBattery" type="checkbox"/><label for="readBattery" class="checkbox">&#8226;</label></td></tr>'+
+            '<tr class="cordova-setting-battery"><td><input id="readBattery" class="cordova-setting" data-name="readBattery" type="checkbox"/><label for="readBattery" class="checkbox">&#8226;</label></td></tr>' +
 
             '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('Position poll interval (sec)')         + ':</td></tr>' +
-            '<tr class="cordova-setting-battery"><td><input type="number" min="0" max="1800" class="cordova-setting" data-name="geoInterval" style="width: 100%"></td></tr>'+
+            '<tr class="cordova-setting-battery"><td><input type="number" min="0" max="1800" class="cordova-setting" data-name="geoInterval" style="width: 100%"></td></tr>' +
 
             '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('High accuracy position')             + ':</td></tr>' +
-            '<tr class="cordova-setting-battery"><td><input id="geoHighAccuracy" class="cordova-setting" data-name="geoHighAccuracy" type="checkbox"/><label for="geoHighAccuracy" class="checkbox">&#8226;</label></td></tr>'+
+            '<tr class="cordova-setting-battery"><td><input id="geoHighAccuracy" class="cordova-setting" data-name="geoHighAccuracy" type="checkbox"/><label for="geoHighAccuracy" class="checkbox">&#8226;</label></td></tr>' +
 
-            '</select></td></tr>'+
+            '<tr><td>&nbsp;</td></tr>' +
+            '<tr><td><a href="https://iobroker.net/apppolicy_' + this.settings.systemLang + '/" target="_blank">' + _('show_policy') + '</a></td></tr>' +
+
+            '</select></td></tr>' +
             '</table></div>');
 
         cordova.getAppVersion.getVersionNumber().then(function (version) {
             $('#cordova_version').text(version);
         });
-
+        var $settings = $('#cordova_dialog .cordova-setting');
         // install sync for zoomLevelPortrait and zoomLevelLandscape
-        $('#cordova_dialog .cordova-setting[data-name="zoomLevelPortrait"]').change(function() {
+        $settings.find('[data-name="zoomLevelPortrait"]').change(function() {
             if ($(this).attr('type') === 'number') {
-                $('#cordova_dialog .cordova-setting[data-name="zoomLevelPortrait"][type="range"]').val($(this).val());
+                $settings.find('[data-name="zoomLevelPortrait"][type="range"]').val($(this).val());
             } else {
-                $('#cordova_dialog .cordova-setting[data-name="zoomLevelPortrait"][type="number"]').val($(this).val());
-            }
-        }).keyup(function () {
-            $(this).trigger('change');
-        });
-        $('#cordova_dialog .cordova-setting[data-name="zoomLevelLandscape"]').change(function() {
-            if ($(this).attr('type') === 'number') {
-                $('#cordova_dialog .cordova-setting[data-name="zoomLevelLandscape"][type="range"]').val($(this).val());
-            } else {
-                $('#cordova_dialog .cordova-setting[data-name="zoomLevelLandscape"][type="number"]').val($(this).val());
+                $settings.find('[data-name="zoomLevelPortrait"][type="number"]').val($(this).val());
             }
         }).keyup(function () {
             $(this).trigger('change');
         });
 
-        $('#cordova_dialog .cordova-setting[data-name="geoInterval"]').change(function() {
+        $settings.find('[data-name="zoomLevelLandscape"]').change(function() {
             if ($(this).attr('type') === 'number') {
-                $('#cordova_dialog .cordova-setting[data-name="geoInterval"][type="range"]').val($(this).val());
+                $settings.find('[data-name="zoomLevelLandscape"][type="range"]').val($(this).val());
             } else {
-                $('#cordova_dialog .cordova-setting[data-name="geoInterval"][type="number"]').val($(this).val());
+                $settings.find('[data-name="zoomLevelLandscape"][type="number"]').val($(this).val());
+            }
+        }).keyup(function () {
+            $(this).trigger('change');
+        });
+
+        $settings.find('[data-name="geoInterval"]').change(function() {
+            if ($(this).attr('type') === 'number') {
+                $settings.find('[data-name="geoInterval"][type="range"]').val($(this).val());
+            } else {
+                $settings.find('[data-name="geoInterval"][type="number"]').val($(this).val());
             }
         }).keyup(function () {
             $(this).trigger('change');
@@ -1967,7 +1976,7 @@ var app = {
                 'minimum-scale=1, maximum-scale=1');
 
             // load settings
-            $('#cordova_dialog .cordova-setting').each(function() {
+            $settings.each(function() {
                 var settingName = $(this).data('name');
                 if ($(this).attr('type') === 'checkbox') {
                     $(this).prop('checked', that.settings[settingName]);
@@ -2059,7 +2068,7 @@ var app = {
                 document.addEventListener('backbutton', that.onBackButtonGeneral, false);
                 var changed = false;
                 // save settings
-                $('#cordova_dialog .cordova-setting').each(function() {
+                $settings.each(function() {
                     if ($(this).attr('type') === 'checkbox') {
                         if (that.settings[$(this).data('name')] != $(this).prop('checked')) {
                             changed = true;
@@ -2089,7 +2098,7 @@ var app = {
                 var changed = false;
 
                 // save settings
-                $('#cordova_dialog .cordova-setting').each(function() {
+                $settings.each(function() {
                     if ($(this).attr('type') === 'checkbox') {
                         if (that.settings[$(this).data('name')] != $(this).prop('checked')) {
                             changed = true;
@@ -2134,7 +2143,7 @@ var app = {
                 var projectChanged = false;
 
                 // save settings
-                $('#cordova_dialog .cordova-setting').each(function() {
+                $settings.each(function() {
                     if ($(this).attr('type') === 'checkbox') {
                         if (that.settings[$(this).data('name')] != $(this).prop('checked')) {
                             that.settings[$(this).data('name')] = $(this).prop('checked');
