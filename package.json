@@ -1,7 +1,7 @@
 {
   "name": "iobroker.vis.cordova",
   "description": "Cordova APP for ioBroker.",
-  "version": "0.8.3",
+  "version": "1.0.0",
   "author": {
     "name": "bluefox",
     "email": "dogafox@gmail.com"
@@ -41,6 +41,7 @@
 	"iobroker.dwd": "*",
     "iobroker.flot": "*",
 	"iobroker.kodi": "*",
+    "iobroker.mihome-vacuum": "*",
     "iobroker.starline": "*",
     "iobroker.rickshaw": "*",
     "iobroker.web": "*",
@@ -63,7 +64,7 @@
     "iobroker.vis-rgraph": "*",
     "iobroker.vis-timeandweather": "*",
     "iobroker.yr": "*",
-    "cordova": "^6.4.0"
+    "cordova": "^6.5.0"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.vis.cordova/issues"
