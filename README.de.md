@@ -53,6 +53,7 @@ Mobile Verbindung
 - *Ersatz URL* - Wenn Ihr vis Projekt Links für Bilder aus einer lokalen Netzwerk URL verwendet (die von der ioBroker URL abweicht), können Sie hier diese URL angeben und alle Bilder die im Vis-Projekt verwendet werden, werden von diesem Server auf das Smartphone geladen.
 - *Instanz* - Eindeutige Instanz-ID dieses VIS. Diese ist erforderlich um gezielt Befehle nur zu dieser Vis Instanz zu senden. (Siehe [Control interface](#control-interface) für weitere Details)
 - *Schlafen im Hintergrund* - Wenn die Vis App nicht angezeigt wird (aber im Hintergrund läuft), kann die Kommunikation zum iobroker Server gestoppt werden. In diesem Fall werden die Statusaktualisierungen und Befehle von ioBroker nicht zur App übertragen, auch wenn die App im Hintergrund läuft.
+- *Immer vom Server alles laden* - Keine dateien auf dem Handy speichern und immer alles vom Server lesen
 
 ### Spracherkennung
 Sie können die Spracherkennung in der Anwendung aktivieren. Wenn diese Option aktiviert ist, wird von der App kontinuierlich versucht Befehle zu erkennen. Um festzustellen, ob Sie mit der App oder mit jemand anderem sprechen, kann ein Schlüsselwort festgelegt werden.

@@ -67,6 +67,7 @@ Following settings are active only if some SSID specified and the device is curr
 - *Substitution URL* - if your vis project uses the links for images from some local network URL, that differs from ioBroker URL, you can specify here this URL and all images from this server, that used in the vis project, will be loaded on the mobile phone too.
 - *Instance* - Unique instance ID of this VIS. It is required to send targeted commands to only this vis instance. (See [Control interface](#control-interface) for details)
 - *Sleep in background* - If vis app is not shown (but runs in background) you can stop any communication from the vis app to the ioBroker server. In this case the state updates and commands from ioBroker will not be delivered to app if the app runs in background.
+- *Read always config from server* - Do not cache any files on the phone
 
 ### Speech recognition
 You can activate speech recognition from the application. If this option is activated, the app will constantly try to recognise some commands. To determine if you are speaking with app or with someone else the key word or key phrase can be specified.
@@ -207,6 +208,13 @@ With command in javascript adapter you can activate text to speech engine of And
 - enable automatically load of project files from ioBroker server (e.g. for home use)
 
 ## Changelog
+
+### 1.0.1 (2017-07-21)
+* (bluefox) remove opacity from the settings dialog for performance
+* (bluefox) fix settings for zoom
+* (bluefox) add "no-cache" mode
+* (bluefox) patch proxy.0 links
+* (bluefox) update all packets (e.g. swipe)
 
 ### 0.8.3 (2017-02-07)
 * (bluefox) add private policy

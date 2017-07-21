@@ -160,6 +160,11 @@ $.extend(systemDictionary, {
         "de": "Username oder Kennwort ist flash",
         "ru": "Неправильные имя пользователя или пароль"
     },
+    "Read always config from server": {
+        "en": "Read always config from server",
+        "de": "Immer vom Server alles laden",
+        "ru": "Не кешировать файлы"
+    },
     "show_policy":       {"en": "Show me User Data Policy", "de": "Datenschutz und Sicherheit Richtlinien", "ru": "Конфиденциальность и безопасность"}
 });
 
@@ -172,6 +177,7 @@ var app = {
         resync:         false,
         instance:       null,
         allowMove:      false,
+        dontCache:      false,
         fullscreen:     false,
         lockorientation:    0,
         recognition:    false,
@@ -204,7 +210,7 @@ var app = {
 
     // Application Constructor
     initialize:     function () {
-        if (this.settings.systemLang.indexOf('-') != -1) {
+        if (this.settings.systemLang.indexOf('-') !== -1) {
             this.settings.systemLang = this.settings.systemLang.split('-')[0];
             systemLang = this.settings.systemLang;
         }
@@ -282,7 +288,7 @@ var app = {
                 create:    true,
                 exclusive: false
             }, function (dirHandler) {
-                if (parts.length - 1 == index) {
+                if (parts.length - 1 === index) {
                     cb(null, dirHandler);
                 } else {
                     this.getLocalDir(dir, create, cb, index + 1);
@@ -521,20 +527,22 @@ var app = {
             this.loadCss();
 
             if (this.settings.project) {
-                this.readLocalFile(this.settings.project + '/vis-views.json', function (error, result) {
-                    if (error) console.error(error);
-                    if (!result || this.settings.resync) {
-                        this.syncVis(this.settings.project, function () {
-                            this.settings.resync = false;
-                            this.saveSettings();
-                            if (!this.viewExists) {
-                                window.alert(_('No views found in %s', this.settings.project));
-                            } else {
-                                window.location.reload();
-                            }
-                        }.bind(this));
-                    }
-                }.bind(this));
+                if (!this.settings.dontCache) {
+                    this.readLocalFile(this.settings.project + '/vis-views.json', function (error, result) {
+                        if (error) console.error(error);
+                        if (!result || this.settings.resync) {
+                            this.syncVis(this.settings.project, function () {
+                                this.settings.resync = false;
+                                this.saveSettings();
+                                if (!this.viewExists) {
+                                    window.alert(_('No views found in %s', this.settings.project));
+                                } else {
+                                    window.location.reload();
+                                }
+                            }.bind(this));
+                        }
+                    }.bind(this));
+                }
             }
 
             if (!this.settings.project || this.settings.socketUrl === 'http://localhost:8082') {
@@ -559,11 +567,11 @@ var app = {
                 });
             }
             $('.vis-wait-text').css({left: 0, 'padding-left': '1em'});
-
+            this.settings.lockorientation = parseInt(this.settings.lockorientation, 10);
             //alert ('Orientation: ' + this.settings.lockorientation )
-            if (this.settings.lockorientation == 1) {
+            if (this.settings.lockorientation === 1) {
                 window.plugins.orientationLock.lock('portrait');
-            } else if (this.settings.lockorientation == 2) {
+            } else if (this.settings.lockorientation === 2) {
                 window.plugins.orientationLock.lock('landscape');
             } else {
                 window.plugins.orientationLock.unlock()
@@ -581,9 +589,9 @@ var app = {
                 console.error(error);
             }
 
-            function trace(value) {
+            /*function trace(value) {
                 console.log(value);
-            }
+            }*/
             if (typeof AndroidFullScreen !== 'undefined') {
                 if (this.settings.fullscreen) {
                     AndroidFullScreen.immersiveMode(successFunction, errorFunction);
@@ -619,7 +627,7 @@ var app = {
             this.settings.zoomLevelLandscape  = this.settings.zoomLevelLandscape    || 100;
             this.settings.substitutionUrl     = this.settings.substitutionUrl       || '';
 
-            if (this.settings.socketUrlGSM && navigator.network && navigator.network.connection.type != 'wifi') {
+            if (this.settings.socketUrlGSM && navigator.network && navigator.network.connection.type !== 'wifi') {
                 socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
             } else {
                 try {
@@ -1013,7 +1021,7 @@ var app = {
                             this.readProjectsHelper(files[f].file, function (project) {
                                 if (project) {
                                     this.projects.push(project);
-                                    $('#cordova_project').append('<option value="' + project + '" ' + (project == this.settings.project ? 'selected' : '') + '>' + project + '</option>');
+                                    $('#cordova_project').append('<option value="' + project + '" ' + (project === this.settings.project ? 'selected' : '') + '>' + project + '</option>');
                                 }
                             }.bind(this));
                         }
@@ -1037,7 +1045,7 @@ var app = {
 
         if (this.settings.substitutionUrl) {
             // detect: this.settings.substitutionUrl/vis/, substitutionUrl/vis.0/, substitutionUrl/icon-blabla/, ...
-            var re = new RegExp('": "' + escapeRegExp (this.settings.substitutionUrl) + '\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/[^"^\']+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"', 'g');
+            var re = new RegExp('": "' + escapeRegExp(this.settings.substitutionUrl) + '\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/[^"^\']+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"', 'g');
             m = data.match(re);
             if (m) {
                 for (mm = 0; mm < m.length; mm++) {
@@ -1078,7 +1086,7 @@ var app = {
                 }
             }
             // detect: this.settings.substitutionUrl/vis/, substitutionUrl/vis.0/, substitutionUrl/icon-blabla/, ...
-            re = new RegExp('url\\(\\\\"' + escapeRegExp (this.settings.substitutionUrl) + '\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/[^"^\']+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"','g');
+            re = new RegExp('url\\(\\\\"' + escapeRegExp(this.settings.substitutionUrl) + '\\\/[-_0-9\\w]+(?:.[-_0-9\\w]+)?\\/[^"^\']+\\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\\\"','g');
             m = data.match(re);
 
             if (m) {
@@ -1133,6 +1141,13 @@ var app = {
                 fn  = p.shift(); // keep only one subdirectory
                 fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
+                // ignore proxy requests.
+                if (adapter.match(/^proxy\.\d+$/)) {
+                    // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
+                    data = data.replace(m[mm], '": "' + this.settings.socketUrl + '/' + originalFileName);
+                    continue;
+                }
+
                 // files cannot be stored directly in root
                 if (adapter === 'vis.0' && fn.indexOf('/') !== -1) adapter = '';
 
@@ -1181,6 +1196,13 @@ var app = {
                 if (newName[newName.length - 1] === '"') newName = newName.substring(0, newName.length - 2);
                 newName = ('/' + newName).replace('/vis.0/', '');
 
+                // ignore proxy requests.
+                if (adapter.match(/^proxy\.\d+$/)) {
+                    // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
+                    data = data.replace(m[mm], 'src=\\"' + this.settings.socketUrl + '/' + originalFileName);
+                    continue;
+                }
+
                 // files cannot be stored directly in root
                 if (adapter === 'vis.0' && fn.indexOf('/') !== -1) adapter = '';
 
@@ -1222,6 +1244,13 @@ var app = {
                 if (newName[newName.length - 1] === "'") newName = newName.substring(0, newName.length - 1);
                 newName = ('/' + newName).replace('/vis.0/', '');
 
+                // ignore proxy requests.
+                if (adapter.match(/^proxy\.\d+$/)) {
+                    // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
+                    data = data.replace(m[mm], "src='" + this.settings.socketUrl + '/' + originalFileName);
+                    continue;
+                }
+
                 // files cannot be stored directly in root
                 if (adapter === 'vis.0' && fn.indexOf('/') !== -1) adapter = '';
 
@@ -1262,6 +1291,13 @@ var app = {
 
                 newName = originalFileName.replace('/vis.0/', '');
 
+                // ignore proxy requests.
+                if (adapter.match(/^proxy\.\d+$/)) {
+                    // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
+                    data = data.replace(m[mm], 'url(' + this.settings.socketUrl + '/' + originalFileName + ')');
+                    continue;
+                }
+
                 // files cannot be stored directly in root
                 if (adapter === 'vis.0' && fn.indexOf('/') !== -1) adapter = '';
 
@@ -1286,6 +1322,64 @@ var app = {
         }
 
 		// set absolute path to local flot/rickshaw directory
+        data = data
+            .replace(/"\/flot\//g, '"file:///android_asset/www/flot/')
+            .replace(/'\/flot\//g, "'file:///android_asset/www/flot/")
+            .replace(/"\/rickshaw\//g, '"file:///android_asset/www/rickshaw/')
+            .replace(/'\/rickshaw\//g, "'file:///android_asset/www/rickshaw/");
+
+        return data;
+    },
+    replaceFilesInViewsWeb: function (viewsObj) {
+        var data = viewsObj.toString();
+        var m;
+        var mm;
+        // detect: /vis/, /vis.0/, /icon-blabla/, ...
+        m = data.match(/": "\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
+        if (m) {
+            for (mm = 0; mm < m.length; mm++) {
+                var originalFileName = m[mm].substring(5);// remove ": "/
+                // remove spaces in names because they will be %20
+                data = data.replace(m[mm], '": "' + this.settings.socketUrl + '/' + originalFileName);
+            }
+        }
+
+        // try to replace <img src="/vis.0/main...">
+        m = data.match(/src=\\"\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\"/g);
+        if (m) {
+            for (mm = 0; mm < m.length; mm++) {
+                var originalFileName = m[mm].substring(7); // remove src=\"/
+                // remove spaces in names because they will be %20
+                data = data.replace(m[mm], 'src=\\"' + this.settings.socketUrl + '/' + originalFileName);
+            }
+        }
+
+        // try to replace <img src='/vis.0/main...'>
+        m = data.match(/src='\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+'/g);
+        if (m) {
+            for (mm = 0; mm < m.length; mm++) {
+                var originalFileName = m[mm].substring(6); // remove src="/
+                // remove spaces in names because they will be %20
+                data = data.replace(m[mm], "src='" + this.settings.socketUrl + '/' + originalFileName);
+            }
+        }
+
+        // try to replace <img src='/vis.0/main...'>
+        m = data.match(/url\(['"]?\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+['"]?\)/g);
+        if (m) {
+            for (mm = 0; mm < m.length; mm++) {
+                var originalFileName = m[mm].substring(4); // remove url(/
+                if (originalFileName[0] === "'") {
+                    data = data.replace(m[mm], "url('"  + this.settings.socketUrl + '/' + originalFileName.substring(1));
+                } else if (originalFileName[0] === '"') {
+                    data = data.replace(m[mm], 'url("'  + this.settings.socketUrl + '/' + originalFileName.substring(1));
+                } else {
+                    data = data.replace(m[mm], 'url('  + this.settings.socketUrl + '/' + originalFileName);
+                }
+           }
+        }
+
+        // set absolute path to local flot/rickshaw directory
         data = data
             .replace(/"\/flot\//g, '"file:///android_asset/www/flot/')
             .replace(/'\/flot\//g, "'file:///android_asset/www/flot/")
@@ -1388,7 +1482,7 @@ var app = {
         this.deleteLocalFile(file, function (error) {
             if (error) console.error(error);
             setTimeout(function () {
-                this.copyFilesToDevice(files, cb, total);
+                this.deleteFilesFromDevice(files, cb);
             }.bind(this), 0);
         });
     },
@@ -1398,7 +1492,7 @@ var app = {
         _files = _files || [];
 
         // if start => reset flag
-        if (!dir || dir.indexOf('/') == -1) this.viewExists = false;
+        if (!dir || dir.indexOf('/') === -1) this.viewExists = false;
 
         if (vis.conn.getIsConnected()) {
             vis.conn.readDir('/vis.0/' + dir, function (error, files) {
@@ -1497,7 +1591,7 @@ var app = {
             this.ttsText = $('#cordova_tts_text');
         }
 
-        if (data[0] == '{') {
+        if (data[0] === '{') {
             var obj;
             try {
                 obj = JSON.parse(data);
@@ -1507,13 +1601,13 @@ var app = {
             if (obj) data = obj;
         }
         if (typeof data === 'string') {
-            if (data.indexOf(';') != -1) {
+            if (data.indexOf(';') !== -1) {
                 var parts = data.split(';');
                 data = {};
                 for (var i = 0; i < parts.length; i++) {
-                    if (parts[i] == 'en' || parts[i] == 'de' || parts[i] == 'ru') {
+                    if (parts[i] === 'en' || parts[i] === 'de' || parts[i] === 'ru') {
                         data.locale = parts[i];
-                    } else if (parseInt(parts[i], 10) == parts[i]) {
+                    } else if (parseInt(parts[i], 10) === parts[i]) {
                         data.volume = parseInt(parts[i], 10) / 100;
                     } else {
                         data.text = (data.text ? ';' : '') + parts[i];
@@ -1532,9 +1626,9 @@ var app = {
         if (data.language) data.locale = data.language;
         if (data.lang)     data.locale = data.lang;
 
-        if (data.locale == 'en') data.locale = 'en-GB';
-        if (data.locale == 'de') data.locale = 'de-DE';
-        if (data.locale == 'ru') data.locale = 'ru-RU';
+        if (data.locale === 'en') data.locale = 'en-GB';
+        if (data.locale === 'de') data.locale = 'de-DE';
+        if (data.locale === 'ru') data.locale = 'ru-RU';
 
         if (this.settings.project && this.settings.recognition) {
             this.menu.css('background', 'rgba(0, 0, 0, 0.1)');
@@ -1601,9 +1695,9 @@ var app = {
                     if (event.results[0][0].final) {
                         // start analyse
                         if (this.match) {
-                            for (var m = 0; m < this.match.length; m++) {
-                                if (this.match[m].test(text)) {
-                                    text = text.replace(this.match[m], '').replace(/\s\s/g, ' ').trim();
+                            for (var k = 0; k < this.match.length; k++) {
+                                if (this.match[k].test(text)) {
+                                    text = text.replace(this.match[k], '').replace(/\s\s/g, ' ').trim();
                                     // Key phrase found
                                     matched = true;
                                     break;
@@ -1800,10 +1894,10 @@ var app = {
             h = Math.round(2200 / this.settings.zoomLevelPortrait);
             f = Math.round(1600 / this.settings.zoomLevelPortrait);
         }
-
+        var $body = $('body');
         // install menu button
-        $('body').append('<div id="cordova_menu" style="top: 0.5em; left: 0.5em; text-align: center; font-size: ' + f + 'px;padding-left: 0.5em; padding-right: 0.5em; width: ' + w + 'px; height: ' + h + 'px; position: fixed; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 15002" id="cordova_menu">...</div>');
-        $('body').append('<div id="cordova_dialog_bg" style="display: none"></div>' +
+        $body.append('<div id="cordova_menu" style="top: 0.5em; left: 0.5em; text-align: center; font-size: ' + f + 'px;padding-left: 0.5em; padding-right: 0.5em; width: ' + w + 'px; height: ' + h + 'px; position: fixed; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 15002" id="cordova_menu">...</div>');
+        $body.append('<div id="cordova_dialog_bg" style="display: none"></div>' +
             '<div id="cordova_dialog">' +
             '<div style="padding-left: 1em; font-size: 2em; font-weight: bold">' + _('Settings') +
             '<span style="padding-left: 1em; font-size: 0.5em" id="cordova_version"></span>' + '</div>' +
@@ -1862,6 +1956,9 @@ var app = {
 
             '<tr><td class="cordova-settings-label"><label for="allowMove">' + _('Allow window move')      + ':</label></td></tr>' +
             '<tr><td><input  id="allowMove"      class="cordova-setting" data-name="allowMove"   type="checkbox"/><label for="allowMove" class="checkbox">&#8226;</label></td></tr>' +
+
+            '<tr><td class="cordova-settings-label"><label for="dontCache">' + _('Read always config from server')      + ':</label></td></tr>' +
+            '<tr><td><input  id="dontCache"      class="cordova-setting" data-name="dontCache"   type="checkbox"/><label for="dontCache" class="checkbox">&#8226;</label></td></tr>' +
 
             '<tr><td class="cordova-settings-label"><label for="fullscreen">' + _('Fullscreen')      + ':</label></td></tr>' +
             '<tr><td><input  id="fullscreen"      class="cordova-setting" data-name="fullscreen"   type="checkbox"/><label for="fullscreen" class="checkbox">&#8226;</label></td></tr>' +
@@ -1933,33 +2030,34 @@ var app = {
         cordova.getAppVersion.getVersionNumber().then(function (version) {
             $('#cordova_version').text(version);
         });
-        var $settings = $('#cordova_dialog .cordova-setting');
+        var $dialog = $('#cordova_dialog');
+        var $settings = $dialog.find('.cordova-setting');
         // install sync for zoomLevelPortrait and zoomLevelLandscape
-        $settings.find('[data-name="zoomLevelPortrait"]').change(function() {
+        $dialog.find('input[data-name="zoomLevelPortrait"]').change(function() {
             if ($(this).attr('type') === 'number') {
-                $settings.find('[data-name="zoomLevelPortrait"][type="range"]').val($(this).val());
+                $dialog.find('input[data-name="zoomLevelPortrait"][type="range"]').val($(this).val());
             } else {
-                $settings.find('[data-name="zoomLevelPortrait"][type="number"]').val($(this).val());
+                $dialog.find('input[data-name="zoomLevelPortrait"][type="number"]').val($(this).val());
             }
         }).keyup(function () {
             $(this).trigger('change');
         });
 
-        $settings.find('[data-name="zoomLevelLandscape"]').change(function() {
+        $dialog.find('input[data-name="zoomLevelLandscape"]').change(function() {
             if ($(this).attr('type') === 'number') {
-                $settings.find('[data-name="zoomLevelLandscape"][type="range"]').val($(this).val());
+                $dialog.find('input[data-name="zoomLevelLandscape"][type="range"]').val($(this).val());
             } else {
-                $settings.find('[data-name="zoomLevelLandscape"][type="number"]').val($(this).val());
+                $dialog.find('input[data-name="zoomLevelLandscape"][type="number"]').val($(this).val());
             }
         }).keyup(function () {
             $(this).trigger('change');
         });
 
-        $settings.find('[data-name="geoInterval"]').change(function() {
+        $dialog.find('input[data-name="geoInterval"]').change(function() {
             if ($(this).attr('type') === 'number') {
-                $settings.find('[data-name="geoInterval"][type="range"]').val($(this).val());
+                $dialog.find('input[data-name="geoInterval"][type="range"]').val($(this).val());
             } else {
-                $settings.find('[data-name="geoInterval"][type="number"]').val($(this).val());
+                $dialog.find('input[data-name="geoInterval"][type="number"]').val($(this).val());
             }
         }).keyup(function () {
             $(this).trigger('change');
@@ -1967,6 +2065,7 @@ var app = {
 
         var that = this;
         $('#cordova_menu').click(function () {
+            $('#vis_container').hide();
             document.removeEventListener('backbutton', that.onBackButtonGeneral, false);
             document.addEventListener('backbutton', that.onBackButtonSettings, false);
 
@@ -2025,7 +2124,7 @@ var app = {
             }
 
             $('.cordova_toggle').unbind('click').click(function () {
-                if ($(this).html() == '▶') {
+                if ($(this).html() === '▶') {
                     $('.cordova-setting-' + $(this).data('group')).show();
                     $(this).html('▼');
                 } else {
@@ -2061,6 +2160,7 @@ var app = {
                 $(window).trigger('orientationchange');
                 $('#cordova_dialog_bg').hide();
                 $('#cordova_dialog').hide();
+                $('#vis_container').show();
             }).css({height: '2em'});
 
             $('#cordova_reload').unbind('click').click(function () {
@@ -2089,6 +2189,7 @@ var app = {
 
                 $('#cordova_dialog_bg').hide();
                 $('#cordova_dialog').hide();
+                $('#vis_container').show();
                 window.location.reload();
             }).css({height: '2em'});
 
@@ -2118,6 +2219,7 @@ var app = {
 
                 /*$('#cordova_dialog_bg').hide();
                  $('#cordova_dialog').hide();
+                 $('#vis_container').show();
                  that.saveSettings();
                  window.location.reload();*/
                 $('#cordova_ok').trigger('click');
@@ -2125,11 +2227,11 @@ var app = {
 
             $('#cordova_ok').unbind('click').click(function () {
                 document.removeEventListener('backbutton', that.onBackButtonSettings, false);
-                if ($('#cordova-password').val() != $('#cordova-password-repeat').val()) {
+                if ($('#cordova-password').val() !== $('#cordova-password-repeat').val()) {
                     window.alert(_('WIFI password repeat does not equal to repeat'));
                     return;
                 }
-                if ($('#cordova-password-gsm').val() != $('#cordova-password-repeat-gsm').val()) {
+                if ($('#cordova-password-gsm').val() !== $('#cordova-password-repeat-gsm').val()) {
                     window.alert(_('Cell password repeat does not equal to repeat'));
                     return;
                 }
@@ -2139,6 +2241,7 @@ var app = {
 
                 $('#cordova_dialog_bg').hide();
                 $('#cordova_dialog').hide();
+                $('#vis_container').show();
                 var changed = false;
                 var projectChanged = false;
 
@@ -2237,8 +2340,9 @@ var app = {
                 }.bind(this), 1000);
             }
         }
-    },
+    }
 
+    /*
     replaceFilePathJson: function (data) {
         if (typeof data === 'object') data = JSON.stringify(data);
         //console.log ('data: ' + data);
@@ -2265,6 +2369,13 @@ var app = {
                     if (newName[newName.length - 1] === '"') newName = newName.substring(0, newName.length - 2);
                     newName = ('/' + newName).replace('/vis.0/', '');
 
+                    // ignore proxy requests.
+                    if (adapter.match(/^proxy\.\d+$/)) {
+                        // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
+                        data = data.replace(m[mm], 'src=\\"' + this.settings.socketUrl + '/' + originalFileName);
+                        continue;
+                    }
+
                     // files cannot be stored directly in root
                     if (adapter === 'vis.0' && fn.indexOf('/') !== -1) adapter = '';
 
@@ -2286,6 +2397,13 @@ var app = {
                     fn  = p.shift(); // keep only one subdirectory
                     fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
+                    // ignore proxy requests.
+                    if (adapter.match(/^proxy\.\d+$/)) {
+                        // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
+                        data = data.replace(m[mm], "src='" + this.settings.socketUrl + '/' + originalFileName);
+                        continue;
+                    }
+
                     newName = originalFileName;
                     if (newName[0] === '/') newName = newName.substring(1);
                     if (newName[newName.length - 1] === "'") newName = newName.substring(0, newName.length - 1);
@@ -2297,10 +2415,7 @@ var app = {
                     // remove spaces in names because they will be %20
                     data = data.replace(m[mm], "src='" + this.directory + adapter + fn.replace(/\s/g, '_'));
                 }
-
-
             }
-
         }
         //console.log ('data2: ' + data);
         return data;
@@ -2330,6 +2445,12 @@ var app = {
                     if (newName[newName.length - 1] === '"') newName = newName.substring(0, newName.length - 2);
                     newName = ('/' + newName).replace('/vis.0/', '');
 
+                    // ignore proxy requests.
+                    if (adapter.match(/^proxy\.\d+$/)) {
+                        // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
+                        data = data.replace(m[mm], 'src="' + this.settings.socketUrl + '/' + originalFileName);
+                        continue;
+                    }
                     // files cannot be stored directly in root
                     if (adapter === 'vis.0' && fn.indexOf('/') !== -1) adapter = '';
 
@@ -2351,6 +2472,13 @@ var app = {
                     fn  = p.shift(); // keep only one subdirectory
                     fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
 
+                    // ignore proxy requests.
+                    if (adapter.match(/^proxy\.\d+$/)) {
+                        // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
+                        data = data.replace(m[mm], "src='" + this.settings.socketUrl + '/' + originalFileName);
+                        continue;
+                    }
+
                     newName = originalFileName;
                     if (newName[0] === '/') newName = newName.substring(1);
                     if (newName[newName.length - 1] === "'") newName = newName.substring(0, newName.length - 1);
@@ -2368,39 +2496,8 @@ var app = {
         }
         //console.log ('data2: ' + data);
         return data;
-    },
-    replaceFilePathImg: function (data) {
-        //console.log ('data: ' + data);
-        var m;
-        var newName;
-        if (typeof data === 'string') {
-
-            // try to replace <img src="/vis.0/main...">
-            m = data.match(/^\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+$/g);
-            if (m && m.length>0) {
-                var fn = m[0].substring(1); // remove /
-                var originalFileName = fn;
-                var p  = fn.split('/');
-                var adapter = p.shift(); // remove vis.0 or whatever
-                fn  = p.shift(); // keep only one subdirectory
-                fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
-
-                newName = originalFileName;
-                if (newName[0] === '/') newName = newName.substring(1);
-                if (newName[newName.length - 1] === '"') newName = newName.substring(0, newName.length - 2);
-                newName = ('/' + newName).replace('/vis.0/', '');
-
-                // files cannot be stored directly in root
-                if (adapter === 'vis.0' && fn.indexOf('/') !== -1) adapter = '';
-
-                // remove spaces in names because they will be %20
-                data = this.directory + adapter + fn.replace(/\s/g, '_');
-            }
-        }
-
-        //console.log ('data2: ' + data);
-        return data;
     }
+    */
 };
 
 function logout() {
