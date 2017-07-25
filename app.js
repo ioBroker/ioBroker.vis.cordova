@@ -1829,7 +1829,7 @@ var app = {
             var viewport_scale;
             var orientation = window.orientation !== undefined ? window.orientation : window.screen.orientation.angle;
 
-            if (orientation === 0 || orientation === 180) {
+            if (orientation !== 0 && orientation !== 180) {
                 viewport_scale = this.settings.zoomLevelLandscape / 100;
                 // resize menu button
                 $('#cordova_menu').css({
@@ -1855,7 +1855,7 @@ var app = {
 
         var viewport_scale;
 
-        if (orientation === 0 || orientation === 180) {
+        if (orientation !== 0 && orientation !== 180) {
             viewport_scale = this.settings.zoomLevelLandscape / 100;
         } else {
             viewport_scale = this.settings.zoomLevelPortrait / 100;
@@ -1885,7 +1885,7 @@ var app = {
         var h;
         var f;
         var orientation = window.orientation !== undefined ? window.orientation : window.screen.orientation.angle;
-        if (orientation === 0 || orientation === 180) {
+        if (orientation !== 0 && orientation !== 180) {
             w = Math.round(2800 / this.settings.zoomLevelLandscape);
             h = Math.round(2200 / this.settings.zoomLevelLandscape);
             f = Math.round(1600 / this.settings.zoomLevelLandscape);
@@ -2041,6 +2041,8 @@ var app = {
             }
         }).keyup(function () {
             $(this).trigger('change');
+        }).on('input', function () {
+            $(this).trigger('change');
         });
 
         $dialog.find('input[data-name="zoomLevelLandscape"]').change(function() {
@@ -2051,6 +2053,8 @@ var app = {
             }
         }).keyup(function () {
             $(this).trigger('change');
+        }).on('input', function () {
+            $(this).trigger('change');
         });
 
         $dialog.find('input[data-name="geoInterval"]').change(function() {
@@ -2060,6 +2064,8 @@ var app = {
                 $dialog.find('input[data-name="geoInterval"][type="number"]').val($(this).val());
             }
         }).keyup(function () {
+            $(this).trigger('change');
+        }).on('input', function () {
             $(this).trigger('change');
         });
 
@@ -2340,9 +2346,9 @@ var app = {
                 }.bind(this), 1000);
             }
         }
-    }
+    },
 
-    /*
+    // used in basic.html
     replaceFilePathJson: function (data) {
         if (typeof data === 'object') data = JSON.stringify(data);
         //console.log ('data: ' + data);
@@ -2497,7 +2503,7 @@ var app = {
         //console.log ('data2: ' + data);
         return data;
     }
-    */
+
 };
 
 function logout() {
