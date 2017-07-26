@@ -2427,12 +2427,10 @@ var app = {
         return data;
     },
     replaceFilePathSrc: function (data) {
-        //console.log ('data: ' + data);
         var m;
         var newName;
         var mm;
         if (typeof data === 'string') {
-
             // try to replace <img src="/vis.0/main...">
             m = data.match(/src="\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
             if (m) {
@@ -2500,10 +2498,47 @@ var app = {
             }
 
         }
-        //console.log ('data2: ' + data);
+        return data;
+    },
+    replaceFilePathImg: function (data) {
+        var m;
+        var newName;
+        var mm;
+        if (typeof data === 'string') {
+            // try to replace /vis.0/main...
+            m = data.match(/\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+/g);
+            if (m) {
+                for (mm = 0; mm < m.length; mm++) {
+                    //file:///data/data/net.iobroker.vis/files/main/vis-user.css
+                    //cdvfile://localhost/persistent
+                    var fn = m[mm].substring(6); // remove src="/
+                    var originalFileName = fn; // remove last "
+                    var p  = fn.split('/');
+                    var adapter = p.shift(); // remove vis.0 or whatever
+                    fn  = p.shift(); // keep only one subdirectory
+                    fn += p.length ? '/' + p.join('') : '';// all other subdirectories combine in one name because of store bug
+
+                    newName = originalFileName;
+                    if (newName[0] === '/') newName = newName.substring(1);
+                    if (newName[newName.length - 1] === '"') newName = newName.substring(0, newName.length - 2);
+                    newName = ('/' + newName).replace('/vis.0/', '');
+
+                    // ignore proxy requests.
+                    if (adapter.match(/^proxy\.\d+$/)) {
+                        // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
+                        data = data.replace(m[mm], 'src="' + this.settings.socketUrl + '/' + originalFileName);
+                        continue;
+                    }
+                    // files cannot be stored directly in root
+                    if (adapter === 'vis.0' && fn.indexOf('/') !== -1) adapter = '';
+
+                    // remove spaces in names because they will be %20
+                    data = data.replace(m[mm], this.directory + adapter + fn.replace(/\s/g, '_'));
+                }
+            }
+        }
         return data;
     }
-
 };
 
 function logout() {
