@@ -2506,7 +2506,7 @@ var app = {
         var mm;
         if (typeof data === 'string') {
             // try to replace /vis.0/main...
-            m = data.match(/\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+/g);
+            m = data.match(/^\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+$/g);
             if (m) {
                 for (mm = 0; mm < m.length; mm++) {
                     //file:///data/data/net.iobroker.vis/files/main/vis-user.css
