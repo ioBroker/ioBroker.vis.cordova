@@ -208,6 +208,8 @@ With command in javascript adapter you can activate text to speech engine of And
 - enable automatically load of project files from ioBroker server (e.g. for home use)
 
 ## Changelog
+### 1.0.4 (2017-08-07)
+* (bluefox) add weather widgets
 
 ### 1.0.1 (2017-07-21)
 * (bluefox) remove opacity from the settings dialog for performance
