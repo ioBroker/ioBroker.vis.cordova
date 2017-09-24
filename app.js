@@ -1850,7 +1850,7 @@ var app = {
             // resize viewport
             $('meta[name=viewport]').attr('content',
                 'width=' + this.window.width + ',' +
-                'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale);
+            'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale + ',initial-scale=' + viewport_scale + ', user-scalable=no');
         }.bind(this);
 
         var viewport_scale;
@@ -1864,7 +1864,7 @@ var app = {
         // resize viewport
         $('meta[name=viewport]').attr('content',
             'width=' + this.window.width + ',' +
-            'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale);
+            'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale + ',initial-scale=' + viewport_scale + ', user-scalable=no');
 
     },
 
