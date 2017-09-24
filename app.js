@@ -628,7 +628,7 @@ var app = {
             this.settings.substitutionUrl     = this.settings.substitutionUrl       || '';
 
             if (this.settings.socketUrlGSM && navigator.network && navigator.network.connection.type !== 'wifi') {
-                socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+                socketUrl = this.settings.socketUrlGSM + '/?key=nokey' + (this.settings.userGSM ? '&user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
             } else {
                 try {
                     // If WIFI and SSID is set
@@ -648,21 +648,21 @@ var app = {
                             this.ssid = data.connection.SSID;
                             if (this.settings.socketUrlGSM && this.settings.ssid && this.settings.ssid.indexOf(data.connection.SSID) === -1) {
                                 // other wifi network
-                                socketUrl = this.settings.socketUrlGSM + (this.settings.userGSM ? '/?user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+                                socketUrl = this.settings.socketUrlGSM + '/?key=nokey' + (this.settings.userGSM ? '&user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
                             } else {
-                                socketUrl = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                                socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
                             }
                             cb && cb();
                         }.bind(this), function (error) {
-                            socketUrl = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                            socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
                             console.error(error);
                         }.bind(this));
                     } else {
-                        socketUrl = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                        socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
                     }
                 } catch (err) {
                     delayed = false;
-                    socketUrl = this.settings.socketUrl + (this.settings.user ? '/?user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                    socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
                 }
             }
 
