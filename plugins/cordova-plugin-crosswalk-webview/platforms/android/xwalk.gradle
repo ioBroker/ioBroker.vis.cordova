@@ -25,6 +25,7 @@ def SHARED_ARTIFACT_ID = "xwalk_shared_library:"
 def EMBEDD_ARTIFACT_ID = "xwalk_core_library:"
 def CANARY_ARTIFACT_ID = "xwalk_core_library_canary:"
 def BIT_64 = ":64bit@aar"
+def DEFAULT_MIN_SDK_VERSION = 14
 
 def getConfigPreference(name) {
     name = name.toLowerCase()
@@ -56,9 +57,11 @@ if (cdvBuildMultipleApks == null) {
     ext.xwalkMultipleApk = cdvBuildMultipleApks.toBoolean();
 }
 
+def minSdk = getConfigPreference("android-minSdkVersion");
 if (cdvMinSdkVersion == null) {
-    def minSdk = getConfigPreference("android-minSdkVersion");
-    ext.cdvMinSdkVersion =  minSdk && minSdk.toInteger() > 14 ? minSdk : 14;
+    ext.cdvMinSdkVersion = minSdk && Integer.parseInt(minSdk) > DEFAULT_MIN_SDK_VERSION ? minSdk : DEFAULT_MIN_SDK_VERSION;
+} else if (Integer.parseInt('' + cdvMinSdkVersion) < Integer.parseInt(minSdk)) {
+    ext.cdvMinSdkVersion = minSdk;
 }
 
 if (!project.hasProperty('xwalkMode')) {
@@ -78,6 +81,11 @@ if (ext.xwalkMode == SHARED_MODE) {
 // Set defaults before project's build-extras.gradle
 if (!project.hasProperty('xwalkVersion')) {
     ext.xwalkVersion = getConfigPreference("xwalkVersion")
+}
+
+// Set defaults before project's build-extras.gradle
+if (!project.hasProperty('xwalkLiteVersion')) {
+    ext.xwalkLiteVersion = getConfigPreference("xwalkLiteVersion")
 }
 
 if (!project.hasProperty('xwalkCommandLine')) {
@@ -115,6 +123,10 @@ cdvPluginPostBuildExtras.add({
     }
 
     def xwalkSpec = xwalkVersion
+    if (ext.xwalkMode == LITE_MODE) {
+        xwalkSpec = xwalkLiteVersion;
+    }
+
     if ((xwalkSpec =~ /:/).count == 1) {
         xwalkSpec = DEFAULT_GROUP_ID + xwalkSpec
     } else if ((xwalkSpec =~ /:/).count == 0) {

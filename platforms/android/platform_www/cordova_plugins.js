@@ -364,11 +364,11 @@ module.exports.metadata =
     "com.jiliac.systemvolume": "0.1.0",
     "cordova.custom.plugins.exitapp": "1.0.0",
     "com.phonegap.plugins.OrientationLock": "0.1",
-    "cordova-plugin-crosswalk-webview": "1.8.0",
     "cordova-plugin-fullscreen": "1.1.0",
     "cordova-plugin-battery-status": "1.1.2",
     "cordova-plugin-compat": "1.0.0",
-    "cordova-plugin-geolocation": "2.2.0"
+    "cordova-plugin-geolocation": "2.2.0",
+    "cordova-plugin-crosswalk-webview": "2.3.0"
 };
 // BOTTOM OF METADATA
 });

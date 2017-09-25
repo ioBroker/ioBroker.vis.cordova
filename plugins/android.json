@@ -37,9 +37,6 @@
         "com.jiliac.systemvolume": {
             "PACKAGE_NAME": "net.iobroker.vis"
         },
-        "cordova-plugin-crosswalk-webview": {
-            "PACKAGE_NAME": "net.iobroker.vis"
-        },
         "cordova.custom.plugins.exitapp": {
             "PACKAGE_NAME": "net.iobroker.vis"
         },
@@ -53,6 +50,14 @@
             "PACKAGE_NAME": "net.iobroker.vis"
         },
         "cordova-plugin-geolocation": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-crosswalk-webview": {
+            "XWALK_VERSION": "23+",
+            "XWALK_LITEVERSION": "xwalk_core_library_canary:17+",
+            "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
+            "XWALK_MODE": "embedded",
+            "XWALK_MULTIPLEAPK": "true",
             "PACKAGE_NAME": "net.iobroker.vis"
         }
     },

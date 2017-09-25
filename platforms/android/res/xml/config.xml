@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="net.iobroker.vis" version="1.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <preference name="loglevel" value="DEBUG" />
+<widget id="net.iobroker.vis" version="1.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <feature name="Whitelist">
         <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
         <param name="onload" value="true" />
@@ -33,12 +32,6 @@
     <feature name="OrientationLock">
         <param name="android-package" value="com.plugin.phonegap.OrientationLock" />
     </feature>
-    <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine" />
-    <preference default="19+" name="xwalkVersion" />
-    <preference default="xwalk_core_library_canary:17+" name="xwalkLiteVersion" />
-    <preference default="--disable-pull-to-refresh-effect" name="xwalkCommandLine" />
-    <preference default="embedded" name="xwalkMode" />
-    <preference default="true" name="xwalkMultipleApk" />
     <feature name="AndroidFullScreen">
         <param name="android-package" value="com.mesmotronic.plugins.FullScreenPlugin" />
     </feature>
@@ -55,7 +48,6 @@
     <feature name="ExitApp">
         <param name="android-package" value="cordova.custom.plugins.exitapp.ExitApp" />
     </feature>
-    <allow-intent href="market:*" />
     <name>ioBroker.vis</name>
     <description>
         ioBroker.vis runtime for ioBroker.
@@ -75,8 +67,16 @@
     <allow-navigation href="*" />
     <allow-navigation href="file://*/*" />
     <allow-navigation href="cdvfile://*/*" />
+    <allow-intent href="market:*" />
+    <preference name="loglevel" value="DEBUG" />
+    <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine" />
+    <preference name="xwalkVersion" value="23+" />
+    <preference name="xwalkLiteVersion" value="xwalk_core_library_canary:17+" />
+    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
+    <preference name="xwalkMode" value="embedded" />
+    <preference name="xwalkMultipleApk" value="true" />
+    <preference name="android-minSdkVersion" value="16" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     <preference name="iosPersistentFileLocation" value="Library" />
     <preference name="BackupWebStorage" value="none" />
-    <preference name="xwalkVersion" value="18" />
 </widget>

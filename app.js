@@ -1068,12 +1068,12 @@ var app = {
 
                     // add to files
                     var found = false;
-                    for (var ff = 0; ff < total.length; ff++) {
-                        if (typeof total[ff] === 'string' && total[ff] === originalFileName) {
+                    for (var ff_ = 0; ff_ < total.length; ff_++) {
+                        if (typeof total[ff_] === 'string' && total[ff_] === originalFileName) {
                             found = true;
                             break;
                         }
-                        if (typeof total[ff] === 'object' && total[ff].src === originalFileName) {
+                        if (typeof total[ff_] === 'object' && total[ff_].src === originalFileName) {
                             found = true;
                             break;
                         }
@@ -1533,6 +1533,9 @@ var app = {
     },
 
     syncVis:        function (project, cb) {
+        // hide dialog error
+        $('#dialog-message').hide();
+
         if (!$('#cordova_progress').length) {
             $('body').append('<div id="cordova_progress" style="position: absolute; z-index: 5003; top: 50%; left: 5%; width: 90%; height: 2em; background: gray">' +
                 '<div id="cordova_progress_show" style="height: 100%; width: 0; background: lightblue; z-index: 5004"></div></div>');
@@ -1899,17 +1902,17 @@ var app = {
         $body.append('<div id="cordova_menu" style="top: 0.5em; left: 0.5em; text-align: center; font-size: ' + f + 'px;padding-left: 0.5em; padding-right: 0.5em; width: ' + w + 'px; height: ' + h + 'px; position: fixed; background: rgba(0,0,0,0.1); border-radius: 20px; z-index: 15002" id="cordova_menu">...</div>');
         $body.append('<div id="cordova_dialog_bg" style="display: none"></div>' +
             '<div id="cordova_dialog">' +
-            '<div style="padding-left: 1em; font-size: 2em; font-weight: bold">' + _('Settings') +
+            '<div style="padding-left: 1em; font-size: 2em; font-weight: bold; padding-top: 0.5em">' + _('Settings') +
             '<span style="padding-left: 1em; font-size: 0.5em" id="cordova_version"></span>' + '</div>' +
             '<table style="width: 100%; padding: 1em">' +
 
             '<tr><td colspan="2"><div class="button-group">' +
             '<div class="left">' +
-            '<button id="cordova_reload">&#8634;' + _('Reload')  + '</button>' +
-            '<button id="cordova_resync">⇔' + _('Re-sync') + '</button>' +
+            '<button id="cordova_reload" style="font-size: 14px;">&#8634;' + _('Reload')  + '</button>' +
+            '<button id="cordova_resync" style="font-size: 14px;">⇔' + _('Re-sync') + '</button>' +
             '</div><div class="right">' +
-            '<button id="cordova_ok">✔'     + _('Ok')      + '</button>' +
-            '<button id="cordova_cancel">&#10060;' + _('Cancel')  + '</button>' +
+            '<button id="cordova_ok" style="font-size: 14px;">✔'     + _('Ok')      + '</button>' +
+            '<button id="cordova_cancel" style="font-size: 14px;">&#10060;' + _('Cancel')  + '</button>' +
             '</div></div></td></tr>'  +
 
             '<tr><td class="cordova-settings-label">' + _('Connected') + ':</td></td><tr>' +
@@ -2095,7 +2098,9 @@ var app = {
 
             if (!that.settings.socketUrl || that.settings.socketUrl === 'http://localhost:8082') {
                 if (!$('.cordova-setting-ssid').is(':visible')) {
-                    $('.cordova_toggle[data-group="ssid"]').trigger('click');
+                    setTimeout(function () {
+                        $('.cordova_toggle[data-group="ssid"]').trigger('click');
+                    }, 1000);
                 }
             }
 
