@@ -21,6 +21,13 @@
 // cordova run android
 // ```
 
+// How to create release:
+// extend platforms/android/release-signing.properties with
+//      keyPassword=xxx
+//      storePassword=xxx
+//
+// Copy ioBroker.vis.keystore into platforms/android/ and
+// run "grunt release"
 
 module.exports = function (grunt) {
 
