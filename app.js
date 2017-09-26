@@ -1829,11 +1829,11 @@ var app = {
             height:      window.innerHeight
         };
         window.onorientationchange = function () {
-            var viewport_scale;
+            var viewportScale;
             var orientation = window.orientation !== undefined ? window.orientation : window.screen.orientation.angle;
 
             if (orientation !== 0 && orientation !== 180) {
-                viewport_scale = this.settings.zoomLevelLandscape / 100;
+                viewportScale = this.settings.zoomLevelLandscape / 100;
                 // resize menu button
                 $('#cordova_menu').css({
                     width:  Math.round(2800 / this.settings.zoomLevelLandscape),
@@ -1841,7 +1841,7 @@ var app = {
                     'font-size': Math.round(1600 / this.settings.zoomLevelLandscape) + 'px'
                 })
             } else {
-                viewport_scale = this.settings.zoomLevelPortrait / 100;
+                viewportScale = this.settings.zoomLevelPortrait / 100;
                 // resize menu button
                 $('#cordova_menu').css({
                     width:  Math.round(2800 / this.settings.zoomLevelPortrait),
@@ -1851,19 +1851,19 @@ var app = {
             }
 
             // resize viewport
- 			document.body.style.zoom=viewport_scale;
+ 			document.body.style.zoom = viewportScale;
         }.bind(this);
 
-        var viewport_scale;
+        var viewportScale;
 
         if (orientation !== 0 && orientation !== 180) {
-            viewport_scale = this.settings.zoomLevelLandscape / 100;
+            viewportScale = this.settings.zoomLevelLandscape / 100;
         } else {
-            viewport_scale = this.settings.zoomLevelPortrait / 100;
+            viewportScale = this.settings.zoomLevelPortrait / 100;
         }
 
         // resize viewport
-	   document.body.style.zoom=viewport_scale;
+	    document.body.style.zoom = viewportScale;
     },
 
     loadCss:        function () {
@@ -2074,9 +2074,7 @@ var app = {
             document.addEventListener('backbutton', that.onBackButtonSettings, false);
 
             // resize viewport
-            $('meta[name=viewport]').attr('content',
-                'width=' + (that.window ? that.window.width : window.innerWidth) + ',' +
-                'minimum-scale=1, maximum-scale=1');
+            document.body.style.zoom = 1;
 
             // load settings
             $settings.each(function() {
