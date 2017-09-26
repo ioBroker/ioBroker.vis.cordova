@@ -596,7 +596,7 @@ var app = {
                 if (this.settings.fullscreen) {
                     AndroidFullScreen.immersiveMode(successFunction, errorFunction);
                 } else {
-                    AndroidFullScreen.leanMode(successFunction, errorFunction);
+                    AndroidFullScreen.showSystemUI(successFunction, errorFunction);
                 }
             }
 
@@ -1851,9 +1851,7 @@ var app = {
             }
 
             // resize viewport
-            $('meta[name=viewport]').attr('content',
-                'width=' + this.window.width + ',' +
-            'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale + ',initial-scale=' + viewport_scale + ', user-scalable=no');
+ 			document.body.style.zoom=viewport_scale;
         }.bind(this);
 
         var viewport_scale;
@@ -1865,10 +1863,7 @@ var app = {
         }
 
         // resize viewport
-        $('meta[name=viewport]').attr('content',
-            'width=' + this.window.width + ',' +
-            'minimum-scale=' + viewport_scale + ', maximum-scale=' + viewport_scale + ',initial-scale=' + viewport_scale + ', user-scalable=no');
-
+	   document.body.style.zoom=viewport_scale;
     },
 
     loadCss:        function () {
