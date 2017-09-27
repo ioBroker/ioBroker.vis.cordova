@@ -1534,7 +1534,13 @@ var app = {
 
     syncVis:        function (project, cb) {
         // hide dialog error
-        $('#dialog-message').hide();
+        if ($('#dialog-message').is(':visible')) {
+            try {
+                $('#dialog-message').dialog('close');
+            } catch (e) {
+
+            }
+        }
 
         if (!$('#cordova_progress').length) {
             $('body').append('<div id="cordova_progress" style="position: absolute; z-index: 5003; top: 50%; left: 5%; width: 90%; height: 2em; background: gray">' +
