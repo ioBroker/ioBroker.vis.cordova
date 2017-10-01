@@ -181,7 +181,8 @@ var app = {
         fullscreen:     false,
         lockorientation:    0,
         recognition:    false,
-        text2command:    0,
+        socketPro:      false,
+        text2command:   0,
         defaultRoom:    '',
         volume:         80,
         zoomLevelPortrait: 100,
@@ -207,6 +208,7 @@ var app = {
     lastPosition:   null,
     geoTimer:       null,
     exitApp:		false,
+    currentUrl:     '',
 
     // Application Constructor
     initialize:     function () {
@@ -489,13 +491,27 @@ var app = {
         }
         this.settings.geoInterval = parseInt(this.settings.geoInterval, 10);
 
-        this.settings.socketUrl = this.settings.socketUrl.toLowerCase();
+        this.settings.socketUrl = (this.settings.socketUrl || '').toLowerCase();
 
+        // add http://
         if (!this.settings.socketUrl.match(/^http:\/\/|^https:\/\//i)) {
             this.settings.socketUrl = 'http://' + this.settings.socketUrl;
         }
+        // remove last /
+        if (this.settings.socketUrl.match(/\/$/)) {
+            this.settings.socketUrl = this.settings.socketUrl.substring(0, this.settings.socketUrl.length - 1);
+        }
 
+        this.settings.socketUrlGSM = (this.settings.socketUrlGSM || '').toLowerCase();
 
+        // add http://
+        if (!this.settings.socketUrlGSM.match(/^http:\/\/|^https:\/\//i)) {
+            this.settings.socketUrlGSM = 'http://' + this.settings.socketUrlGSM;
+        }
+        // remove last /
+        if (this.settings.socketUrlGSM.match(/\/$/)) {
+            this.settings.socketUrlGSM = this.settings.socketUrlGSM.substring(0, this.settings.socketUrlGSM.length - 1);
+        }
         /*this.writeLocalFile('main/imgavSony.png', 'text', function (error) {
             this.readLocalFile('main/imgavSony.png', function (error, result) {
                 if (error) console.error(error);
@@ -605,6 +621,34 @@ var app = {
         }.bind(this));
     },
 
+    setProCookies: function (cb) {
+        if (this.settings.socketPro) {
+            // By calling of this function, the wss cookie will be set and authentication will work.
+            $.ajax({
+                type: 'POST',
+                url: 'https://iobroker.pro/login?app=true',
+                headers: {
+                    'Content-Type':     'application/x-www-form-urlencoded',
+                    'Referer':          'https://iobroker.pro/login',
+                    'Host':             'iobroker.pro',
+                    'Origin':           'https://iobroker.pro'
+                },
+                data: {
+                    username: this.settings.userGSM     || this.settings.user,
+                    password: this.settings.passwordGSM || this.settings.password
+                },
+                success: function (data, textStatus, request) {
+                    cb(null, true);
+                },
+                error: function (request, textStatus, errorThrown) {
+                    alert(_('Cannot login to iobroker.pro.'));
+                }
+            });
+        } else {
+            cb(null, false);
+        }
+    },
+
     loadSettings:   function (cb) {
         if (typeof Storage  !== 'undefined') {
             var value   = localStorage.getItem('cordova');
@@ -627,8 +671,19 @@ var app = {
             this.settings.zoomLevelLandscape  = this.settings.zoomLevelLandscape    || 100;
             this.settings.substitutionUrl     = this.settings.substitutionUrl       || '';
 
-            if (this.settings.socketUrlGSM && navigator.network && navigator.network.connection.type !== 'wifi') {
-                socketUrl = this.settings.socketUrlGSM + '/?key=nokey' + (this.settings.userGSM ? '&user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+            if (((this.settings.socketUrlGSM || this.settings.socketPro) && !this.settings.socketUrl) ||
+                ((this.settings.socketUrlGSM || this.settings.socketPro) && navigator.network && navigator.network.connection.type !== 'wifi')) {
+                delayed = true;
+                this.setProCookies(function (error, usePro) {
+                if (this.settings.socketPro) {
+                    socketUrl = 'https://iobroker.pro';
+                } else {
+                    socketUrl = this.settings.socketUrlGSM;
+                }
+                this.currentUrl = socketUrl;
+                socketUrl += '/?key=nokey' + (this.settings.userGSM ? '&user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+                    cb && cb();
+                }.bind(this));
             } else {
                 try {
                     // If WIFI and SSID is set
@@ -646,21 +701,33 @@ var app = {
                         delayed = true;
                         navigator.wifi.getWifiInfo(function (data) {
                             this.ssid = data.connection.SSID;
-                            if (this.settings.socketUrlGSM && this.settings.ssid && this.settings.ssid.indexOf(data.connection.SSID) === -1) {
+                            if ((this.settings.socketPro || this.settings.socketUrlGSM) && this.settings.ssid && this.settings.ssid.indexOf(data.connection.SSID) === -1) {
                                 // other wifi network
-                                socketUrl = this.settings.socketUrlGSM + '/?key=nokey' + (this.settings.userGSM ? '&user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+                                this.setProCookies(function (error, usePro) {
+                                    if (usePro) {
+                                    socketUrl = 'https://iobroker.pro';
+                                } else {
+                                    socketUrl = this.settings.socketUrlGSM;
+                                }
+                                this.currentUrl = socketUrl;
+                                socketUrl += '/?key=nokey' + (this.settings.userGSM ? '&user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+                                cb && cb();
+                                }.bind(this));
                             } else {
+                                this.currentUrl = this.settings.socketUrl;
                                 socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
                             }
-                            cb && cb();
                         }.bind(this), function (error) {
+                            this.currentUrl = this.settings.socketUrl;
                             socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
                             console.error(error);
                         }.bind(this));
                     } else {
+                        this.currentUrl = this.settings.socketUrl;
                         socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
                     }
                 } catch (err) {
+                    this.currentUrl = this.settings.socketUrl;
                     delayed = false;
                     socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
                 }
@@ -1144,7 +1211,7 @@ var app = {
                 // ignore proxy requests.
                 if (adapter.match(/^proxy\.\d+$/)) {
                     // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
-                    data = data.replace(m[mm], '": "' + this.settings.socketUrl + '/' + originalFileName);
+                    data = data.replace(m[mm], '": "' + this.currentUrl + '/' + originalFileName);
                     continue;
                 }
 
@@ -1199,7 +1266,7 @@ var app = {
                 // ignore proxy requests.
                 if (adapter.match(/^proxy\.\d+$/)) {
                     // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
-                    data = data.replace(m[mm], 'src=\\"' + this.settings.socketUrl + '/' + originalFileName);
+                    data = data.replace(m[mm], 'src=\\"' + this.currentUrl + '/' + originalFileName);
                     continue;
                 }
 
@@ -1247,7 +1314,7 @@ var app = {
                 // ignore proxy requests.
                 if (adapter.match(/^proxy\.\d+$/)) {
                     // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
-                    data = data.replace(m[mm], "src='" + this.settings.socketUrl + '/' + originalFileName);
+                    data = data.replace(m[mm], "src='" + this.currentUrl + '/' + originalFileName);
                     continue;
                 }
 
@@ -1294,7 +1361,7 @@ var app = {
                 // ignore proxy requests.
                 if (adapter.match(/^proxy\.\d+$/)) {
                     // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
-                    data = data.replace(m[mm], 'url(' + this.settings.socketUrl + '/' + originalFileName + ')');
+                    data = data.replace(m[mm], 'url(' + this.currentUrl + '/' + originalFileName + ')');
                     continue;
                 }
 
@@ -1340,7 +1407,7 @@ var app = {
             for (mm = 0; mm < m.length; mm++) {
                 var originalFileName = m[mm].substring(5);// remove ": "/
                 // remove spaces in names because they will be %20
-                data = data.replace(m[mm], '": "' + this.settings.socketUrl + '/' + originalFileName);
+                data = data.replace(m[mm], '": "' + this.currentUrl + '/' + originalFileName);
             }
         }
 
@@ -1350,7 +1417,7 @@ var app = {
             for (mm = 0; mm < m.length; mm++) {
                 var originalFileName = m[mm].substring(7); // remove src=\"/
                 // remove spaces in names because they will be %20
-                data = data.replace(m[mm], 'src=\\"' + this.settings.socketUrl + '/' + originalFileName);
+                data = data.replace(m[mm], 'src=\\"' + this.currentUrl + '/' + originalFileName);
             }
         }
 
@@ -1360,7 +1427,7 @@ var app = {
             for (mm = 0; mm < m.length; mm++) {
                 var originalFileName = m[mm].substring(6); // remove src="/
                 // remove spaces in names because they will be %20
-                data = data.replace(m[mm], "src='" + this.settings.socketUrl + '/' + originalFileName);
+                data = data.replace(m[mm], "src='" + this.currentUrl + '/' + originalFileName);
             }
         }
 
@@ -1370,11 +1437,11 @@ var app = {
             for (mm = 0; mm < m.length; mm++) {
                 var originalFileName = m[mm].substring(4); // remove url(/
                 if (originalFileName[0] === "'") {
-                    data = data.replace(m[mm], "url('"  + this.settings.socketUrl + '/' + originalFileName.substring(1));
+                    data = data.replace(m[mm], "url('"  + this.currentUrl + '/' + originalFileName.substring(1));
                 } else if (originalFileName[0] === '"') {
-                    data = data.replace(m[mm], 'url("'  + this.settings.socketUrl + '/' + originalFileName.substring(1));
+                    data = data.replace(m[mm], 'url("'  + this.currentUrl + '/' + originalFileName.substring(1));
                 } else {
-                    data = data.replace(m[mm], 'url('  + this.settings.socketUrl + '/' + originalFileName);
+                    data = data.replace(m[mm], 'url('  + this.currentUrl + '/' + originalFileName);
                 }
            }
         }
@@ -1407,6 +1474,7 @@ var app = {
         vis.conn.readFile64(file, function (error, data, filename) {
             if (error) console.error(error);
             $('#cordova_progress_show').css('width', (100 - (files.length / this.totalFileCount) * 100) + '%');
+            $('#cordova_progress_info').text(files.length + '/' + this.totalFileCount + ' - ' + filename);
             console.log ('Progress files open:  ' + files.length + ' Total: ' + this.totalFileCount);
             if (!error && data !== undefined && data !== null) {
                 if ((data.mime.indexOf('text') === -1 && data.mime.indexOf('application') === -1)) {
@@ -1543,8 +1611,10 @@ var app = {
         }
 
         if (!$('#cordova_progress').length) {
-            $('body').append('<div id="cordova_progress" style="position: absolute; z-index: 5003; top: 50%; left: 5%; width: 90%; height: 2em; background: gray">' +
-                '<div id="cordova_progress_show" style="height: 100%; width: 0; background: lightblue; z-index: 5004"></div></div>');
+            $('body').append(
+                '<div id="cordova_progress" style="position: absolute; z-index: 5003; top: 50%; left: 5%; width: 90%; height: 2em; background: gray">' +
+                '<div id="cordova_progress_show" style="height: 100%; width: 0; background: lightblue; z-index: 5004"></div></div>' +
+                '<div id="cordova_progress_info" style="position: absolute; z-index: 5003; top: calc(50% + 2.1em); left: 5%; width: 90%; height: 2em; overflow: hidden; text-align: left; font-size: 0.5em"></div>');
         }
 
         if (vis.conn.getIsConnected()) {
@@ -1858,6 +1928,7 @@ var app = {
 
             // resize viewport
  			document.body.style.zoom = viewportScale;
+            vis.updateIframeZoom(viewportScale);
         }.bind(this);
 
         var viewportScale;
@@ -1870,6 +1941,8 @@ var app = {
 
         // resize viewport
 	    document.body.style.zoom = viewportScale;
+
+        vis.updateIframeZoom(viewportScale);
     },
 
     loadCss:        function () {
@@ -1916,9 +1989,11 @@ var app = {
             '<button id="cordova_cancel" style="font-size: 14px;">&#10060;' + _('Cancel')  + '</button>' +
             '</div></div></td></tr>'  +
 
+            // Indicate Connected
             '<tr><td class="cordova-settings-label">' + _('Connected') + ':</td></td><tr>' +
             '<tr><td class="cordova-settings-value"><div id="cordova_connected"></div></td></tr>' +
 
+            // WIFI
             '<tr><td class="cordova-settings-label section-legend"><span>'      + _('WIFI') + '</span><div class="cordova_toggle" data-group="ssid">▶</div></td></tr>' +
             '<tr class="cordova-setting-ssid"><td>' + _('WIFI SSID') + ':</td></tr>' +
             '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="ssid"       style="width: calc(100% - 4em)" id="cordova_ssid"/><button id="cordova_ssid_button" style="width: 3em; height: 2.3em;">' + _('Actual') + '</button></td></tr>' +
@@ -1935,7 +2010,7 @@ var app = {
             '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Password repeat')  + ':</td></tr>' +
             '<tr class="cordova-setting-ssid"><td><input id="cordova-password-repeat" type="password"   style="width: 100%"/></td></tr>' +
 
-
+            // Language
             '<tr><td class="cordova-settings-label">' + _('Language')  + ':</td></tr>' +
             '<tr><td class="cordova-settings-value"><select data-name="systemLang" class="cordova-setting">' +
             '<option value="">' + _('System') + '</option>' +
@@ -1944,10 +2019,11 @@ var app = {
             '<option value="ru">русский</option>' +
             '</select></td></tr>' +
 
-
+            // Project
             '<tr><td class="cordova-settings-label">' + _('Project')               + ':</td></tr>' +
             '<tr><td class="cordova-settings-value"><select class="cordova-setting" data-name="project"     id="cordova_project" style="width: 100%"></select></td></tr>' +
 
+            // Orientation
             '<tr><td class="cordova-settings-label">' + _('Orientation')  + ':</td></tr>' +
             '<tr><td class="cordova-settings-value"><select data-name="lockorientation" class="cordova-setting">' +
             '<option value="0">' + _('orientation_auto') + '</option>' +
@@ -1955,6 +2031,7 @@ var app = {
             '<option value="2">' + _('orientation_landscape') + '</option>' +
             '</select></td></tr>' +
 
+            // Settings
             '<tr><td class="cordova-settings-label"><label for="noSleep">' + _('Prevent from sleep')       + ':</label></td></tr>' +
             '<tr><td><input id="noSleep" class="cordova-setting" data-name="noSleep" type="checkbox"/><label for="noSleep" class="checkbox">&#8226;</label></td></tr>' +
 
@@ -1999,9 +2076,13 @@ var app = {
             '<tr class="cordova-setting-speech cordova-settings-label speech"><td><label for="responseWithTts">' + _('Response over TTS') + ':</label></td></tr>' +
             '<tr class="cordova-setting-speech speech"><td><input id="responseWithTts"    class="cordova-setting" data-name="responseWithTts" type="checkbox"/><label for="responseWithTts" class="checkbox">&#8226;</label></td></tr>' +
 
+            // Mobile connection
             '<tr><td class="cordova-settings-label section-legend"><span>' + _('Cell')      + '</span><div class="cordova_toggle" data-group="cell">▶</div></td></tr>' +
-            '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell Socket')           + ':</td></tr>' +
-            '<tr class="cordova-setting-cell"><td><input  class="cordova-setting" data-name="socketUrlGSM" style="width: 100%"/></td></tr>' +
+            '<tr class="cordova-setting-cell"><td><label for="socketPro">' + _('Use iobroker.pro') + ':</label></td></tr>' +
+            '<tr class="cordova-setting-cell"><td><input id="socketPro" class="cordova-setting" data-name="socketPro" type="checkbox"/><label for="socketPro" class="checkbox">&#8226;</label></td></tr>' +
+
+            '<tr class="cordova-setting-cell cordova-setting-cell-socket"><td class="cordova-settings-label">' + _('Cell Socket')           + ':</td></tr>' +
+            '<tr class="cordova-setting-cell cordova-setting-cell-socket"><td><input  class="cordova-setting" data-name="socketUrlGSM" style="width: 100%"/></td></tr>' +
 
             '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell User')             + ':</td></tr>' +
             '<tr class="cordova-setting-cell"><td><input class="cordova-setting" data-name="userGSM"    style="width: 100%"/></td></tr>' +
@@ -2083,7 +2164,7 @@ var app = {
             document.body.style.zoom = 1;
 
             // load settings
-            $settings.each(function() {
+            $settings.each(function () {
                 var settingName = $(this).data('name');
                 if ($(this).attr('type') === 'checkbox') {
                     $(this).prop('checked', that.settings[settingName]);
@@ -2095,7 +2176,7 @@ var app = {
                 }
             });
 
-            if (!that.settings.socketUrl || that.settings.socketUrl === 'http://localhost:8082') {
+            if ((!that.settings.socketUrl || that.settings.socketUrl === 'http://localhost:8082') && !that.settings.socketPro) {
                 if (!$('.cordova-setting-ssid').is(':visible')) {
                     setTimeout(function () {
                         $('.cordova_toggle[data-group="ssid"]').trigger('click');
@@ -2133,6 +2214,12 @@ var app = {
                 $('#cordova_ssid').css('width', '100%');
             }
 
+            if (that.settings.socketPro) {
+                $('.cordova-setting-cell-socket').hide();
+            } else {
+                $('.cordova-setting-cell-socket').show();
+            }
+
             $('.cordova_toggle').unbind('click').click(function () {
                 if ($(this).html() === '▶') {
                     $('.cordova-setting-' + $(this).data('group')).show();
@@ -2140,6 +2227,14 @@ var app = {
                 } else {
                     $('.cordova-setting-' + $(this).data('group')).hide();
                     $(this).html('▶');
+                }
+            });
+
+            $('#socketPro').unbind('change').change(function () {
+                if ($(this).prop('checked')) {
+                    $('.cordova-setting-cell-socket').hide();
+                } else {
+                    $('.cordova-setting-cell-socket').show();
                 }
             });
 
@@ -2382,7 +2477,7 @@ var app = {
                     // ignore proxy requests.
                     if (adapter.match(/^proxy\.\d+$/)) {
                         // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
-                        data = data.replace(m[mm], 'src=\\"' + this.settings.socketUrl + '/' + originalFileName);
+                        data = data.replace(m[mm], 'src=\\"' + this.currentUrl + '/' + originalFileName);
                         continue;
                     }
 
@@ -2410,7 +2505,7 @@ var app = {
                     // ignore proxy requests.
                     if (adapter.match(/^proxy\.\d+$/)) {
                         // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
-                        data = data.replace(m[mm], "src='" + this.settings.socketUrl + '/' + originalFileName);
+                        data = data.replace(m[mm], "src='" + this.currentUrl + '/' + originalFileName);
                         continue;
                     }
 
@@ -2456,7 +2551,7 @@ var app = {
                     // ignore proxy requests.
                     if (adapter.match(/^proxy\.\d+$/)) {
                         // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
-                        data = data.replace(m[mm], 'src="' + this.settings.socketUrl + '/' + originalFileName);
+                        data = data.replace(m[mm], 'src="' + this.currentUrl + '/' + originalFileName);
                         continue;
                     }
                     // files cannot be stored directly in root
@@ -2483,7 +2578,7 @@ var app = {
                     // ignore proxy requests.
                     if (adapter.match(/^proxy\.\d+$/)) {
                         // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
-                        data = data.replace(m[mm], "src='" + this.settings.socketUrl + '/' + originalFileName);
+                        data = data.replace(m[mm], "src='" + this.currentUrl + '/' + originalFileName);
                         continue;
                     }
 
@@ -2530,7 +2625,7 @@ var app = {
                     // ignore proxy requests.
                     if (adapter.match(/^proxy\.\d+$/)) {
                         // replace "/proxy.0/aaa.png" with http(s)://socketURL/proxy.0/aaa.png
-                        data = data.replace(m[mm], 'src="' + this.settings.socketUrl + '/' + originalFileName);
+                        data = data.replace(m[mm], 'src="' + this.currentUrl + '/' + originalFileName);
                         continue;
                     }
                     // files cannot be stored directly in root
