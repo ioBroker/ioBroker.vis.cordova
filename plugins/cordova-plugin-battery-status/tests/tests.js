@@ -20,16 +20,23 @@
  */
 
 /* jshint jasmine: true */
-/* global WinJS */
+/* global Windows, WinJS */
 
 exports.defineAutoTests = function () {
-    var isWindowsStore = (cordova.platformId == "windows8") || (cordova.platformId == "windows" && !WinJS.Utilities.isPhone),
-        onEvent;
+    var hasPowerManagerAPI = cordova.platformId === "windows" &&
+        Windows && Windows.System && Windows.System.Power &&
+        Windows.System.Power.PowerManager;
+
+    var batteryStatusUnsupported = cordova.platformId === "windows8" ||
+        // We don't test battery status on Windows when there is no corresponding APIs available
+        cordova.platformId === "windows" && !(hasPowerManagerAPI || WinJS.Utilities.isPhone);
+
+    var onEvent;
 
     describe('Battery (navigator.battery)', function () {
 
         it("battery.spec.1 should exist", function () {
-            if (isWindowsStore) {
+            if (batteryStatusUnsupported) {
                 pending('Battery status is not supported on windows store');
             }
 
@@ -42,18 +49,18 @@ exports.defineAutoTests = function () {
         describe("batterystatus", function () {
 
             afterEach(function () {
-                if (!isWindowsStore) {
+                if (!batteryStatusUnsupported) {
                     try {
                         window.removeEventListener("batterystatus", onEvent, false);
                     }
                     catch (e) {
-                        console.err('Error removing batterystatus event listener: ' + e);
+                        console.error('Error removing batterystatus event listener: ' + e);
                     }
                 }
             });
 
             it("battery.spec.2 should fire batterystatus events", function (done) {
-                if (isWindowsStore) {
+                if (batteryStatusUnsupported) {
                     pending('Battery status is not supported on windows store');
                 }
 
@@ -78,18 +85,18 @@ exports.defineAutoTests = function () {
         describe("batterylow", function () {
 
             afterEach(function () {
-                if (!isWindowsStore) {
+                if (!batteryStatusUnsupported) {
                     try {
                         window.removeEventListener("batterylow", onEvent, false);
                     }
                     catch (e) {
-                        console.err('Error removing batterylow event listener: ' + e);
+                        console.error('Error removing batterylow event listener: ' + e);
                     }
                 }
             });
 
             it("battery.spec.3 should fire batterylow event (30 -> 20)", function (done) {
-                if (isWindowsStore) {
+                if (batteryStatusUnsupported) {
                     pending('Battery status is not supported on windows store');
                 }
 
@@ -116,7 +123,7 @@ exports.defineAutoTests = function () {
             });
 
             it("battery.spec.3.1 should fire batterylow event (30 -> 19)", function (done) {
-                if (isWindowsStore) {
+                if (batteryStatusUnsupported) {
                     pending('Battery status is not supported on windows store');
                 }
 
@@ -142,7 +149,7 @@ exports.defineAutoTests = function () {
             });
 
             it("battery.spec.3.2 should not fire batterylow event (5 -> 20)", function (done) {
-                if (isWindowsStore) {
+                if (batteryStatusUnsupported) {
                     pending('Battery status is not supported on windows store');
                 }
 
@@ -168,7 +175,7 @@ exports.defineAutoTests = function () {
             });
 
             it("battery.spec.3.3 batterylow event(21 -> 20) should not fire if charging", function (done) {
-                if (isWindowsStore) {
+                if (batteryStatusUnsupported) {
                     pending('Battery status is not supported on windows store');
                 }
 
@@ -197,18 +204,18 @@ exports.defineAutoTests = function () {
         describe("batterycritical", function () {
 
             afterEach(function () {
-                if (!isWindowsStore) {
+                if (!batteryStatusUnsupported) {
                     try {
                         window.removeEventListener("batterycritical", onEvent, false);
                     }
                     catch (e) {
-                        console.err('Error removing batterycritical event listener: ' + e);
+                        console.error('Error removing batterycritical event listener: ' + e);
                     }
                 }
             });
 
             it("battery.spec.4 should fire batterycritical event (19 -> 5)", function (done) {
-                if (isWindowsStore) {
+                if (batteryStatusUnsupported) {
                     pending('Battery status is not supported on windows store');
                 }
 
@@ -235,7 +242,7 @@ exports.defineAutoTests = function () {
             });
 
             it("battery.spec.4.1 should fire batterycritical event (19 -> 4)", function (done) {
-                if (isWindowsStore) {
+                if (batteryStatusUnsupported) {
                     pending('Battery status is not supported on windows store');
                 }
 
@@ -262,7 +269,7 @@ exports.defineAutoTests = function () {
             });
 
             it("battery.spec.4.2 should fire batterycritical event (100 -> 4) when decreases", function (done) {
-                if (isWindowsStore) {
+                if (batteryStatusUnsupported) {
                     pending('Battery status is not supported on windows store');
                 }
 
@@ -288,7 +295,7 @@ exports.defineAutoTests = function () {
             });
 
             it("battery.spec.4.3 should not fire batterycritical event (4 -> 5) when increasing", function (done) {
-                if (isWindowsStore) {
+                if (batteryStatusUnsupported) {
                     pending('Battery status is not supported on windows store');
                 }
 
@@ -314,7 +321,7 @@ exports.defineAutoTests = function () {
             });
 
             it("battery.spec.4.4 should not fire batterycritical event (6 -> 5) if charging", function (done) {
-                if (isWindowsStore) {
+                if (batteryStatusUnsupported) {
                     pending('Battery status is not supported on windows store');
                 }
 

@@ -56,7 +56,7 @@ function trace(value)
 }
 
 // Is this plugin supported?
-AndroidFullScreen.isSupported();
+AndroidFullScreen.isSupported(supportedFunction, errorFunction);
 
 // Is immersive mode supported?
 AndroidFullScreen.isImmersiveModeSupported(successFunction, errorFunction);
@@ -81,6 +81,11 @@ AndroidFullScreen.showUnderSystemUI(successFunction, errorFunction);
 
 // Hide system UI and keep it hidden (Android 4.4+ only)
 AndroidFullScreen.immersiveMode(successFunction, errorFunction);
+
+// Custom full screen mode
+// See https://developer.android.com/reference/android/view/View.html#setSystemUiVisibility(int)
+AndroidFullScreen.setSystemUiVisibility(AndroidFullScreen.SYSTEM_UI_FLAG_FULLSCREEN | AndroidFullScreen.SYSTEM_UI_FLAG_LOW_PROFILE, successFunction, errorFunction);
+
 
 ```
 

@@ -7,57 +7,49 @@
         "files": {}
     },
     "installed_plugins": {
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "net.iobroker.vis"
-        },
-        "nl.x-services.plugins.insomnia": {
-            "PACKAGE_NAME": "net.iobroker.vis"
-        },
-        "cordova-plugin-file": {
-            "PACKAGE_NAME": "net.iobroker.vis"
-        },
-        "cordova-plugin-network-information": {
-            "PACKAGE_NAME": "net.iobroker.vis"
-        },
-        "cordova-plugin-tts": {
-            "PACKAGE_NAME": "net.iobroker.vis"
-        },
-        "org.apache.cordova.speech.speechrecognition": {
-            "PACKAGE_NAME": "net.iobroker.vis"
-        },
-        "org.apache.cordova.wifiinfo": {
-            "PACKAGE_NAME": "net.iobroker.vis"
-        },
-        "cordova-plugin-app-version": {
-            "PACKAGE_NAME": "net.iobroker.vis"
-        },
-        "cordova-plugin-x-toast": {
-            "PACKAGE_NAME": "net.iobroker.vis"
-        },
         "com.jiliac.systemvolume": {
-            "PACKAGE_NAME": "net.iobroker.vis"
-        },
-        "cordova.custom.plugins.exitapp": {
             "PACKAGE_NAME": "net.iobroker.vis"
         },
         "com.phonegap.plugins.OrientationLock": {
             "PACKAGE_NAME": "net.iobroker.vis"
         },
-        "cordova-plugin-fullscreen": {
+        "cordova-plugin-tts": {
             "PACKAGE_NAME": "net.iobroker.vis"
         },
-        "cordova-plugin-battery-status": {
+        "cordova.custom.plugins.exitapp": {
             "PACKAGE_NAME": "net.iobroker.vis"
         },
         "cordova-plugin-geolocation": {
             "PACKAGE_NAME": "net.iobroker.vis"
         },
-        "cordova-plugin-crosswalk-webview": {
-            "XWALK_VERSION": "23+",
-            "XWALK_LITEVERSION": "xwalk_core_library_canary:17+",
-            "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
-            "XWALK_MODE": "embedded",
-            "XWALK_MULTIPLEAPK": "true",
+        "cordova-plugin-battery-status": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-x-toast": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-app-version": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "phonegap-plugin-speech-recognition": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-insomnia": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-fullscreen": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "com.pylonproducts.wifiwizard": {
             "PACKAGE_NAME": "net.iobroker.vis"
         }
     },

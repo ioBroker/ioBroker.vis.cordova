@@ -1,14 +1,66 @@
 {
-  "name": "cordova-plugin-app-version",
-  "version": "0.1.8",
+  "_args": [
+    [
+      {
+        "raw": "cordova-plugin-app-version",
+        "scope": null,
+        "escapedName": "cordova-plugin-app-version",
+        "name": "cordova-plugin-app-version",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "D:\\pWork\\ioBroker.vis.cordova\\node_modules"
+    ]
+  ],
+  "_from": "cordova-plugin-app-version@latest",
+  "_id": "cordova-plugin-app-version@0.1.9",
+  "_inCache": true,
+  "_location": "/cordova-plugin-app-version",
+  "_nodeVersion": "5.8.0",
+  "_npmOperationalInternal": {
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/cordova-plugin-app-version-0.1.9.tgz_1472026299040_0.8699118127115071"
+  },
+  "_npmUser": {
+    "name": "whiteoctober",
+    "email": "info@whiteoctober.co.uk"
+  },
+  "_npmVersion": "3.7.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "cordova-plugin-app-version",
+    "scope": null,
+    "escapedName": "cordova-plugin-app-version",
+    "name": "cordova-plugin-app-version",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-app-version/-/cordova-plugin-app-version-0.1.9.tgz",
+  "_shasum": "9db0607863337a710489302e5f50a904f1449bdb",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-app-version",
+  "_where": "D:\\pWork\\ioBroker.vis.cordova\\node_modules",
+  "author": {
+    "name": "whiteoctober"
+  },
+  "bugs": {
+    "url": "https://github.com/whiteoctober/cordova-plugin-app-version/issues"
+  },
+  "dependencies": {},
   "description": "Cordova plugin to return the version number of the current app",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "9db0607863337a710489302e5f50a904f1449bdb",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-app-version/-/cordova-plugin-app-version-0.1.9.tgz"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/whiteoctober/cordova-plugin-app-version.git"
-  },
+  "gitHead": "bcfecaf9e4d20135a487de5502f7d1e3b251e062",
+  "homepage": "https://github.com/whiteoctober/cordova-plugin-app-version#readme",
   "keywords": [
     "cordova",
     "ecosystem:cordova",
@@ -17,10 +69,26 @@
     "appversion",
     "plugin"
   ],
-  "author": "whiteoctober",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/whiteoctober/cordova-plugin-app-version/issues"
+  "maintainers": [
+    {
+      "name": "maistho",
+      "email": "maistho@gmail.com"
+    },
+    {
+      "name": "whiteoctober",
+      "email": "info@whiteoctober.co.uk"
+    }
+  ],
+  "name": "cordova-plugin-app-version",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whiteoctober/cordova-plugin-app-version.git"
   },
-  "homepage": "https://github.com/whiteoctober/cordova-plugin-app-version#readme"
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.1.9"
 }

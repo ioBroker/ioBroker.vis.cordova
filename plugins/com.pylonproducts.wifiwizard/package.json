@@ -1,0 +1,100 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "wifiwizard",
+        "scope": null,
+        "escapedName": "wifiwizard",
+        "name": "wifiwizard",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "D:\\pWork\\ioBroker.vis.cordova\\node_modules"
+    ]
+  ],
+  "_from": "wifiwizard@latest",
+  "_id": "wifiwizard@0.2.11",
+  "_inCache": true,
+  "_location": "/wifiwizard",
+  "_nodeVersion": "0.12.7",
+  "_npmUser": {
+    "name": "hoerresb",
+    "email": "brandonhoerres@gmail.com"
+  },
+  "_npmVersion": "2.11.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "wifiwizard",
+    "scope": null,
+    "escapedName": "wifiwizard",
+    "name": "wifiwizard",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/wifiwizard/-/wifiwizard-0.2.11.tgz",
+  "_shasum": "ed2db47bc4ac621c12de1d6ef5948822e964df14",
+  "_shrinkwrap": null,
+  "_spec": "wifiwizard",
+  "_where": "D:\\pWork\\ioBroker.vis.cordova\\node_modules",
+  "author": {
+    "name": "Matt Parsons"
+  },
+  "bugs": {
+    "url": "https://github.com/parsonsmatt/wifiwizard/issues"
+  },
+  "cordova": {
+    "id": "com.pylonproducts.wifiwizard",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {},
+  "description": "This plugin allows Phonegap applications to manage Wifi connections.",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "ed2db47bc4ac621c12de1d6ef5948822e964df14",
+    "tarball": "https://registry.npmjs.org/wifiwizard/-/wifiwizard-0.2.11.tgz"
+  },
+  "gitHead": "6a7701ebe2ec7e7bb176c63375d0c67a3de87972",
+  "homepage": "https://github.com/parsonsmatt/wifiwizard#readme",
+  "keywords": [
+    "phonegap",
+    "network",
+    "wifi",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "license": "Apache 2.0",
+  "maintainers": [
+    {
+      "name": "asmund1",
+      "email": "asmund@herikstad.net"
+    },
+    {
+      "name": "hoerresb",
+      "email": "brandonhoerres@gmail.com"
+    },
+    {
+      "name": "parsonsmatt",
+      "email": "parsonsmatt@gmail.com"
+    }
+  ],
+  "name": "wifiwizard",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/parsonsmatt/wifiwizard.git"
+  },
+  "scripts": {},
+  "version": "0.2.11"
+}

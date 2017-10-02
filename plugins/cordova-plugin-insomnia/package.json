@@ -1,0 +1,106 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "cordova-plugin-insomnia",
+        "scope": null,
+        "escapedName": "cordova-plugin-insomnia",
+        "name": "cordova-plugin-insomnia",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "D:\\pWork\\ioBroker.vis.cordova\\node_modules"
+    ]
+  ],
+  "_from": "cordova-plugin-insomnia@latest",
+  "_id": "cordova-plugin-insomnia@4.3.0",
+  "_inCache": true,
+  "_location": "/cordova-plugin-insomnia",
+  "_nodeVersion": "4.2.2",
+  "_npmOperationalInternal": {
+    "host": "packages-18-east.internal.npmjs.com",
+    "tmp": "tmp/cordova-plugin-insomnia-4.3.0.tgz_1485942457945_0.2706606136634946"
+  },
+  "_npmUser": {
+    "name": "eddyverbruggen",
+    "email": "eddyverbruggen@gmail.com"
+  },
+  "_npmVersion": "4.0.5",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "cordova-plugin-insomnia",
+    "scope": null,
+    "escapedName": "cordova-plugin-insomnia",
+    "name": "cordova-plugin-insomnia",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-insomnia/-/cordova-plugin-insomnia-4.3.0.tgz",
+  "_shasum": "832a33f6d763f0b80273bdf761b35b678c43b957",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-insomnia",
+  "_where": "D:\\pWork\\ioBroker.vis.cordova\\node_modules",
+  "author": {
+    "name": "Eddy Verbruggen",
+    "email": "eddyverbruggen@gmail.com",
+    "url": "https://github.com/EddyVerbruggen"
+  },
+  "bugs": {
+    "url": "https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-insomnia",
+    "platforms": [
+      "ios",
+      "wp8",
+      "windows",
+      "android",
+      "firefoxos"
+    ]
+  },
+  "dependencies": {},
+  "description": "Prevent the screen of the mobile device from falling asleep.",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "832a33f6d763f0b80273bdf761b35b678c43b957",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-insomnia/-/cordova-plugin-insomnia-4.3.0.tgz"
+  },
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "gitHead": "8d2c3b01fc0c11d9bc36bc1b5f9a141bd097f908",
+  "homepage": "https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin#readme",
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-wp8",
+    "cordova-windows",
+    "cordova-android",
+    "cordova-firefoxos"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "eddyverbruggen",
+      "email": "eddyverbruggen@gmail.com"
+    }
+  ],
+  "name": "cordova-plugin-insomnia",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin.git"
+  },
+  "scripts": {},
+  "version": "4.3.0"
+}
