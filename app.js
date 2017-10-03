@@ -134,6 +134,7 @@ $.extend(systemDictionary, {
         "de": "Zoom Level Landscape",
         "ru": "Зум при гор. положении"
     },
+    "Use iobroker.pro": {"en": "Use iobroker.pro", "de": "Benutze iobroker.pro", "ru": "Использовать iobroker.pro"},
 
     "Volume": {
         "en": "Speech volume",
@@ -494,7 +495,7 @@ var app = {
         this.settings.socketUrl = (this.settings.socketUrl || '').toLowerCase();
 
         // add http://
-        if (!this.settings.socketUrl.match(/^http:\/\/|^https:\/\//i)) {
+        if (this.settings.socketUrl && !this.settings.socketUrl.match(/^http:\/\/|^https:\/\//i)) {
             this.settings.socketUrl = 'http://' + this.settings.socketUrl;
         }
         // remove last /
@@ -505,7 +506,7 @@ var app = {
         this.settings.socketUrlGSM = (this.settings.socketUrlGSM || '').toLowerCase();
 
         // add http://
-        if (!this.settings.socketUrlGSM.match(/^http:\/\/|^https:\/\//i)) {
+        if (this.settings.socketUrlGSM && !this.settings.socketUrlGSM.match(/^http:\/\/|^https:\/\//i)) {
             this.settings.socketUrlGSM = 'http://' + this.settings.socketUrlGSM;
         }
         // remove last /
@@ -687,7 +688,7 @@ var app = {
             } else {
                 try {
                     // If WIFI and SSID is set
-                    if (this.settings.socketUrlGSM && this.settings.ssid && navigator.wifi) {
+                    if (this.settings.socketUrlGSM && this.settings.ssid) {
                         // convert into array of SSIDs
                         if (typeof this.settings.ssid === 'string') {
                             this.settings.ssid = this.settings.ssid.split(',');
@@ -699,29 +700,33 @@ var app = {
 
                         // read SSID info
                         delayed = true;
-                        navigator.wifi.getWifiInfo(function (data) {
-                            this.ssid = data.connection.SSID;
-                            if ((this.settings.socketPro || this.settings.socketUrlGSM) && this.settings.ssid && this.settings.ssid.indexOf(data.connection.SSID) === -1) {
-                                // other wifi network
-                                this.setProCookies(function (error, usePro) {
-                                    if (usePro) {
-                                    socketUrl = 'https://iobroker.pro';
+                        if (typeof WifiWizard !== 'undefined') {
+                            WifiWizard.getCurrentSSID(function (response) {
+                                this.ssid = response.replace(/\"/g, '');
+                                if ((this.settings.socketPro || this.settings.socketUrlGSM) && this.settings.ssid && this.settings.ssid.indexOf(this.ssid) === -1) {
+                                    // other wifi network
+                                    this.setProCookies(function (error, usePro) {
+                                        if (usePro) {
+                                            socketUrl = 'https://iobroker.pro';
+                                        } else {
+                                            socketUrl = this.settings.socketUrlGSM;
+                                        }
+                                        this.currentUrl = socketUrl;
+                                        socketUrl += '/?key=nokey' + (this.settings.userGSM ? '&user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+                                        cb && cb();
+                                    }.bind(this));
                                 } else {
-                                    socketUrl = this.settings.socketUrlGSM;
+                                    this.currentUrl = this.settings.socketUrl;
+                                    socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                                    cb && cb();
                                 }
-                                this.currentUrl = socketUrl;
-                                socketUrl += '/?key=nokey' + (this.settings.userGSM ? '&user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
-                                cb && cb();
-                                }.bind(this));
-                            } else {
+                            }.bind(this), function (error){
                                 this.currentUrl = this.settings.socketUrl;
                                 socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
-                            }
-                        }.bind(this), function (error) {
-                            this.currentUrl = this.settings.socketUrl;
-                            socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
-                            console.error(error);
-                        }.bind(this));
+                                console.error(error);
+                                cb && cb();
+                            }.bind(this));
+                        }
                     } else {
                         this.currentUrl = this.settings.socketUrl;
                         socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
@@ -1474,7 +1479,7 @@ var app = {
         vis.conn.readFile64(file, function (error, data, filename) {
             if (error) console.error(error);
             $('#cordova_progress_show').css('width', (100 - (files.length / this.totalFileCount) * 100) + '%');
-            $('#cordova_progress_info').text(files.length + '/' + this.totalFileCount + ' - ' + filename);
+            $('#cordova_progress_info').text((this.totalFileCount - files.length) + '/' + this.totalFileCount + ' - ' + filename);
             console.log ('Progress files open:  ' + files.length + ' Total: ' + this.totalFileCount);
             if (!error && data !== undefined && data !== null) {
                 if ((data.mime.indexOf('text') === -1 && data.mime.indexOf('application') === -1)) {
@@ -1614,7 +1619,7 @@ var app = {
             $('body').append(
                 '<div id="cordova_progress" style="position: absolute; z-index: 5003; top: 50%; left: 5%; width: 90%; height: 2em; background: gray">' +
                 '<div id="cordova_progress_show" style="height: 100%; width: 0; background: lightblue; z-index: 5004"></div></div>' +
-                '<div id="cordova_progress_info" style="position: absolute; z-index: 5003; top: calc(50% + 2.0em); left: 5%; width: 90%; height: 2em; overflow: hidden; text-align: left; font-size: 0.5em; padding-left: 0.5em"></div>');
+                '<div id="cordova_progress_info" style="position: absolute; z-index: 5003; top: calc(50% + 1.5em); left: 5%; width: 90%; height: 2em; overflow: hidden; text-align: left; font-size: 0.5em; padding-left: 0.5em"></div>');
         }
 
         if (vis.conn.getIsConnected()) {
@@ -1637,6 +1642,7 @@ var app = {
                             this.totalFileCount = 0;
                             this.copyFilesToDevice(files, function () {
                                 $('#cordova_progress').remove();
+                                $('#cordova_progress_info').remove();
                                 $('#cordova_dialog_bg').hide();
                                 if (cb) cb();
                             });
@@ -1877,11 +1883,16 @@ var app = {
                 var d = new Date();
                 console.log('[' + d.getSeconds() + '.' + d.getMilliseconds() + '] Error by recognizing: ' + JSON.stringify(event));
                 this.menu.css('background', 'rgba(0, 0, 0, 0.1)');
-                if (!this.settings.noCommInBackground || !this.inBackground) {
-                    setTimeout(function () {
-                        this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
-                        if (!this.speaking) this.recognition.start(true);
-                    }.bind(this), 300);
+
+                if (event !== 'Speech recognition is not present or enabled') {
+                    if (!this.settings.noCommInBackground || !this.inBackground) {
+                        setTimeout(function () {
+                            this.menu.css('background', 'rgba(0, 0, 128, 0.5)');
+                            if (!this.speaking) this.recognition.start(true);
+                        }.bind(this), 300);
+                    }
+                } else {
+                    window.alert(_('Speech recognition is not present or enabled. Google Search must be installed and enabled'));
                 }
             }.bind(this);
 
@@ -1927,8 +1938,9 @@ var app = {
             }
 
             // resize viewport
- 			document.body.style.zoom = viewportScale;
-            vis.updateIframeZoom(viewportScale);
+            $('meta[name=viewport]').attr('content',
+                'width=' + this.window.width + ',' +
+            'minimum-scale=' + viewportScale + ', maximum-scale=' + viewportScale + ',initial-scale=' + viewportScale + ', user-scalable=no');
         }.bind(this);
 
         var viewportScale;
@@ -1940,9 +1952,9 @@ var app = {
         }
 
         // resize viewport
-	    document.body.style.zoom = viewportScale;
-
-        vis.updateIframeZoom(viewportScale);
+        $('meta[name=viewport]').attr('content',
+            'width=' + this.window.width + ',' +
+            'minimum-scale=' + viewportScale + ', maximum-scale=' + viewportScale + ',initial-scale=' + viewportScale + ', user-scalable=no');
     },
 
     loadCss:        function () {
@@ -1954,7 +1966,6 @@ var app = {
                 $(document).trigger('vis-user');
             });
         }
-
     },
 
     installMenu:    function () {
@@ -2038,8 +2049,8 @@ var app = {
             '<tr><td class="cordova-settings-label"><label for="allowMove">' + _('Allow window move')      + ':</label></td></tr>' +
             '<tr><td><input  id="allowMove"      class="cordova-setting" data-name="allowMove"   type="checkbox"/><label for="allowMove" class="checkbox">&#8226;</label></td></tr>' +
 
-            '<tr><td class="cordova-settings-label"><label for="dontCache">' + _('Read always config from server')      + ':</label></td></tr>' +
-            '<tr><td><input  id="dontCache"      class="cordova-setting" data-name="dontCache"   type="checkbox"/><label for="dontCache" class="checkbox">&#8226;</label></td></tr>' +
+            '<tr class="cordova-settings-dont-cache"><td class="cordova-settings-label"><label for="dontCache">' + _('Read always config from server')      + ':</label></td></tr>' +
+            '<tr class="cordova-settings-dont-cache"><td><input  id="dontCache"      class="cordova-setting" data-name="dontCache"   type="checkbox"/><label for="dontCache" class="checkbox">&#8226;</label></td></tr>' +
 
             '<tr><td class="cordova-settings-label"><label for="fullscreen">' + _('Fullscreen')      + ':</label></td></tr>' +
             '<tr><td><input  id="fullscreen"      class="cordova-setting" data-name="fullscreen"   type="checkbox"/><label for="fullscreen" class="checkbox">&#8226;</label></td></tr>' +
@@ -2161,7 +2172,9 @@ var app = {
             document.addEventListener('backbutton', that.onBackButtonSettings, false);
 
             // resize viewport
-            document.body.style.zoom = 1;
+            $('meta[name=viewport]').attr('content',
+                'width=' + (that.window ? that.window.width : window.innerWidth) + ',' +
+                'minimum-scale=1, maximum-scale=1');
 
             // load settings
             $settings.each(function () {
@@ -2206,24 +2219,37 @@ var app = {
                 });
             }
 
-            if (that.ssid) {
-                $('#cordova_ssid_button').show();
-                $('#cordova_ssid').css('width', 'calc(100% - 4em)');
-            } else {
-                $('#cordova_ssid_button').hide();
-                $('#cordova_ssid').css('width', '100%');
+            if (typeof WifiWizard !== 'undefined') {
+                WifiWizard.getCurrentSSID(function (response) {
+                    that.ssid = response.replace(/\"/g, '');
+                    if (that.ssid) {
+                        $('#cordova_ssid_button').show();
+                        $('#cordova_ssid').css('width', 'calc(100% - 4em)');
+                    } else {
+                        $('#cordova_ssid_button').hide();
+                        $('#cordova_ssid').css('width', '100%');
+                    }
+                });
             }
 
             if (that.settings.socketPro) {
                 $('.cordova-setting-cell-socket').hide();
+                $('#dontCache').prop('checked', false);
+                $('.cordova-settings-dont-cache').hide();
             } else {
                 $('.cordova-setting-cell-socket').show();
+                $('.cordova-settings-dont-cache').show();
             }
 
             $('.cordova_toggle').unbind('click').click(function () {
                 if ($(this).html() === '▶') {
                     $('.cordova-setting-' + $(this).data('group')).show();
                     $(this).html('▼');
+                    if ($('#socketPro').prop('checked')) {
+                        $('.cordova-setting-cell-socket').hide();
+                    } else {
+                        $('.cordova-setting-cell-socket').show();
+                    }
                 } else {
                     $('.cordova-setting-' + $(this).data('group')).hide();
                     $(this).html('▶');
@@ -2233,8 +2259,11 @@ var app = {
             $('#socketPro').unbind('change').change(function () {
                 if ($(this).prop('checked')) {
                     $('.cordova-setting-cell-socket').hide();
+                    $('#dontCache').prop('checked', false).trigger('change');
+                    $('.cordova-settings-dont-cache').hide();
                 } else {
                     $('.cordova-setting-cell-socket').show();
+                    $('.cordova-settings-dont-cache').show();
                 }
             });
 

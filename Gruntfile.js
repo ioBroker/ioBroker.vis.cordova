@@ -26,8 +26,10 @@
 //      keyPassword=xxx
 //      storePassword=xxx
 //
+// Copy img/icon.png into www/icon/
 // Copy ioBroker.vis.keystore into platforms/android/ and
 // run "grunt release"
+
 
 module.exports = function (grunt) {
 

@@ -32,10 +32,9 @@
     "dependencies": {
         "cordova": "^7.0.1",
         "cordova-android": "^6.2.3",
-        "cordova-plugin-crosswalk-webview": "^2.3.0",
-        "cordova-plugin-file": "1",
-        "cordova-plugin-network-information": "1",
-        "cordova-plugin-whitelist": "1",
+        "cordova-plugin-file": "^4.3.3",
+        "cordova-plugin-network-information": "^1.3.3",
+        "cordova-plugin-whitelist": "^1.3.2",
         "grunt": "^1.0.1",
         "grunt-contrib-clean": "^1.0.0",
         "grunt-contrib-copy": "^1.0.0",
@@ -70,7 +69,9 @@
         "iobroker.vis-timeandweather": "*",
         "iobroker.vis-weather": "*",
         "iobroker.web": "*",
-        "iobroker.yr": "*"
+        "iobroker.yr": "*",
+        "wifiwizard": "^0.2.11",
+        "com.pylonproducts.wifiwizard": "~0.2.11"
     },
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.vis.cordova/issues"
@@ -87,13 +88,7 @@
             "cordova-plugin-file": {},
             "cordova-plugin-network-information": {},
             "cordova-plugin-whitelist": {},
-            "cordova-plugin-crosswalk-webview": {
-                "XWALK_VERSION": "23+",
-                "XWALK_LITEVERSION": "xwalk_core_library_canary:17+",
-                "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
-                "XWALK_MODE": "embedded",
-                "XWALK_MULTIPLEAPK": "true"
-            }
+            "com.pylonproducts.wifiwizard": {}
         },
         "platforms": [
             "android"
