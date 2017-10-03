@@ -135,6 +135,7 @@ $.extend(systemDictionary, {
         "ru": "Зум при гор. положении"
     },
     "Use iobroker.pro": {"en": "Use iobroker.pro", "de": "Benutze iobroker.pro", "ru": "Использовать iobroker.pro"},
+    "Allow self-signed certificates": {"en": "Allow self-signed certificates", "de": "Erlaube selbssignierte Zertifikate", "ru": "Разрешить самоподписанные сертификаты"},
 
     "Volume": {
         "en": "Speech volume",
@@ -2109,7 +2110,7 @@ var app = {
             '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell Password repeat')  + ':</td></tr>' +
             '<tr class="cordova-setting-cell"><td><input id="cordova-password-repeat-gsm" type="password" style="width: 100%"/></td></tr>' +
 
-            '<tr class="cordova-setting-cell"><td><label for="allowSelfSigned">' + _('Allow self-signed certificates') + ':</label></td></tr>' +
+            '<tr class="cordova-setting-cell"><td  class="cordova-settings-label"><label for="allowSelfSigned">' + _('Allow self-signed certificates') + ':</label></td></tr>' +
             '<tr class="cordova-setting-cell"><td><input id="allowSelfSigned" class="cordova-setting" data-name="allowSelfSigned" type="checkbox"/><label for="allowSelfSigned" class="checkbox">&#8226;</label></td></tr>' +
 
             // Battery and location
