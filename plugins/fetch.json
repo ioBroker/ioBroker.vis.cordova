@@ -136,5 +136,13 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cordova-plugin-certificates": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-certificates"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

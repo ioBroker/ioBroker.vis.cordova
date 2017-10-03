@@ -51,6 +51,9 @@
         },
         "com.pylonproducts.wifiwizard": {
             "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-certificates": {
+            "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
     "dependent_plugins": {

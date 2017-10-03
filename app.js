@@ -186,6 +186,7 @@ var app = {
         text2command:   0,
         defaultRoom:    '',
         volume:         80,
+        allowSelfSigned: false,
         zoomLevelPortrait: 100,
         zoomLevelLandscape: 100,
         substitutionUrl: '',
@@ -736,6 +737,10 @@ var app = {
                     delayed = false;
                     socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
                 }
+            }
+
+            if (cordova.plugins.certificates) {
+                cordova.plugins.certificates.trustUnsecureCerts(this.settings.allowSelfSigned === true || this.settings.allowSelfSigned === 'true');
             }
 
             // generate new Instance
@@ -2104,6 +2109,10 @@ var app = {
             '<tr class="cordova-setting-cell"><td class="cordova-settings-label">' + _('Cell Password repeat')  + ':</td></tr>' +
             '<tr class="cordova-setting-cell"><td><input id="cordova-password-repeat-gsm" type="password" style="width: 100%"/></td></tr>' +
 
+            '<tr class="cordova-setting-cell"><td><label for="allowSelfSigned">' + _('Allow self-signed certificates') + ':</label></td></tr>' +
+            '<tr class="cordova-setting-cell"><td><input id="allowSelfSigned" class="cordova-setting" data-name="allowSelfSigned" type="checkbox"/><label for="allowSelfSigned" class="checkbox">&#8226;</label></td></tr>' +
+
+            // Battery and location
             '<tr><td class="cordova-settings-label section-legend"><span>' + _('Battery and location')      + '</span><div class="cordova_toggle" data-group="battery">▶</div></td></tr>' +
             '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('Device name')           + ':</td></tr>' +
             '<tr class="cordova-setting-battery"><td><input  class="cordova-setting" data-name="deviceName" style="width: 100%"/></td></tr>' +
