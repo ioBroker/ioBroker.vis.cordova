@@ -1,0 +1,95 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "cordova-plugin-certificates",
+        "scope": null,
+        "escapedName": "cordova-plugin-certificates",
+        "name": "cordova-plugin-certificates",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "D:\\pWork\\ioBroker.vis.cordova\\node_modules"
+    ]
+  ],
+  "_from": "cordova-plugin-certificates@latest",
+  "_id": "cordova-plugin-certificates@0.6.4",
+  "_inCache": true,
+  "_location": "/cordova-plugin-certificates",
+  "_nodeVersion": "6.11.1",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/cordova-plugin-certificates-0.6.4.tgz_1501142806424_0.2454286552965641"
+  },
+  "_npmUser": {
+    "name": "hypery2k",
+    "email": "contact@martinreinhardt-online.de"
+  },
+  "_npmVersion": "3.10.10",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "cordova-plugin-certificates",
+    "scope": null,
+    "escapedName": "cordova-plugin-certificates",
+    "name": "cordova-plugin-certificates",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-certificates/-/cordova-plugin-certificates-0.6.4.tgz",
+  "_shasum": "8051339be00c691c824338d8fa086ff5f6be2bb9",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-certificates",
+  "_where": "D:\\pWork\\ioBroker.vis.cordova\\node_modules",
+  "author": {
+    "name": "Martin Reinhardt"
+  },
+  "bugs": {
+    "url": "https://github.com/hypery2k/cordova-certificate-plugin/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-certificates",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {},
+  "description": "Cordova Certificate Plugin",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "8051339be00c691c824338d8fa086ff5f6be2bb9",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-certificates/-/cordova-plugin-certificates-0.6.4.tgz"
+  },
+  "gitHead": "762175849f553a4a98a47f6ab55438df8223647e",
+  "homepage": "https://github.com/hypery2k/cordova-certificate-plugin#readme",
+  "keywords": [
+    "cordova",
+    "certificates",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "hypery2k",
+      "email": "npm@martinreinhardt-online.de"
+    }
+  ],
+  "name": "cordova-plugin-certificates",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hypery2k/cordova-certificate-plugin.git"
+  },
+  "scripts": {},
+  "version": "0.6.4"
+}
