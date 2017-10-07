@@ -641,11 +641,24 @@ var app = {
                     password: this.settings.passwordGSM || this.settings.password
                 },
                 success: function (data, textStatus, request) {
+                    // hide dialog error
+                    var $dialog = $('#dialog-message');
+                    if ($dialog.is(':visible')) {
+                        try {
+                            $dialog.dialog('close');
+                        } catch (e) {
+
+                        }
+                    }
+
                     cb(null, true);
                 },
                 error: function (request, textStatus, errorThrown) {
-                    alert(_('Cannot login to iobroker.pro.'));
-                }
+                    vis.showMessage(_('Cannot login to iobroker.pro') + ': ' + textStatus);
+                    setTimeout(function () {
+                        this.setProCookies(cb);
+                    }.bind(this), 10000);
+                }.bind(this)
             });
         } else {
             cb(null, false);
@@ -1613,19 +1626,19 @@ var app = {
 
     syncVis:        function (project, cb) {
         // hide dialog error
-        if ($('#dialog-message').is(':visible')) {
+        var $dialog = $('#dialog-message');
+        if ($dialog.is(':visible')) {
             try {
-                $('#dialog-message').dialog('close');
+                $dialog.dialog('close');
             } catch (e) {
 
             }
         }
-
         if (!$('#cordova_progress').length) {
             $('body').append(
                 '<div id="cordova_progress" style="position: absolute; z-index: 5003; top: 50%; left: 5%; width: 90%; height: 2em; background: gray">' +
                 '<div id="cordova_progress_show" style="height: 100%; width: 0; background: lightblue; z-index: 5004"></div></div>' +
-                '<div id="cordova_progress_info" style="position: absolute; z-index: 5003; top: calc(50% + 1.5em); left: 5%; width: 90%; height: 2em; overflow: hidden; text-align: left; font-size: 0.5em; padding-left: 0.5em"></div>');
+                '<div id="cordova_progress_info" style="position: absolute; z-index: 5005; top: calc(50% + 1.5em); left: 5%; width: 90%; height: 2em; overflow: hidden; text-align: left; font-size: 0.5em; padding-left: 0.5em"></div>');
         }
 
         if (vis.conn.getIsConnected()) {

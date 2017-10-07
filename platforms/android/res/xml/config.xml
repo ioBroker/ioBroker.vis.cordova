@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="net.iobroker.vis" version="1.0.7" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <feature name="SystemVolume">
+        <param name="android-package" value="com.jiliac.systemvolume.SystemVolume" />
+    </feature>
+    <feature name="OrientationLock">
+        <param name="android-package" value="com.plugin.phonegap.OrientationLock" />
+    </feature>
+    <feature name="Geolocation">
+        <param name="android-package" value="org.apache.cordova.geolocation.Geolocation" />
+    </feature>
+    <feature name="Battery">
+        <param name="android-package" value="org.apache.cordova.batterystatus.BatteryListener" />
+    </feature>
+    <feature name="Toast">
+        <param name="android-package" value="nl.xservices.plugins.Toast" />
+    </feature>
+    <feature name="AppVersion">
+        <param name="android-package" value="uk.co.whiteoctober.cordova.AppVersion" />
+    </feature>
+    <feature name="SpeechRecognition">
+        <param name="android-package" value="org.apache.cordova.speech.SpeechRecognition" />
+    </feature>
+    <feature name="NetworkStatus">
+        <param name="android-package" value="org.apache.cordova.networkinformation.NetworkManager" />
+    </feature>
+    <feature name="Insomnia">
+        <param name="android-package" value="nl.xservices.plugins.Insomnia" />
+    </feature>
+    <feature name="Whitelist">
+        <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="AndroidFullScreen">
+        <param name="android-package" value="com.mesmotronic.plugins.FullScreenPlugin" />
+    </feature>
+    <feature name="File">
+        <param name="android-package" value="org.apache.cordova.file.FileUtils" />
+        <param name="onload" value="true" />
+    </feature>
+    <allow-navigation href="cdvfile:*" />
+    <feature name="WifiWizard">
+        <param name="android-package" value="com.pylonproducts.wifiwizard.WifiWizard" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="CertificatesPlugin">
+        <param name="android-package" value="de.martinreinhardt.cordova.plugins.CertificatesPlugin" />
+    </feature>
+    <feature name="TTS">
+        <param name="android-package" value="com.wordsbaking.cordova.tts.TTS" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="ExitApp">
+        <param name="android-package" value="cordova.custom.plugins.exitapp.ExitApp" />
+    </feature>
+    <name>ioBroker.vis</name>
+    <description>
+        ioBroker.vis runtime for ioBroker.
+    </description>
+    <author email="dogafox@gmail.com" href="http://iobroker.net">
+        Bluefox
+    </author>
+    <icon src="img/icon.png" />
+    <content src="index.html" />
+    <access origin="*" />
+    <access origin="cdvfile://*" />
+    <access origin="file://*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="file://*/*" />
+    <allow-intent href="cdvfile://*/*" />
+    <allow-navigation href="http://*/*" />
+    <allow-navigation href="*" />
+    <allow-navigation href="file://*/*" />
+    <allow-navigation href="cdvfile://*/*" />
+    <allow-intent href="market:*" />
+    <preference name="loglevel" value="DEBUG" />
+    <preference name="AndroidPersistentFileLocation" value="Internal" />
+    <preference name="iosPersistentFileLocation" value="Library" />
+    <preference name="BackupWebStorage" value="none" />
+</widget>
