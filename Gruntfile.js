@@ -1,18 +1,23 @@
 // To use this file in WebStorm, right click on the file name in the Project Panel (normally left) and select "Open Grunt Console"
 
 /** @namespace __dirname */
-/* jshint -W097 */// jshint strict:false
-/*jslint node: true */
+/* jshint -W097 */
+/* jshint strict:false */
+/* jslint node: true */
 'use strict';
 
 // ## How to build
 //
+// Copy real file with keys ioBroker.vis.keystore to ioBroker.vis.cordova\platforms\android
 // ```
 // npm install
 // grunt release
 // or
 // grunt build
 // ```
+//
+// **Note**: if "grunt" command not found, install grunt-cli with "npm i grunt-cli -g"
+//
 //
 // Output is in ```ioBroker.vis.cordova\platforms\android\build\outputs\apk```
 //
@@ -36,6 +41,7 @@ module.exports = function (grunt) {
     var srcDir    = __dirname + '/';
     var pkg       = grunt.file.readJSON('package.json');
     var version   = pkg.version;
+    var fs        = require('fs');
 
     // Project configuration.
     grunt.initConfig({
@@ -345,6 +351,9 @@ module.exports = function (grunt) {
         'jshint',
         'jscs'
     ]);
+    if (!fs.existsSync(__dirname + '/platforms/android/ioBroker.vis.keystore')) {
+        fs.writeFileSync(__dirname + '/platforms/android/ioBroker.vis.keystore', '');
+    }
 	
 	grunt.registerTask('prepublish', ['replace', 'updateReadme']);
 	grunt.registerTask('p', ['prepublish']);

@@ -10,6 +10,8 @@
 /cordova/platforms/android/.gradle
 /cordova/platforms/android/build
 /www
+/platforms/android/assets/www
+!/platforms/android/assets/www/index.html
 /platforms/android/.gradle
 /platforms/android/*.keystore
 /platforms/android/assets/www/cordova-js-src
@@ -23,3 +25,5 @@
 /platforms/android/assets/www/cordova.js
 /platforms/android/assets/www/cordova_plugins.js
 /platforms/android/assets/www/signals
+/platforms/android/cordova/node_modules
+/platforms/android/CordovaLib/build
