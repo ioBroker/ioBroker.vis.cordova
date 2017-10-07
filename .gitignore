@@ -9,10 +9,8 @@
 /cordova/platforms/android/assets/www
 /cordova/platforms/android/.gradle
 /cordova/platforms/android/build
-/cordova/platforms/android/CordovaLib/build
 /www
 /platforms/android/.gradle
-/platforms/android/CordovaLib/build
 /platforms/android/*.keystore
 /platforms/android/assets/www/cordova-js-src
 /platforms/android/assets/www/css
@@ -25,5 +23,3 @@
 /platforms/android/assets/www/cordova.js
 /platforms/android/assets/www/cordova_plugins.js
 /platforms/android/assets/www/signals
-/platforms/android/cordova
-/platforms/android/CordovaLib
