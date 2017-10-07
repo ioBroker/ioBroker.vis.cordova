@@ -624,8 +624,26 @@ var app = {
         }.bind(this));
     },
 
+    showProLogo: function (isError) {
+        var $pro = $('#iobroker_pro');
+        if (!$pro.length) {
+            $('body').append('<div id="iobroker_pro" style=" position: fixed; z-index: 5000; top: 5px;right: 5px; color: white; border-radius: 5px; padding: 1px 3px 1px 3px; font-family: Arial; font-size: 0.9em;">.pro</div>');
+            $pro = $('#iobroker_pro');
+        }
+        $pro.show();
+        if (isError) {
+            $pro.css({background: '#b93f3f'});
+        } else {
+            $pro.css({background: '#3399CC'});
+            setTimeout(function () {
+                $('#iobroker_pro').remove();
+            }, 10000);
+        }
+    },
+
     setProCookies: function (cb) {
         if (this.settings.socketPro) {
+            console.log('Connect via ioBroker.pro');
             // By calling of this function, the wss cookie will be set and authentication will work.
             $.ajax({
                 type: 'POST',
@@ -641,20 +659,31 @@ var app = {
                     password: this.settings.passwordGSM || this.settings.password
                 },
                 success: function (data, textStatus, request) {
-                    // hide dialog error
-                    var $dialog = $('#dialog-message');
-                    if ($dialog.is(':visible')) {
-                        try {
-                            $dialog.dialog('close');
-                        } catch (e) {
+                    if (data && typeof data === 'object' && data['connect.sid']) {
+                        // hide dialog error
+                        var $dialog = $('#dialog-message');
+                        if ($dialog.is(':visible')) {
+                            try {
+                                $dialog.dialog('close');
+                            } catch (e) {
 
+                            }
                         }
-                    }
 
-                    cb(null, true);
-                },
+                        this.showProLogo();
+
+                        cb(null, true);
+                    } else {
+                        window.alert(_('Invalid username or password'));
+                        if (!$('#cordova_menu').length) {
+                            this.installMenu();
+                        }
+                        $('#cordova_menu').trigger('click');
+                    }
+                }.bind(this),
                 error: function (request, textStatus, errorThrown) {
                     vis.showMessage(_('Cannot login to iobroker.pro') + ': ' + textStatus);
+                    this.showProLogo(true);
                     setTimeout(function () {
                         this.setProCookies(cb);
                     }.bind(this), 10000);
@@ -691,7 +720,7 @@ var app = {
                 ((this.settings.socketUrlGSM || this.settings.socketPro) && navigator.network && navigator.network.connection.type !== 'wifi')) {
                 delayed = true;
                 this.setProCookies(function (error, usePro) {
-                if (this.settings.socketPro) {
+                if (usePro) {
                     socketUrl = 'https://iobroker.pro';
                 } else {
                     socketUrl = this.settings.socketUrlGSM;
@@ -703,7 +732,7 @@ var app = {
             } else {
                 try {
                     // If WIFI and SSID is set
-                    if (this.settings.socketUrlGSM && this.settings.ssid) {
+                    if ((this.settings.socketUrlGSM || this.settings.socketPro) && this.settings.ssid) {
                         // convert into array of SSIDs
                         if (typeof this.settings.ssid === 'string') {
                             this.settings.ssid = this.settings.ssid.split(',');
@@ -718,7 +747,7 @@ var app = {
                         if (typeof WifiWizard !== 'undefined') {
                             WifiWizard.getCurrentSSID(function (response) {
                                 this.ssid = response.replace(/\"/g, '');
-                                if ((this.settings.socketPro || this.settings.socketUrlGSM) && this.settings.ssid && this.settings.ssid.indexOf(this.ssid) === -1) {
+                                if (this.settings.ssid.indexOf(this.ssid) === -1) {
                                     // other wifi network
                                     this.setProCookies(function (error, usePro) {
                                         if (usePro) {
@@ -776,6 +805,10 @@ var app = {
 
     onAuthError:    function (err) {
         window.alert(_('Invalid username or password'));
+        if (!$('#cordova_menu').length) {
+            app.installMenu();
+        }
+        $('#cordova_menu').trigger('click');
     },
     // creates vis states for battery and geolocation
     createStates:   function (cb) {
@@ -1097,7 +1130,7 @@ var app = {
         }, true);
     },
     readProjects:   function (cb) {
-        if (vis.conn.getIsConnected()) {
+        if (vis.conn && vis.conn.getIsConnected()) {
             this.projects = [];
             $('#cordova_project').html('');
             vis.conn.readDir('/vis.0', function (error, files) {
@@ -1586,7 +1619,7 @@ var app = {
         // if start => reset flag
         if (!dir || dir.indexOf('/') === -1) this.viewExists = false;
 
-        if (vis.conn.getIsConnected()) {
+        if (vis.conn && vis.conn.getIsConnected()) {
             vis.conn.readDir('/vis.0/' + dir, function (error, files) {
                 if (files) {
                     var count = 0;
@@ -1634,6 +1667,12 @@ var app = {
 
             }
         }
+
+        // resize viewport
+        $('meta[name=viewport]').attr('content',
+            'width=' + (this.window ? this.window.width : window.innerWidth) + ',' +
+            'minimum-scale=1, maximum-scale=1');
+
         if (!$('#cordova_progress').length) {
             $('body').append(
                 '<div id="cordova_progress" style="position: absolute; z-index: 5003; top: 50%; left: 5%; width: 90%; height: 2em; background: gray">' +
@@ -1641,7 +1680,7 @@ var app = {
                 '<div id="cordova_progress_info" style="position: absolute; z-index: 5005; top: calc(50% + 1.5em); left: 5%; width: 90%; height: 2em; overflow: hidden; text-align: left; font-size: 0.5em; padding-left: 0.5em"></div>');
         }
 
-        if (vis.conn.getIsConnected()) {
+        if (vis.conn && vis.conn.getIsConnected()) {
             $('#cordova_dialog_bg').show();
 
             // let the menu button available
@@ -1956,10 +1995,12 @@ var app = {
                 })
             }
 
-            // resize viewport
-            $('meta[name=viewport]').attr('content',
-                'width=' + this.window.width + ',' +
-            'minimum-scale=' + viewportScale + ', maximum-scale=' + viewportScale + ',initial-scale=' + viewportScale + ', user-scalable=no');
+            if (!$('#cordova_dialog').is(':visible')) {
+                // resize viewport
+                $('meta[name=viewport]').attr('content',
+                    'width=' + this.window.width + ',' +
+                    'minimum-scale=' + viewportScale + ', maximum-scale=' + viewportScale + ',initial-scale=' + viewportScale + ', user-scalable=no');
+            }
         }.bind(this);
 
         var viewportScale;
@@ -1970,10 +2011,12 @@ var app = {
             viewportScale = this.settings.zoomLevelPortrait / 100;
         }
 
-        // resize viewport
-        $('meta[name=viewport]').attr('content',
-            'width=' + this.window.width + ',' +
-            'minimum-scale=' + viewportScale + ', maximum-scale=' + viewportScale + ',initial-scale=' + viewportScale + ', user-scalable=no');
+        if (!$('#cordova_dialog').is(':visible')) {
+            // resize viewport
+            $('meta[name=viewport]').attr('content',
+                'width=' + this.window.width + ',' +
+                'minimum-scale=' + viewportScale + ', maximum-scale=' + viewportScale + ',initial-scale=' + viewportScale + ', user-scalable=no');
+        }
     },
 
     loadCss:        function () {
@@ -2313,10 +2356,12 @@ var app = {
             $('#cordova_cancel').unbind('click').click(function () {
                 document.removeEventListener('backbutton', that.onBackButtonSettings, false);
                 document.addEventListener('backbutton', that.onBackButtonGeneral, false);
-                // reset view port scale
-                $(window).trigger('orientationchange');
                 $('#cordova_dialog_bg').hide();
                 $('#cordova_dialog').hide();
+
+                // reset view port scale
+                $(window).trigger('orientationchange');
+
                 $('#vis_container').show();
             }).css({height: '2em'});
 
@@ -2341,12 +2386,14 @@ var app = {
 
                 if (changed && !window.confirm(_('Discard changes?'))) return;
 
+                $('#cordova_dialog_bg').hide();
+                $('#cordova_dialog').hide();
+
                 // reset view port scale
                 $(window).trigger('orientationchange');
 
-                $('#cordova_dialog_bg').hide();
-                $('#cordova_dialog').hide();
                 $('#vis_container').show();
+
                 window.location.reload();
             }).css({height: '2em'});
 
@@ -2393,11 +2440,12 @@ var app = {
                     return;
                 }
 
+                $('#cordova_dialog_bg').hide();
+                $('#cordova_dialog').hide();
+
                 // reset view port scale
                 $(window).trigger('orientationchange');
 
-                $('#cordova_dialog_bg').hide();
-                $('#cordova_dialog').hide();
                 $('#vis_container').show();
                 var changed = false;
                 var projectChanged = false;
@@ -2420,7 +2468,7 @@ var app = {
 
                 if (changed || that.settings.resync) {
                     // If project name changed
-                    if ((projectChanged || that.settings.resync) && vis.conn.getIsConnected()) {
+                    if ((projectChanged || that.settings.resync) && vis.conn && vis.conn.getIsConnected()) {
                         // try to load all files
                         that.syncVis(that.settings.project, function () {
                             that.settings.resync = false;
