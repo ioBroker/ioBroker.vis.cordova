@@ -71,8 +71,7 @@
         "iobroker.vis-weather": "*",
         "iobroker.web": "*",
         "iobroker.yr": "*",
-        "wifiwizard": "^0.2.11",
-        "com.pylonproducts.wifiwizard": "~0.2.11"
+        "wifiwizard": "^0.2.11"
     },
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.vis.cordova/issues"
