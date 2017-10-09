@@ -159,7 +159,7 @@ $.extend(systemDictionary, {
     "Discard changes?":  {"en": "Discard changes?",         "de": "Die Änderungen sind nicht gespeichert. Ignorieren?",  "ru": "Игнорировать изменения?"},
     "Invalid username or password": {
         "en": "Invalid username or password",
-        "de": "Username oder Kennwort ist flash",
+        "de": "Username oder Kennwort ist falsch",
         "ru": "Неправильные имя пользователя или пароль"
     },
     "Read always config from server": {
@@ -187,6 +187,7 @@ var app = {
         text2command:   0,
         defaultRoom:    '',
         volume:         80,
+        writeTimeout:   2000,
         allowSelfSigned: false,
         zoomLevelPortrait: 100,
         zoomLevelLandscape: 100,
@@ -336,11 +337,11 @@ var app = {
                                     cb && cb('Timeout by write of "' + fileN + '"');
                                     cb = null;
                                 }
-                            }, 2000);
+                            }, that.settings.writeTimeout);
 
                             try {
                                 fileWriter.truncate(0);
-                                fileWriter.onwrite = function(evt) {
+                                fileWriter.onwrite = function (evt) {
                                     if (writeTimer) {
                                         clearTimeout(writeTimer);
                                         writeTimer = null;
@@ -355,13 +356,13 @@ var app = {
                                                 cb && cb('Timeout by _write of "' + fileN + '"');
                                                 cb = null;
                                             }
-                                        }, 2000);
+                                        }, that.settings.writeTimeout);
                                         return;
                                     }
                                     console.log('write "' + fileN + '" success:' + JSON.stringify(evt));
                                     cb && cb();
                                     cb = null;
-                                };
+                                }.bind(this);
 
                                 if (window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder) {
                                     var bb = new (window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder)();
@@ -382,7 +383,7 @@ var app = {
                                     cb = null;
                                 }
                             }
-                        }, function (error) {
+                        }.bind(this), function (error) {
                             if (_counter < 10) {
                                 console.warn('Error by write of: ' + fileN + ', Attempt: ' + _counter + ' [' + error + ']');
                                 setTimeout(function () {
@@ -393,7 +394,7 @@ var app = {
                                 cb = null;
                                 console.error('Cannot write file: ' + JSON.stringify(error));
                             }
-                        });
+                        }.bind(this));
                     } catch (err) {
                         if (_counter < 10) {
                             console.warn('Error by write of: ' + fileN + ', Attempt: ' + _counter + ' [' + error + ']');
@@ -406,7 +407,7 @@ var app = {
                             console.error('Cannot create file:' + err);
                         }
                     }
-                }, function (error) {
+                }.bind(this), function (error) {
                     if (_counter < 10) {
                         console.warn('Error by write of: ' + fileN + ', Attempt: ' + _counter + ' [' + error + ']');
                         setTimeout(function () {
@@ -417,12 +418,12 @@ var app = {
                         cb = null;
                         console.error('Cannot create file: ' + error);
                     }
-                });
+                }.bind(this));
             } else {
                 console.error('Directory "' + fileName + '" not found');
                 cb(error || 'Directory not found');
             }
-        });
+        }.bind(this));
     },
     readLocalFile:  function (fileName, cb) {
         var parts = fileName.split('/');
@@ -522,6 +523,10 @@ var app = {
                 }
             }.bind(this));
         }.bind(this));*/
+
+        this.settings.writeTimeout = parseInt(that.settings.writeTimeout, 2000) || 2000;
+        if (this.settings.writeTimeout < 1000) this.settings.writeTimeout = 1000;
+
 
         this.connection = navigator.network ? navigator.network.connection.type : undefined;
         document.addEventListener('online', function () {
@@ -1532,7 +1537,7 @@ var app = {
             if (error) console.error(error);
             $('#cordova_progress_show').css('width', (100 - (files.length / this.totalFileCount) * 100) + '%');
             $('#cordova_progress_info').text((this.totalFileCount - files.length) + '/' + this.totalFileCount + ' - ' + filename);
-            console.log ('Progress files open:  ' + files.length + ' Total: ' + this.totalFileCount);
+            console.log('Progress files open:  ' + files.length + ' Total: ' + this.totalFileCount);
             if (!error && data !== undefined && data !== null) {
                 if ((data.mime.indexOf('text') === -1 && data.mime.indexOf('application') === -1)) {
                     var binary_string =  window.atob(data.data);
@@ -2082,6 +2087,9 @@ var app = {
 
             '<tr class="cordova-setting-ssid"><td class="cordova-settings-label">' + _('WIFI Password repeat')  + ':</td></tr>' +
             '<tr class="cordova-setting-ssid"><td><input id="cordova-password-repeat" type="password"   style="width: 100%"/></td></tr>' +
+
+            '<tr class="cordova-setting-ssid"><td  class="cordova-settings-label">' + _('Local write timeout (ms)')             + ':</td></tr>' +
+            '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="writeTimeout" type="number" min="1000" max="60000" style="width: 100%"/></td></tr>' +
 
             // Language
             '<tr><td class="cordova-settings-label">' + _('Language')  + ':</td></tr>' +
