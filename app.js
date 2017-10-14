@@ -80,6 +80,7 @@ $.extend(systemDictionary, {
         "de": "Vollbild",
         "ru": "Полноэкранный режим"
     },
+    "reading...":   {"en": "reading...",        "de": "abfragen...",        "ru": "считывание..."},
     "Cell":         {"en": "Cell Connection",   "de": "Mobile Verbindung",  "ru": "Мобильное соединение"},
     "Cell Socket":  {"en": "Socket URL",        "de": "Socket URL",         "ru": "Socket URL"},
     "Cell User":    {"en": "Cell User",         "de": "Anwender",           "ru": "Пользователь"},
@@ -136,6 +137,7 @@ $.extend(systemDictionary, {
     },
     "Use iobroker.pro": {"en": "Use iobroker.pro", "de": "Benutze iobroker.pro", "ru": "Использовать iobroker.pro"},
     "Allow self-signed certificates": {"en": "Allow self-signed certificates", "de": "Erlaube selbssignierte Zertifikate", "ru": "Разрешить самоподписанные сертификаты"},
+    "none":              {"en": "none",                     "de": "nichts",  "ru": "нет выбора"},
 
     "Volume": {
         "en": "Speech volume",
@@ -157,6 +159,7 @@ $.extend(systemDictionary, {
     "Response over TTS": {"en": "Response over TTS",        "de": "Antworten mit TTS",      "ru": "Отвечать голосом"},
     "Message":           {"en": "Message",                  "de": "Meldung",                "ru": "Сообщение"},
     "Discard changes?":  {"en": "Discard changes?",         "de": "Die Änderungen sind nicht gespeichert. Ignorieren?",  "ru": "Игнорировать изменения?"},
+    "Local write timeout (ms)":  {"en": "Local write timeout (ms)",         "de": "Timeout für Sync (ms)",  "ru": "Таймаут синхронизации (ms)"},
     "Invalid username or password": {
         "en": "Invalid username or password",
         "de": "Username oder Kennwort ist falsch",
@@ -1134,10 +1137,15 @@ var app = {
             }
         }, true);
     },
-    readProjects:   function (cb) {
+    readProjects:   function (cb, attempt) {
+        attempt = attempt || 0;
+        if (attempt > 20) {
+            alert(_('Cannot read projects'));
+            cb && cb();
+        }
         if (vis.conn && vis.conn.getIsConnected()) {
             this.projects = [];
-            $('#cordova_project').html('');
+            $('#cordova_project').html('<option>' + _('reading...') + '</option>').prop('disabled', true);
             vis.conn.readDir('/vis.0', function (error, files) {
                 if (error) {
                     alert('Cannot read projects: ' + error);
@@ -1150,18 +1158,25 @@ var app = {
                             this.readProjectsHelper(files[f].file, function (project) {
                                 if (project) {
                                     this.projects.push(project);
-                                    $('#cordova_project').append('<option value="' + project + '" ' + (project === this.settings.project ? 'selected' : '') + '>' + project + '</option>');
+                                }
+                                if (!--count) {
+                                    var text = '';
+                                    for (var p = 0; p < this.projects.length; p++) {
+                                        text += '<option value="' + this.projects[p] + '" ' + (this.projects[p] === this.settings.project ? 'selected' : '') + '>' + this.projects[p] + '</option>';
+                                    }
+                                    $('#cordova_project').html(text).prop('disabled', false);
+                                    cb && cb();
                                 }
                             }.bind(this));
                         }
                     }
                 }
 
-                if (!--count && cb) cb();
+                if (!count && cb) cb();
             }.bind(this));
         } else {
             setTimeout(function () {
-                this.readProjects(cb);
+                this.readProjects(cb, attempt++);
             }.bind(this), 500);
         }
     },
@@ -1818,7 +1833,7 @@ var app = {
 
     initSpeechRecognition: function () {
         if (this.settings.project && this.settings.recognition && (this.settings.text2command || this.settings.text2command === 0)) {
-            $('body').append('<div id="cordova_show_recognized" style="display:none; padding: 0.2em; border-radius: 0.4em;position: absolute; z-index: 5000; background: lightskyblue; top: 1em; left: 3em; font-size: 1.5em;"></div>');
+            $('body').append('<div id="cordova_show_recognized" style="display: none; padding: 0.2em; border-radius: 0.4em;position: absolute; z-index: 5000; background: lightskyblue; top: 1em; left: 3em; font-size: 1.5em;"></div>');
             this.recText = $('#cordova_show_recognized');
 
             this.recognition = new SpeechRecognition();
@@ -2091,6 +2106,11 @@ var app = {
             '<tr class="cordova-setting-ssid"><td  class="cordova-settings-label">' + _('Local write timeout (ms)')             + ':</td></tr>' +
             '<tr class="cordova-setting-ssid"><td><input class="cordova-setting" data-name="writeTimeout" type="number" min="1000" max="60000" style="width: 100%"/></td></tr>' +
 
+
+            // Project
+            '<tr><td class="cordova-settings-label">' + _('Project')               + ':</td></tr>' +
+            '<tr><td class="cordova-settings-value"><select class="cordova-setting" data-name="project"     id="cordova_project" style="width: 100%"></select></td></tr>' +
+
             // Language
             '<tr><td class="cordova-settings-label">' + _('Language')  + ':</td></tr>' +
             '<tr><td class="cordova-settings-value"><select data-name="systemLang" class="cordova-setting">' +
@@ -2099,10 +2119,6 @@ var app = {
             '<option value="de">deutsch</option>' +
             '<option value="ru">русский</option>' +
             '</select></td></tr>' +
-
-            // Project
-            '<tr><td class="cordova-settings-label">' + _('Project')               + ':</td></tr>' +
-            '<tr><td class="cordova-settings-value"><select class="cordova-setting" data-name="project"     id="cordova_project" style="width: 100%"></select></td></tr>' +
 
             // Orientation
             '<tr><td class="cordova-settings-label">' + _('Orientation')  + ':</td></tr>' +
