@@ -524,7 +524,7 @@ var app = {
             }.bind(this));
         }.bind(this));*/
 
-        this.settings.writeTimeout = parseInt(that.settings.writeTimeout, 2000) || 2000;
+        this.settings.writeTimeout = parseInt(this.settings.writeTimeout, 2000) || 2000;
         if (this.settings.writeTimeout < 1000) this.settings.writeTimeout = 1000;
 
 
