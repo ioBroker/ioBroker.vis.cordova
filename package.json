@@ -1,7 +1,7 @@
 {
     "name": "iobroker.vis.cordova",
     "description": "Cordova APP for ioBroker.",
-    "version": "1.0.9",
+    "version": "1.1.0",
     "author": {
         "name": "bluefox",
         "email": "dogafox@gmail.com"
