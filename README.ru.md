@@ -166,3 +166,24 @@ javascript:logout (). Здесь вы найдете такой виджет д�
 ```
 [{"tpl":"tplIconLink","data":{"visibility-cond":"==","visibility-val":1,"href":"javascript:logout ();","target":"_self","text":"","views":null,"gestures-offsetX":0,"gestures-offsetY":0,"signals-cond-0":"==","signals-val-0":true,"signals-icon-0":"/vis/signals/lowbattery.png","signals-icon-size-0":0,"signals-blink-0":false,"signals-horz-0":0,"signals-vert-0":0,"signals-hide-edit-0":false,"signals-cond-1":"==","signals-val-1":true,"signals-icon-1":"/vis/signals/lowbattery.png","signals-icon-size-1":0,"signals-blink-1":false,"signals-horz-1":0,"signals-vert-1":0,"signals-hide-edit-1":false,"signals-cond-2":"==","signals-val-2":true,"signals-icon-2":"/vis/signals/lowbattery.png","signals-icon-size-2":0,"signals-blink-2":false,"signals-horz-2":0,"signals-vert-2":0,"signals-hide-edit-2":false,"src":"/icons-material-png/action/ic_exit_to_app_black_48dp.png","name":"","class":""},"style":{"left":"1232px","top":"755px","z-index":"106","background":"none","border-style":"none","color":"#000000","font-family":"Arial, Helvetica, sans-serif","font-size":"large","letter-spacing":"","font-weight":"bold","width":"34px","height":"32px"},"widgetSet":"jqui"}]
 ```
+
+### Использование приложения с облаком ioBroker.pro
+Вы можете подключиться к своему дому через облако iobroker.pro. Для этого:
+1. Настройте соединение WiFi.
+
+![WiFi соединение](img/iobroker.pro1.png)
+
+Введите свое имя SSID для дома.
+Вы можете просто нажать кнопку «<=», и текущий SSID будет автоматически вставлен в соответствующее поле.
+
+В зависимости от имени SSID приложение определит, должен ли он использовать локальный адрес (URL-адрес сокета на последнем снимке) или iobroker.pro как способ подключения.
+
+2. Вы должны ввести свои учетные данные ioBroker.pro в разделе «Мобильное соединение»:
+
+![Мобильное соединение](img/iobroker.pro2.png)
+
+Установите флажок «Использовать iobroker.pro» и введите ниже свой логин (email) и пароль для облака ioBroker.pro.
+
+После этого, когда вы подключаетесь через iobroker.pro, вы увидите маленькую иконку в верхнем правом углу в течение первых 10 секунд, если соединение осуществляется через облако iobroker.pro.
+
+![iobroker.pro icon](img/iobroker.pro3.png)

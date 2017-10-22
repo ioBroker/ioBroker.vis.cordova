@@ -212,6 +212,27 @@ $(document).on('swipe', function (event){
 
 Wichtig ist, mit der Streichbewegung nicht auf einem Widget sondern möglichst auf dem Hintergrund zu starten, um nicht versehentlich eine Änderung auszulösen.
 
+### App mit der ioBroker.pro-Cloud verwenden
+Sie können sich über die iobroker.pro Cloud mit Ihrem Zuhause verbinden. Damit es geht folgendes muss getan werden:
+1. Konfigurieren Sie die WiFi Verbindung.
+
+![WiFi Verbindung](img/iobroker.pro1.de.png)
+
+Geben Sie Ihren Home-SSID-Namen ein, um festzustellen, ob Sie Zuhause sind.
+Sie können einfach auf "<=" klicken und die aktuelle SSID wird automatisch in das entsprechende Feld eingefügt.
+
+Abhängig vom SSID-Namen bestimmt die App, ob lokale Verbindung (Socket-URL im letzten Bild) oder iobroker.pro als Verbindungsweg verwendet werden muss.
+
+2. Sie müssen Ihre ioBroker.pro-Anmeldeinformationen im Abschnitt "Cell connection" eingeben:
+
+![Mobile Verbindung](img/iobroker.pro2.de.png)
+
+Aktivieren Sie das Kontrollkästchen "Benutze iobroker.pro" und geben Sie Ihren Benutzernamen (E-Mail) und Ihr Passwort auf dem ioBroker.pro-Service ein.
+
+Danach, wenn Sie über iobroker.pro verbunden sind, sehen Sie ein kleines Symbol in der oberen rechten Ecke für die ersten 10 Sekunden, wenn die Verbindung über die iobroker.pro-Cloud erfolgt.
+
+![iobroker.pro icon](img/iobroker.pro3.de.png)
+
 ## Steuerschnittstelle
 Vis erstellt 3 Variablen:
 

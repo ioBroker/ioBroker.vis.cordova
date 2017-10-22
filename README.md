@@ -162,6 +162,27 @@ or in vis versions newer as 0.10.6
 [{"tpl":"tplHtmlLogout","data":{"html":"<button>Exit</button>","in_app_close":true},"style":{"left":"10px","top":"10px"},"widgetSet":"basic"}]
 ```
 
+### Using App with ioBroker.pro cloud
+You can connect to your home via iobroker.pro cloud. To do that:
+1. Configure WiFi connection.
+
+![WiFi connection](img/iobroker.pro1.png)
+
+Enter your home SSID name to detect if your at home or not. 
+You can just click on "<=" button and the current SSID will be automatically inserted into the corresponding field.
+
+Depends on the SSID name the app will determine if it must use local address (Socket URL on the last picture) or iobroker.pro as connect way.
+
+2. You must enter your ioBroker.pro credentials in "Cell connection" part:
+
+![Cell connection](img/iobroker.pro2.png)
+
+Activate checkbox "Use iobroker.pro" and enter below your login (email) and password for ioBroker.pro cloud.
+
+After that, when you connects via iobroker.pro you will see small icon on the top right corner for first 10 seconds if connection is via iobroker.pro cloud.
+
+![iobroker.pro icon](img/iobroker.pro3.png)
+
 ## Control interface
 Vis creates 3 variables:
 
