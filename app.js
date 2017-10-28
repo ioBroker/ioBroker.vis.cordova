@@ -734,7 +734,7 @@ var app = {
                     socketUrl = this.settings.socketUrlGSM;
                 }
                 this.currentUrl = socketUrl;
-                socketUrl += '/?key=nokey' + (this.settings.userGSM ? '&user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+                socketUrl += '/?key=nokey' + (this.settings.userGSM ? '&user=' + encodeURIComponent(this.settings.userGSM) + '&pass=' + encodeURIComponent(this.settings.passwordGSM) : '');
                     cb && cb();
                 }.bind(this));
             } else {
@@ -764,29 +764,29 @@ var app = {
                                             socketUrl = this.settings.socketUrlGSM;
                                         }
                                         this.currentUrl = socketUrl;
-                                        socketUrl += '/?key=nokey' + (this.settings.userGSM ? '&user=' + this.settings.userGSM + '&pass=' + this.settings.passwordGSM : '');
+                                        socketUrl += '/?key=nokey' + (this.settings.userGSM ? '&user=' + encodeURIComponent(this.settings.userGSM) + '&pass=' + encodeURIComponent(this.settings.passwordGSM) : '');
                                         cb && cb();
                                     }.bind(this));
                                 } else {
                                     this.currentUrl = this.settings.socketUrl;
-                                    socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                                    socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + encodeURIComponent(this.settings.user) + '&pass=' + encodeURIComponent(this.settings.password) : '');
                                     cb && cb();
                                 }
                             }.bind(this), function (error){
                                 this.currentUrl = this.settings.socketUrl;
-                                socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                                socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + encodeURIComponent(this.settings.user) + '&pass=' + encodeURIComponent(this.settings.password) : '');
                                 console.error(error);
                                 cb && cb();
                             }.bind(this));
                         }
                     } else {
                         this.currentUrl = this.settings.socketUrl;
-                        socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                        socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + encodeURIComponent(this.settings.user) + '&pass=' + encodeURIComponent(this.settings.password) : '');
                     }
                 } catch (err) {
                     this.currentUrl = this.settings.socketUrl;
                     delayed = false;
-                    socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + this.settings.user + '&pass=' + this.settings.password : '');
+                    socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + encodeURIComponent(this.settings.user) + '&pass=' + encodeURIComponent(this.settings.password) : '');
                 }
             }
 
