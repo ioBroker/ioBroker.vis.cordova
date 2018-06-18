@@ -66,6 +66,7 @@
         "iobroker.vis-keyboard": "*",
         "iobroker.vis-lcars": "*",
         "iobroker.vis-map": "*",
+        "iobroker.vis-material": "*",
         "iobroker.vis-metro": "*",
         "iobroker.vis-players": "*",
         "iobroker.vis-plumb": "*",
