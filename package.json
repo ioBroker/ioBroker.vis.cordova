@@ -73,6 +73,8 @@
         "iobroker.vis-rgraph": "*",
         "iobroker.vis-timeandweather": "*",
         "iobroker.vis-weather": "*",
+		"iobroker.sbfspot": "*",
+		"iobroker.ebus": "*",
         "iobroker.web": "*",
         "iobroker.yr": "*",
         "wifiwizard": "^0.2.11",
