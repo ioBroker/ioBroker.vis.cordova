@@ -47,11 +47,13 @@
 
         "iobroker.chromecast": "*",
         "iobroker.dwd": "*",
+        "iobroker.ebus": "*",
         "iobroker.flot": "*",
         "iobroker.kodi": "*",
         "iobroker.mihome-vacuum": "*",
         "iobroker.milight": "*",
         "iobroker.rickshaw": "*",
+        "iobroker.sbfspot": "*",
         "iobroker.starline": "*",
         "iobroker.vis": "*",
         "iobroker.vis-bars": "*",
@@ -73,7 +75,7 @@
         "iobroker.vis-rgraph": "*",
         "iobroker.vis-timeandweather": "*",
         "iobroker.vis-weather": "*",
-        "iobroker.web": "*",
+        "iobroker.web": "*",      		
         "iobroker.yr": "*",
         "wifiwizard": "^0.2.11",
         "com.pylonproducts.wifiwizard": "~0.2.11"
