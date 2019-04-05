@@ -1,0 +1,92 @@
+{
+  "_args": [
+    [
+      "cordova-plugin-brightness",
+      "/storage/dev/iobroker/ioBroker.vis.cordova"
+    ]
+  ],
+  "_from": "cordova-plugin-brightness@latest",
+  "_id": "cordova-plugin-brightness@0.2.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/cordova-plugin-brightness",
+  "_nodeVersion": "8.9.4",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/cordova-plugin-brightness_0.2.0_1521048742840_0.01456428525160347"
+  },
+  "_npmUser": {
+    "email": "olivier@mg-crea.com",
+    "name": "mgcrea"
+  },
+  "_npmVersion": "5.6.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "cordova-plugin-brightness",
+    "raw": "cordova-plugin-brightness",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-brightness/-/cordova-plugin-brightness-0.2.0.tgz",
+  "_shasum": "af2b57d5f8054828a54f86bd6886d015d00293bc",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-brightness",
+  "_where": "/storage/dev/iobroker/ioBroker.vis.cordova",
+  "author": {
+    "name": "Evgeniy Lukovsky"
+  },
+  "bugs": {
+    "url": "https://github.com/mgcrea/cordova-plugin-brightness/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-brightness",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "dependencies": {},
+  "description": "Cordova Brightness Control Plugin",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "fileCount": 7,
+    "integrity": "sha512-ujW4v58jArPxPf8CjEppl9hM2/9jep1+nflzAOGoT4yc5UIuLja6j6+wxK2fv6+UWqVEWEKB3JkfnijVUl6HjQ==",
+    "shasum": "af2b57d5f8054828a54f86bd6886d015d00293bc",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-brightness/-/cordova-plugin-brightness-0.2.0.tgz",
+    "unpackedSize": 11958
+  },
+  "engines": [
+    {
+      "name": "cordova-ios",
+      "version": ">=3.6.0"
+    }
+  ],
+  "gitHead": "456cc4ff99d9647e8573648d856201a537b6c75b",
+  "homepage": "https://github.com/mgcrea/cordova-plugin-brightness#readme",
+  "keywords": [
+    "cordova",
+    "cordova-ios",
+    "ecosystem:cordova",
+    "unity"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "mgcrea",
+      "email": "olivier@mg-crea.com"
+    }
+  ],
+  "name": "cordova-plugin-brightness",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mgcrea/cordova-plugin-brightness.git"
+  },
+  "version": "0.2.0"
+}
