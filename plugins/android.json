@@ -54,6 +54,9 @@
         },
         "cordova-plugin-certificates": {
             "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-brightness": {
+            "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
     "dependent_plugins": {

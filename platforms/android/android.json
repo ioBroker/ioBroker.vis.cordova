@@ -119,6 +119,10 @@
                         {
                             "xml": "<feature name=\"CertificatesPlugin\"><param name=\"android-package\" value=\"de.martinreinhardt.cordova.plugins.CertificatesPlugin\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Brightness\"><param name=\"android-package\" value=\"org.apache.cordova.plugin.Brightness.BrightnessPlugin\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -189,6 +193,9 @@
             "PACKAGE_NAME": "net.iobroker.vis"
         },
         "cordova-plugin-certificates": {
+            "PACKAGE_NAME": "net.iobroker.vis"
+        },
+        "cordova-plugin-brightness": {
             "PACKAGE_NAME": "net.iobroker.vis"
         }
     },
@@ -554,6 +561,14 @@
             "clobbers": [
                 "cordova.plugins.certificates"
             ]
+        },
+        {
+            "id": "cordova-plugin-brightness.Brightness",
+            "file": "plugins/cordova-plugin-brightness/www/brightness.js",
+            "pluginId": "cordova-plugin-brightness",
+            "clobbers": [
+                "cordova.plugins.brightness"
+            ]
         }
     ],
     "plugin_metadata": {
@@ -573,6 +588,7 @@
         "cordova-plugin-fullscreen": "1.1.0",
         "cordova-plugin-file": "4.3.3",
         "com.pylonproducts.wifiwizard": "0.2.11",
-        "cordova-plugin-certificates": "0.6.4"
+        "cordova-plugin-certificates": "0.6.4",
+        "cordova-plugin-brightness": "0.1.5"
     }
 }

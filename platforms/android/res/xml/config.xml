@@ -78,4 +78,7 @@
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     <preference name="iosPersistentFileLocation" value="Library" />
     <preference name="BackupWebStorage" value="none" />
+    <feature name="Brightness">
+        <param name="android-package" value="org.apache.cordova.plugin.Brightness.BrightnessPlugin" />
+    </feature>
 </widget>

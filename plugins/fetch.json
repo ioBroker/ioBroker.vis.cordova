@@ -144,5 +144,13 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cordova-plugin-brightness": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-brightness"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

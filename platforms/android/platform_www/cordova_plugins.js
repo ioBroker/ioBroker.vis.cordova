@@ -360,6 +360,14 @@ module.exports = [
         "clobbers": [
             "cordova.plugins.certificates"
         ]
+    },
+    {
+        "id": "cordova-plugin-brightness.Brightness",
+        "file": "plugins/cordova-plugin-brightness/www/brightness.js",
+        "pluginId": "cordova-plugin-brightness",
+        "clobbers": [
+            "cordova.plugins.brightness"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -381,7 +389,8 @@ module.exports.metadata =
     "cordova-plugin-fullscreen": "1.1.0",
     "cordova-plugin-file": "4.3.3",
     "com.pylonproducts.wifiwizard": "0.2.11",
-    "cordova-plugin-certificates": "0.6.4"
+    "cordova-plugin-certificates": "0.6.4",
+    "cordova-plugin-brightness": "0.1.5"
 };
 // BOTTOM OF METADATA
 });
