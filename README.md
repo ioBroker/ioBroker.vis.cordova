@@ -1,6 +1,5 @@
 ![Logo](img/icon_small.png)
-ioBroker.vis.cordova
-============
+# ioBroker.vis.cordova
 
 [по русски](README.ru.md)
 
@@ -229,6 +228,9 @@ With command in javascript adapter you can activate text to speech engine of And
 - enable automatically load of project files from ioBroker server (e.g. for home use)
 
 ## Changelog
+### 1.2.0 (2019-05-04)
+* versions of adapters were updated
+
 ### 1.0.5 (2017-09-26)
 * (nobody) fix scale factor
 * (bluefox) update weather widgets
@@ -332,9 +334,8 @@ With command in javascript adapter you can activate text to speech engine of And
 ### 0.0.7 (2015-01-18)
 - (bluefox) text2speech
 
-
 ## License
- Copyright (c) 2016-2017 bluefox https://github.com/GermanBluefox
+ Copyright (c) 2016-2019 bluefox https://github.com/GermanBluefox
  Creative Common Attribution-NonCommercial (CC BY-NC)
 
  http://creativecommons.org/licenses/by-nc/4.0/

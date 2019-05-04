@@ -54,42 +54,42 @@ module.exports = function (grunt) {
                 options: {
                     patterns: [
                         {
-                            match: /var version = *'[\.0-9]*';/g,
+                            match: /var version = *'[.0-9]*';/g,
                             replacement: "var version = '" + version + "';"
                         },
                         {
-                            match: /version="[\.0-9]*"/g,
+                            match: /version="[.0-9]*"/g,
                             replacement: 'version="' + version + '"'
                         },
                         {
-                            match: /"version": *"[\.0-9]*",/g,
+                            match: /"version": *"[.0-9]*",/g,
                             replacement: '"version": "' + version + '",'
                         },
                         {
-                            match: /version: *"[\.0-9]*",/,
+                            match: /version: *"[.0-9]*",/,
                             replacement: 'version: "' + version + '",'
                         },
                         {
-                            match: /version: *'[\.0-9]*',/,
+                            match: /version: *'[.0-9]*',/,
                             replacement: "version: '" + version + "',"
                         },                        {
-                            match: /<!-- ioBroker\.vis Version [\.0-9]+ -->/,
+                            match: /<!-- ioBroker\.vis Version [.0-9]+ -->/,
                             replacement: '<!-- ioBroker.vis Version ' + version + ' -->'
                         },
                         {
-                            match: /# ioBroker\.vis Version [\.0-9]+/,
+                            match: /# ioBroker\.vis Version [.0-9]+/,
                             replacement: '# ioBroker.vis Version ' + version
                         },
                         {
-                            match: /# ioBroker\.flot version = *'[\.0-9]*';/g,
+                            match: /# ioBroker\.flot version = *'[.0-9]*';/g,
                             replacement: "ioBroker.flot version = '" + version + "';"
                         },
                         {
-                            match: /# ioBroker\.rickshaw version = *'[\.0-9]*';/g,
+                            match: /# ioBroker\.rickshaw version = *'[.0-9]*';/g,
                             replacement: "ioBroker.rickshaw version = '" + version + "';"
                         },
                         {
-                            match: /# dev build [\.0-9]+/g,
+                            match: /# dev build [.0-9]+/g,
                             replacement: '# dev build 0'
                         }
                     ]
@@ -313,8 +313,8 @@ module.exports = function (grunt) {
             if (iopackage.common && readme.indexOf(iopackage.common.version) === -1) {
                 var timestamp = new Date();
                 var date = timestamp.getFullYear() + '-' +
-                    ("0" + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
-                    ("0" + (timestamp.getDate()).toString(10)).slice(-2);
+                    ('0' + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
+                    ('0' + (timestamp.getDate()).toString(10)).slice(-2);
 
                 var news = "";
                 if (iopackage.common.whatsNew) {

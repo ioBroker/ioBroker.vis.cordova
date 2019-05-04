@@ -1,105 +1,108 @@
 {
-    "name": "iobroker.vis.cordova",
-    "description": "Cordova APP for ioBroker.",
-    "version": "1.1.1",
-    "author": {
-        "name": "bluefox",
-        "email": "dogafox@gmail.com"
-    },
-    "contributors": [
-        "bluefox <dogafox@gmail.com>"
-    ],
-    "homepage": "https://github.com/ioBroker/ioBroker.vis.cordova",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/ioBroker/ioBroker.vis.cordova"
-    },
-    "licenses": [
-        {
-            "type": "MIT",
-            "url": "https://github.com/ioBroker/ioBroker.vis.cordova/blob/master/LICENSE"
-        }
-    ],
-    "keywords": [
-        "ioBroker",
-        "vis",
-        "GUI",
-        "DashUI",
-        "web interface",
-        "home automation",
-        "SCADA"
-    ],
-    "dependencies": {
-        "cordova": "^7.0.1",
-        "cordova-android": "^6.3.0",
-        "cordova-plugin-certificates": "^0.6.4",
-        "cordova-plugin-file": "^4.3.3",
-        "cordova-plugin-network-information": "^1.3.3",
-        "cordova-plugin-whitelist": "^1.3.2",
-        "grunt": "^1.0.1",
-        "grunt-contrib-clean": "^1.0.0",
-        "grunt-contrib-copy": "^1.0.0",
-        "grunt-contrib-jshint": "^1.1.0",
-        "grunt-exec": "^0.4.6",
-        "grunt-http": "^2.2.0",
-        "grunt-jscs": "^3.0.1",
-        "grunt-replace": "^1.0.1",
-
-        "iobroker.chromecast": "*",
-        "iobroker.dwd": "*",
-        "iobroker.ebus": "*",
-        "iobroker.flot": "*",
-        "iobroker.kodi": "*",
-        "iobroker.mihome-vacuum": "*",
-        "iobroker.milight": "*",
-        "iobroker.rickshaw": "*",
-        "iobroker.sbfspot": "*",
-        "iobroker.starline": "*",
-        "iobroker.vis": "*",
-        "iobroker.vis-bars": "*",
-        "iobroker.vis-canvas-gauges": "*",
-        "iobroker.vis-colorpicker": "*",
-        "iobroker.vis-fancyswitch": "*",
-        "iobroker.vis-google-fonts": "*",
-        "iobroker.vis-history": "*",
-        "iobroker.vis-hqwidgets": "*",
-        "iobroker.vis-jqui-mfd": "*",
-        "iobroker.vis-justgage": "*",
-        "iobroker.vis-keyboard": "*",
-        "iobroker.vis-lcars": "*",
-        "iobroker.vis-map": "*",
-        "iobroker.vis-material": "*",
-        "iobroker.vis-metro": "*",
-        "iobroker.vis-players": "*",
-        "iobroker.vis-plumb": "*",
-        "iobroker.vis-rgraph": "*",
-        "iobroker.vis-timeandweather": "*",
-        "iobroker.vis-weather": "*",
-        "iobroker.web": "*",      		
-        "iobroker.yr": "*",
-        "wifiwizard": "^0.2.11",
-        "com.pylonproducts.wifiwizard": "~0.2.11"
-    },
-    "bugs": {
-        "url": "https://github.com/ioBroker/ioBroker.vis.cordova/issues"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "grunt build",
-        "run": "grunt run",
-        "release": "grunt release"
-    },
-    "license": "MIT",
-    "cordova": {
-        "plugins": {
-            "cordova-plugin-file": {},
-            "cordova-plugin-network-information": {},
-            "cordova-plugin-whitelist": {},
-            "com.pylonproducts.wifiwizard": {},
-            "cordova-plugin-certificates": {}
-        },
-        "platforms": [
-            "android"
-        ]
+  "name": "iobroker.vis.cordova",
+  "description": "Cordova APP for ioBroker.",
+  "version": "1.2.0",
+  "author": {
+    "name": "bluefox",
+    "email": "dogafox@gmail.com"
+  },
+  "contributors": [
+    "bluefox <dogafox@gmail.com>"
+  ],
+  "homepage": "https://github.com/ioBroker/ioBroker.vis.cordova",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ioBroker/ioBroker.vis.cordova"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/ioBroker/ioBroker.vis.cordova/blob/master/LICENSE"
     }
+  ],
+  "keywords": [
+    "ioBroker",
+    "vis",
+    "GUI",
+    "DashUI",
+    "web interface",
+    "home automation",
+    "SCADA"
+  ],
+  "dependencies": {
+    "cordova": "^7.1.0",
+    "cordova-android": "^6.3.0",
+    "cordova-plugin-brightness": "^0.2.0",
+    "cordova-plugin-certificates": "^0.6.4",
+    "cordova-plugin-file": "^4.3.3",
+    "cordova-plugin-network-information": "^1.3.3",
+    "cordova-plugin-whitelist": "^1.3.2",
+    "grunt": "^1.0.4",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-exec": "^0.4.7",
+    "grunt-http": "^2.3.1",
+    "grunt-jscs": "^3.0.1",
+    "grunt-replace": "^1.0.1",
+    "iobroker.bring": "*",
+    "iobroker.chromecast": "*",
+    "iobroker.dwd": "*",
+    "iobroker.ebus": "*",
+    "iobroker.flot": "*",
+    "iobroker.info": "*",
+    "iobroker.kodi": "*",
+    "iobroker.mihome-vacuum": "*",
+    "iobroker.milight": "*",
+    "iobroker.musiccast": "*",
+    "iobroker.rickshaw": "*",
+    "iobroker.sbfspot": "*",
+    "iobroker.starline": "*",
+    "iobroker.vis": "^1.1.10",
+    "iobroker.vis-bars": "*",
+    "iobroker.vis-canvas-gauges": "*",
+    "iobroker.vis-colorpicker": "*",
+    "iobroker.vis-fancyswitch": "*",
+    "iobroker.vis-google-fonts": "*",
+    "iobroker.vis-history": "*",
+    "iobroker.vis-hqwidgets": "*",
+    "iobroker.vis-jqui-mfd": "*",
+    "iobroker.vis-justgage": "*",
+    "iobroker.vis-keyboard": "*",
+    "iobroker.vis-lcars": "*",
+    "iobroker.vis-map": "*",
+    "iobroker.vis-material": "*",
+    "iobroker.vis-metro": "*",
+    "iobroker.vis-players": "*",
+    "iobroker.vis-plumb": "*",
+    "iobroker.vis-rgraph": "*",
+    "iobroker.vis-timeandweather": "*",
+    "iobroker.vis-weather": "*",
+    "iobroker.web": "*",
+    "iobroker.yr": "*",
+    "wifiwizard": "^0.2.11",
+    "com.pylonproducts.wifiwizard": "~0.2.11"
+  },
+  "bugs": {
+    "url": "https://github.com/ioBroker/ioBroker.vis.cordova/issues"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "grunt build",
+    "run": "grunt run",
+    "release": "grunt release"
+  },
+  "license": "MIT",
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-file": {},
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-whitelist": {},
+      "com.pylonproducts.wifiwizard": {},
+      "cordova-plugin-certificates": {}
+    },
+    "platforms": [
+      "android"
+    ]
+  }
 }
