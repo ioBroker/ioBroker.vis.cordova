@@ -1,56 +1,35 @@
 {
-  "_args": [
-    [
-      {
-        "raw": "cordova-plugin-geolocation",
-        "scope": null,
-        "escapedName": "cordova-plugin-geolocation",
-        "name": "cordova-plugin-geolocation",
-        "rawSpec": "",
-        "spec": "latest",
-        "type": "tag"
-      },
-      "D:\\pWork\\ioBroker.vis.cordova\\node_modules"
-    ]
-  ],
-  "_from": "cordova-plugin-geolocation@latest",
+  "_from": "cordova-plugin-geolocation@2.4.3",
   "_id": "cordova-plugin-geolocation@2.4.3",
-  "_inCache": true,
+  "_inBundle": false,
+  "_integrity": "sha1-HdAAI9Hxos4zD4dn7Qj3tzj+cYQ=",
   "_location": "/cordova-plugin-geolocation",
-  "_nodeVersion": "6.10.1",
-  "_npmOperationalInternal": {
-    "host": "packages-12-west.internal.npmjs.com",
-    "tmp": "tmp/cordova-plugin-geolocation-2.4.3.tgz_1493685640809_0.01689610001631081"
-  },
-  "_npmUser": {
-    "name": "filmaj",
-    "email": "maj.fil@gmail.com"
-  },
-  "_npmVersion": "3.10.10",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "cordova-plugin-geolocation",
-    "scope": null,
-    "escapedName": "cordova-plugin-geolocation",
+    "type": "version",
+    "registry": true,
+    "raw": "cordova-plugin-geolocation@2.4.3",
     "name": "cordova-plugin-geolocation",
-    "rawSpec": "",
-    "spec": "latest",
-    "type": "tag"
+    "escapedName": "cordova-plugin-geolocation",
+    "rawSpec": "2.4.3",
+    "saveSpec": null,
+    "fetchSpec": "2.4.3"
   },
   "_requiredBy": [
-    "#USER"
+    "#USER",
+    "/"
   ],
   "_resolved": "https://registry.npmjs.org/cordova-plugin-geolocation/-/cordova-plugin-geolocation-2.4.3.tgz",
   "_shasum": "1dd00023d1f1a2ce330f8767ed08f7b738fe7184",
-  "_shrinkwrap": null,
-  "_spec": "cordova-plugin-geolocation",
-  "_where": "D:\\pWork\\ioBroker.vis.cordova\\node_modules",
+  "_spec": "cordova-plugin-geolocation@2.4.3",
+  "_where": "C:\\pWork\\ioBroker.vis.cordova",
   "author": {
     "name": "Apache Software Foundation"
   },
   "bugs": {
     "url": "https://github.com/apache/cordova-plugin-geolocation/issues"
   },
+  "bundleDependencies": false,
   "cordova": {
     "id": "cordova-plugin-geolocation",
     "platforms": [
@@ -66,15 +45,10 @@
       "firefoxos"
     ]
   },
-  "dependencies": {},
+  "deprecated": false,
   "description": "Cordova Geolocation Plugin",
   "devDependencies": {
     "jshint": "^2.6.0"
-  },
-  "directories": {},
-  "dist": {
-    "shasum": "1dd00023d1f1a2ce330f8767ed08f7b738fe7184",
-    "tarball": "https://registry.npmjs.org/cordova-plugin-geolocation/-/cordova-plugin-geolocation-2.4.3.tgz"
   },
   "engines": {
     "cordovaDependencies": {
@@ -100,35 +74,7 @@
     "cordova-firefoxos"
   ],
   "license": "Apache-2.0",
-  "maintainers": [
-    {
-      "name": "bowserj",
-      "email": "bowserj@apache.org"
-    },
-    {
-      "name": "csantanapr",
-      "email": "csantana23@gmail.com"
-    },
-    {
-      "name": "filmaj",
-      "email": "maj.fil@gmail.com"
-    },
-    {
-      "name": "purplecabbage",
-      "email": "purplecabbage@gmail.com"
-    },
-    {
-      "name": "shazron",
-      "email": "shazron@gmail.com"
-    },
-    {
-      "name": "stevegill",
-      "email": "stevengill97@gmail.com"
-    }
-  ],
   "name": "cordova-plugin-geolocation",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apache/cordova-plugin-geolocation.git"

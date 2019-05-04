@@ -1,83 +1,59 @@
 {
-  "_args": [
-    [
-      {
-        "raw": "cordova-plugin-battery-status",
-        "scope": null,
-        "escapedName": "cordova-plugin-battery-status",
-        "name": "cordova-plugin-battery-status",
-        "rawSpec": "",
-        "spec": "latest",
-        "type": "tag"
-      },
-      "D:\\pWork\\ioBroker.vis.cordova\\node_modules"
-    ]
-  ],
-  "_from": "cordova-plugin-battery-status@latest",
-  "_id": "cordova-plugin-battery-status@1.2.4",
-  "_inCache": true,
+  "_from": "cordova-plugin-battery-status",
+  "_id": "cordova-plugin-battery-status@2.0.2",
+  "_inBundle": false,
+  "_integrity": "sha1-OqGR97y2/Hz8nd/t9h5rSgWy31U=",
   "_location": "/cordova-plugin-battery-status",
-  "_nodeVersion": "6.10.1",
-  "_npmOperationalInternal": {
-    "host": "packages-12-west.internal.npmjs.com",
-    "tmp": "tmp/cordova-plugin-battery-status-1.2.4.tgz_1493685627359_0.5040916141588241"
-  },
-  "_npmUser": {
-    "name": "filmaj",
-    "email": "maj.fil@gmail.com"
-  },
-  "_npmVersion": "3.10.10",
   "_phantomChildren": {},
   "_requested": {
+    "type": "tag",
+    "registry": true,
     "raw": "cordova-plugin-battery-status",
-    "scope": null,
-    "escapedName": "cordova-plugin-battery-status",
     "name": "cordova-plugin-battery-status",
+    "escapedName": "cordova-plugin-battery-status",
     "rawSpec": "",
-    "spec": "latest",
-    "type": "tag"
+    "saveSpec": null,
+    "fetchSpec": "latest"
   },
   "_requiredBy": [
-    "#USER"
+    "#USER",
+    "/"
   ],
-  "_resolved": "https://registry.npmjs.org/cordova-plugin-battery-status/-/cordova-plugin-battery-status-1.2.4.tgz",
-  "_shasum": "73a576afc0a61a9dd29aff7765907ecac0c9f1f9",
-  "_shrinkwrap": null,
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-battery-status/-/cordova-plugin-battery-status-2.0.2.tgz",
+  "_shasum": "3aa191f7bcb6fc7cfc9ddfedf61e6b4a05b2df55",
   "_spec": "cordova-plugin-battery-status",
-  "_where": "D:\\pWork\\ioBroker.vis.cordova\\node_modules",
+  "_where": "C:\\pWork\\ioBroker.vis.cordova",
   "author": {
     "name": "Apache Software Foundation"
   },
   "bugs": {
-    "url": "https://github.com/apache/cordova-plugin-battery-status/issues"
+    "url": "https://issues.apache.org/jira/browse/CB"
   },
+  "bundleDependencies": false,
   "cordova": {
     "id": "cordova-plugin-battery-status",
     "platforms": [
       "android",
-      "amazon-fireos",
-      "ubuntu",
       "ios",
-      "blackberry10",
-      "wp7",
-      "wp8",
-      "tizen",
-      "firefoxos"
+      "browser",
+      "windows"
     ]
   },
-  "dependencies": {},
+  "deprecated": false,
   "description": "Cordova Battery Plugin",
   "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-semistandard": "^11.0.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "jshint": "^2.6.0"
-  },
-  "directories": {},
-  "dist": {
-    "shasum": "73a576afc0a61a9dd29aff7765907ecac0c9f1f9",
-    "tarball": "https://registry.npmjs.org/cordova-plugin-battery-status/-/cordova-plugin-battery-status-1.2.4.tgz"
   },
   "engines": {
     "cordovaDependencies": {
-      "2.0.0": {
+      "3.0.0": {
         "cordova": ">100"
       }
     }
@@ -88,53 +64,18 @@
     "battery",
     "ecosystem:cordova",
     "cordova-android",
-    "cordova-amazon-fireos",
-    "cordova-ubuntu",
-    "cordova-ios",
-    "cordova-blackberry10",
-    "cordova-wp7",
-    "cordova-wp8",
-    "cordova-tizen",
-    "cordova-firefoxos"
+    "cordova-ios"
   ],
   "license": "Apache-2.0",
-  "maintainers": [
-    {
-      "name": "bowserj",
-      "email": "bowserj@apache.org"
-    },
-    {
-      "name": "csantanapr",
-      "email": "csantana23@gmail.com"
-    },
-    {
-      "name": "filmaj",
-      "email": "maj.fil@gmail.com"
-    },
-    {
-      "name": "purplecabbage",
-      "email": "purplecabbage@gmail.com"
-    },
-    {
-      "name": "shazron",
-      "email": "shazron@gmail.com"
-    },
-    {
-      "name": "stevegill",
-      "email": "stevengill97@gmail.com"
-    }
-  ],
   "name": "cordova-plugin-battery-status",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apache/cordova-plugin-battery-status.git"
   },
   "scripts": {
-    "jshint": "node node_modules/jshint/bin/jshint www && node node_modules/jshint/bin/jshint src && node node_modules/jshint/bin/jshint tests",
-    "test": "npm run jshint"
+    "eslint": "node node_modules/eslint/bin/eslint www && node node_modules/eslint/bin/eslint src && node node_modules/eslint/bin/eslint tests",
+    "test": "npm run eslint"
   },
   "types": "./types/index.d.ts",
-  "version": "1.2.4"
+  "version": "2.0.2"
 }

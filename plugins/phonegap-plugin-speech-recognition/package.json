@@ -1,64 +1,35 @@
 {
-  "_args": [
-    [
-      {
-        "raw": "https://github.com/macdonst/SpeechRecognitionPlugin",
-        "scope": null,
-        "escapedName": null,
-        "name": null,
-        "rawSpec": "https://github.com/macdonst/SpeechRecognitionPlugin",
-        "spec": "git+https://github.com/macdonst/SpeechRecognitionPlugin.git",
-        "type": "hosted",
-        "hosted": {
-          "type": "github",
-          "ssh": "git@github.com:macdonst/SpeechRecognitionPlugin.git",
-          "sshUrl": "git+ssh://git@github.com/macdonst/SpeechRecognitionPlugin.git",
-          "httpsUrl": "git+https://github.com/macdonst/SpeechRecognitionPlugin.git",
-          "gitUrl": "git://github.com/macdonst/SpeechRecognitionPlugin.git",
-          "shortcut": "github:macdonst/SpeechRecognitionPlugin",
-          "directUrl": "https://raw.githubusercontent.com/macdonst/SpeechRecognitionPlugin/master/package.json"
-        }
-      },
-      "D:\\pWork\\ioBroker.vis.cordova\\node_modules"
-    ]
-  ],
-  "_from": "git+https://github.com/macdonst/SpeechRecognitionPlugin.git",
-  "_id": "phonegap-plugin-speech-recognition@0.2.0",
-  "_inCache": true,
+  "_from": "phonegap-plugin-speech-recognition",
+  "_id": "phonegap-plugin-speech-recognition@0.3.0",
+  "_inBundle": false,
+  "_integrity": "sha1-x7hniJqSA5tWsasn/ywxqq11DF4=",
   "_location": "/phonegap-plugin-speech-recognition",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "https://github.com/macdonst/SpeechRecognitionPlugin",
-    "scope": null,
-    "escapedName": null,
-    "name": null,
-    "rawSpec": "https://github.com/macdonst/SpeechRecognitionPlugin",
-    "spec": "git+https://github.com/macdonst/SpeechRecognitionPlugin.git",
-    "type": "hosted",
-    "hosted": {
-      "type": "github",
-      "ssh": "git@github.com:macdonst/SpeechRecognitionPlugin.git",
-      "sshUrl": "git+ssh://git@github.com/macdonst/SpeechRecognitionPlugin.git",
-      "httpsUrl": "git+https://github.com/macdonst/SpeechRecognitionPlugin.git",
-      "gitUrl": "git://github.com/macdonst/SpeechRecognitionPlugin.git",
-      "shortcut": "github:macdonst/SpeechRecognitionPlugin",
-      "directUrl": "https://raw.githubusercontent.com/macdonst/SpeechRecognitionPlugin/master/package.json"
-    }
+    "type": "tag",
+    "registry": true,
+    "raw": "phonegap-plugin-speech-recognition",
+    "name": "phonegap-plugin-speech-recognition",
+    "escapedName": "phonegap-plugin-speech-recognition",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
   },
   "_requiredBy": [
-    "#USER"
+    "#USER",
+    "/"
   ],
-  "_resolved": "git+https://github.com/macdonst/SpeechRecognitionPlugin.git#aa8b86d8aa151c8d23b482ff12ab62b4bbc27c79",
-  "_shasum": "afb25fff6e6936b8465c30b94e72250a52f73cf5",
-  "_shrinkwrap": null,
-  "_spec": "https://github.com/macdonst/SpeechRecognitionPlugin",
-  "_where": "D:\\pWork\\ioBroker.vis.cordova\\node_modules",
+  "_resolved": "https://registry.npmjs.org/phonegap-plugin-speech-recognition/-/phonegap-plugin-speech-recognition-0.3.0.tgz",
+  "_shasum": "c7b867889a92039b56b1ab27ff2c31aaad750c5e",
+  "_spec": "phonegap-plugin-speech-recognition",
+  "_where": "C:\\pWork\\ioBroker.vis.cordova",
   "author": {
     "name": "Simon MacDonald"
   },
   "bugs": {
     "url": "https://github.com/macdonst/SpeechRecognitionPlugin/issues"
   },
+  "bundleDependencies": false,
   "cordova": {
     "id": "phonegap-plugin-speech-recognition",
     "platforms": [
@@ -66,10 +37,8 @@
       "ios"
     ]
   },
-  "dependencies": {},
+  "deprecated": false,
   "description": "Cordova Speech Recognition Plugin",
-  "devDependencies": {},
-  "gitHead": "aa8b86d8aa151c8d23b482ff12ab62b4bbc27c79",
   "homepage": "https://github.com/macdonst/SpeechRecognitionPlugin#readme",
   "keywords": [
     "cordova",
@@ -81,12 +50,9 @@
   ],
   "license": "MIT",
   "name": "phonegap-plugin-speech-recognition",
-  "optionalDependencies": {},
-  "readme": "SpeechRecognitionPlugin\r\n=======================\r\n\r\nW3C Web Speech API - Speech Recognition plugin for PhoneGap\r\n\r\nUpdate 2013/09/05\r\n=================\r\n\r\nBack to work on this but it's not ready yet so don't try to use.\r\n\r\nUpdate 2013/08/05\r\n=================\r\n\r\nHi, you are all probably wondering where the code is after seeing my PhoneGap Day US presentation or reading the slides. Well, I've been dealing with an illness in the family and have not has as much spare time as I would have hoped to update this project. However, things are working out better than I could have hoped for and I should have time to concentrate on this very soon.\r\n\r\nUpdate 2015/04/04\r\n=================\r\n\r\nBasic example is working on iOS and android\r\n```\r\n<script type=\"text/javascript\">\r\nvar recognition;\r\ndocument.addEventListener('deviceready', onDeviceReady, false);\r\n\r\nfunction onDeviceReady() {\r\n    recognition = new SpeechRecognition();\r\n    recognition.onresult = function(event) {\r\n        if (event.results.length > 0) {\r\n            q.value = event.results[0][0].transcript;\r\n            q.form.submit();\r\n        }\r\n    }\r\n}\r\n</script>\r\n<form action=\"http://www.example.com/search\">\r\n    <input type=\"search\" id=\"q\" name=\"q\" size=60>\r\n    <input type=\"button\" value=\"Click to Speak\" onclick=\"recognition.start()\">\r\n</form>\r\n```\r\n\r\nExample from section 6.1 Speech Recognition Examples of the W3C page\r\n(https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html#examples)\r\n\r\nTo install the plugin use \r\n\r\n```\r\ncordova plugin add https://github.com/macdonst/SpeechRecognitionPlugin\r\n```\r\n\r\nSince iOS 10 it's mandatory to add a `NSMicrophoneUsageDescription` in the info.plist to access the microphone.\r\n\r\n\r\nTo add this entry you can pass the `MICROPHONE_USAGE_DESCRIPTION` variable on plugin install.\r\n\r\n\r\nExample:\r\n\r\n`cordova plugin add https://github.com/macdonst/SpeechRecognitionPlugin --variable MICROPHONE_USAGE_DESCRIPTION=\"your usage message\"`\r\n\r\nIf the variable is not provided it will use an empty message, but a usage description string is mandatory to submit your app to the Apple Store.\r\n\r\n\r\nOn iOS 10 and greater it uses the native SFSpeechRecognizer (same as Siri).\r\n\r\nSupported locales for SFSpeechRecognizer are:\r\nro-RO, en-IN, he-IL, tr-TR, en-NZ, sv-SE, fr-BE, it-CH, de-CH, pl-PL, pt-PT, uk-UA, fi-FI, vi-VN, ar-SA, zh-TW, es-ES, en-GB, yue-CN, th-TH, en-ID, ja-JP, en-SA, en-AE, da-DK, fr-FR, sk-SK, de-AT, ms-MY, hu-HU, ca-ES, ko-KR, fr-CH, nb-NO, en-AU, el-GR, ru-RU, zh-CN, en-US, en-IE, nl-BE, es-CO, pt-BR, es-US, hr-HR, fr-CA, zh-HK, es-MX, id-ID, it-IT, nl-NL, cs-CZ, en-ZA, es-CL, en-PH, en-CA, en-SG, de-DE\r\n\r\nTwo-character codes can be used too.\r\n\r\nOn iOS 9 and older it uses iSpeech SDK, an API key is required, get one on https://www.ispeech.org/, it's free.\r\nTo provide the key, add this preference inside the config.xml\r\n```\r\n <preference name=\"apiKey\" value=\"yourApiKeyHere\" />\r\n ```\r\n If none is provided it will use the demo key \"developerdemokeydeveloperdemokey\"\r\n \r\niSpeech supported languages are:\r\n \r\nEnglish (Canada) (en-CA) \t\r\nEnglish (United States) (en-US) \t\r\nSpanish (Spain) (es-ES) \t\r\nFrench (France) (fr-FR) \t\r\nItalian (Italy) (it-IT) \t\r\nPolish (Poland) (pl-PL) \t\r\nPortuguese (Portugal) (pt-PT)\r\n\r\n\r\nTwo-character codes can be used too, but for English, \"en\" will use \"en-US\" \r\n \r\n \r\n",
-  "readmeFilename": "README.md",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/macdonst/SpeechRecognitionPlugin.git"
   },
-  "version": "0.2.0"
+  "version": "0.3.0"
 }

@@ -1,41 +1,19 @@
 {
-  "_args": [
-    [
-      {
-        "raw": "cordova-plugin-file@4.3.3",
-        "scope": null,
-        "escapedName": "cordova-plugin-file",
-        "name": "cordova-plugin-file",
-        "rawSpec": "4.3.3",
-        "spec": "4.3.3",
-        "type": "version"
-      },
-      "D:\\pWork\\ioBroker.vis.cordova\\node_modules"
-    ]
-  ],
   "_from": "cordova-plugin-file@4.3.3",
   "_id": "cordova-plugin-file@4.3.3",
-  "_inCache": true,
+  "_inBundle": false,
+  "_integrity": "sha1-AS6Xqhr7kfhJFuY0G1SDZtI96bk=",
   "_location": "/cordova-plugin-file",
-  "_nodeVersion": "6.10.1",
-  "_npmOperationalInternal": {
-    "host": "packages-18-east.internal.npmjs.com",
-    "tmp": "tmp/cordova-plugin-file-4.3.3.tgz_1493685743335_0.13007491896860301"
-  },
-  "_npmUser": {
-    "name": "filmaj",
-    "email": "maj.fil@gmail.com"
-  },
-  "_npmVersion": "3.10.10",
   "_phantomChildren": {},
   "_requested": {
+    "type": "version",
+    "registry": true,
     "raw": "cordova-plugin-file@4.3.3",
-    "scope": null,
-    "escapedName": "cordova-plugin-file",
     "name": "cordova-plugin-file",
+    "escapedName": "cordova-plugin-file",
     "rawSpec": "4.3.3",
-    "spec": "4.3.3",
-    "type": "version"
+    "saveSpec": null,
+    "fetchSpec": "4.3.3"
   },
   "_requiredBy": [
     "#USER",
@@ -43,15 +21,15 @@
   ],
   "_resolved": "https://registry.npmjs.org/cordova-plugin-file/-/cordova-plugin-file-4.3.3.tgz",
   "_shasum": "012e97aa1afb91f84916e6341b548366d23de9b9",
-  "_shrinkwrap": null,
   "_spec": "cordova-plugin-file@4.3.3",
-  "_where": "D:\\pWork\\ioBroker.vis.cordova\\node_modules",
+  "_where": "C:\\pWork\\ioBroker.vis.cordova",
   "author": {
     "name": "Apache Software Foundation"
   },
   "bugs": {
     "url": "https://github.com/apache/cordova-plugin-file/issues"
   },
+  "bundleDependencies": false,
   "cordova": {
     "id": "cordova-plugin-file",
     "platforms": [
@@ -68,15 +46,10 @@
       "firefoxos"
     ]
   },
-  "dependencies": {},
+  "deprecated": false,
   "description": "Cordova File Plugin",
   "devDependencies": {
     "jshint": "^2.6.0"
-  },
-  "directories": {},
-  "dist": {
-    "shasum": "012e97aa1afb91f84916e6341b548366d23de9b9",
-    "tarball": "https://registry.npmjs.org/cordova-plugin-file/-/cordova-plugin-file-4.3.3.tgz"
   },
   "engines": {
     "cordovaDependencies": {
@@ -103,39 +76,7 @@
     "cordova-firefoxos"
   ],
   "license": "Apache-2.0",
-  "maintainers": [
-    {
-      "name": "bowserj",
-      "email": "bowserj@apache.org"
-    },
-    {
-      "name": "csantanapr",
-      "email": "csantana23@gmail.com"
-    },
-    {
-      "name": "filmaj",
-      "email": "maj.fil@gmail.com"
-    },
-    {
-      "name": "kotikov.vladimir",
-      "email": "kotikov.vladimir@gmail.com"
-    },
-    {
-      "name": "purplecabbage",
-      "email": "purplecabbage@gmail.com"
-    },
-    {
-      "name": "shazron",
-      "email": "shazron@gmail.com"
-    },
-    {
-      "name": "stevegill",
-      "email": "stevengill97@gmail.com"
-    }
-  ],
   "name": "cordova-plugin-file",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apache/cordova-plugin-file.git"
