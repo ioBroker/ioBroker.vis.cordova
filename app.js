@@ -752,32 +752,34 @@ var app = {
 
                         // read SSID info
                         delayed = true;
-                        if (typeof WifiWizard !== 'undefined') {
-                            WifiWizard.getCurrentSSID(function (response) {
-                                this.ssid = response.replace(/\"/g, '');
-                                if (this.settings.ssid.indexOf(this.ssid) === -1) {
-                                    // other wifi network
-                                    this.setProCookies(function (error, usePro) {
-                                        if (usePro) {
-                                            socketUrl = 'https://iobroker.pro';
-                                        } else {
-                                            socketUrl = this.settings.socketUrlGSM;
-                                        }
-                                        this.currentUrl = socketUrl;
-                                        socketUrl += '/?key=nokey' + (this.settings.userGSM ? '&user=' + encodeURIComponent(this.settings.userGSM) + '&pass=' + encodeURIComponent(this.settings.passwordGSM) : '');
+                        if (typeof WifiWizard2 !== 'undefined') {
+                            WifiWizard2.getConnectedSSID()
+                                .then(function (response) {
+                                    this.ssid = response.replace(/"/g, '');
+                                    if (this.settings.ssid.indexOf(this.ssid) === -1) {
+                                        // other wifi network
+                                        this.setProCookies(function (error, usePro) {
+                                            if (usePro) {
+                                                socketUrl = 'https://iobroker.pro';
+                                            } else {
+                                                socketUrl = this.settings.socketUrlGSM;
+                                            }
+                                            this.currentUrl = socketUrl;
+                                            socketUrl += '/?key=nokey' + (this.settings.userGSM ? '&user=' + encodeURIComponent(this.settings.userGSM) + '&pass=' + encodeURIComponent(this.settings.passwordGSM) : '');
+                                            cb && cb();
+                                        }.bind(this));
+                                    } else {
+                                        this.currentUrl = this.settings.socketUrl;
+                                        socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + encodeURIComponent(this.settings.user) + '&pass=' + encodeURIComponent(this.settings.password) : '');
                                         cb && cb();
-                                    }.bind(this));
-                                } else {
+                                    }
+                                }.bind(this))
+                                .catch(function (error){
                                     this.currentUrl = this.settings.socketUrl;
                                     socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + encodeURIComponent(this.settings.user) + '&pass=' + encodeURIComponent(this.settings.password) : '');
+                                    console.error(error);
                                     cb && cb();
-                                }
-                            }.bind(this), function (error){
-                                this.currentUrl = this.settings.socketUrl;
-                                socketUrl = this.settings.socketUrl + '/?key=nokey' + (this.settings.user ? '&user=' + encodeURIComponent(this.settings.user) + '&pass=' + encodeURIComponent(this.settings.password) : '');
-                                console.error(error);
-                                cb && cb();
-                            }.bind(this));
+                                }.bind(this));
                         }
                     } else {
                         this.currentUrl = this.settings.socketUrl;
@@ -2309,17 +2311,21 @@ var app = {
                 });
             }
 
-            if (typeof WifiWizard !== 'undefined') {
-                WifiWizard.getCurrentSSID(function (response) {
-                    that.ssid = response.replace(/\"/g, '');
-                    if (that.ssid) {
-                        $('#cordova_ssid_button').show();
-                        $('#cordova_ssid').css('width', 'calc(100% - 4em)');
-                    } else {
-                        $('#cordova_ssid_button').hide();
-                        $('#cordova_ssid').css('width', '100%');
-                    }
-                });
+            if (typeof WifiWizard2 !== 'undefined') {
+                WifiWizard2.getConnectedSSID()
+                    .then(function (response) {
+                        that.ssid = response.replace(/"/g, '');
+                        if (that.ssid) {
+                            $('#cordova_ssid_button').show();
+                            $('#cordova_ssid').css('width', 'calc(100% - 4em)');
+                        } else {
+                            $('#cordova_ssid_button').hide();
+                            $('#cordova_ssid').css('width', '100%');
+                        }
+                    })
+                    .catch(function (error){
+                        console.error('Cannot read SSID: ' + error);
+                    });
             }
 
             if (that.settings.socketPro) {
@@ -2581,7 +2587,7 @@ var app = {
         if (typeof data === 'string') {
 
             // try to replace <img src="/vis.0/main...">
-            m = data.match(/src=\\"\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\"/g);
+            m = data.match(/src=\\"\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-._0-9\w.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+\\"/g);
             if (m) {
                 for (mm = 0; mm < m.length; mm++) {
                     //file:///data/data/net.iobroker.vis/files/main/vis-user.css
@@ -2614,7 +2620,7 @@ var app = {
             }
 
             // try to replace <img src='/vis.0/main...'>
-            m = data.match(/src='\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+'/g);
+            m = data.match(/src='\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-._0-9\w]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+'/g);
             if (m) {
                 for (mm = 0; mm < m.length; mm++) {
                     //file:///data/data/net.iobroker.vis/files/main/vis-user.css
@@ -2655,7 +2661,7 @@ var app = {
         var mm;
         if (typeof data === 'string') {
             // try to replace <img src="/vis.0/main...">
-            m = data.match(/src="\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
+            m = data.match(/src="\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-._0-9\w]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+"/g);
             if (m) {
                 for (mm = 0; mm < m.length; mm++) {
                     //file:///data/data/net.iobroker.vis/files/main/vis-user.css
@@ -2687,7 +2693,7 @@ var app = {
             }
 
             // try to replace <img src='/vis.0/main...'>
-            m = data.match(/src='\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+'/g);
+            m = data.match(/src='\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-._0-9\w]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+'/g);
             if (m) {
                 for (mm = 0; mm < m.length; mm++) {
                     //file:///data/data/net.iobroker.vis/files/main/vis-user.css
@@ -2729,7 +2735,7 @@ var app = {
         var mm;
         if (typeof data === 'string') {
             // try to replace /vis.0/main...
-            m = data.match(/^\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-_0-9\w\.]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+$/g);
+            m = data.match(/^\/[-_0-9\w]+(?:\.[-_0-9\w]+)?\/[^"^']+[-._0-9\w]+\.(?:png|jpg|jpeg|gif|wav|mp3|bmp|svg)+$/g);
             if (m) {
                 for (mm = 0; mm < m.length; mm++) {
                     //file:///data/data/net.iobroker.vis/files/main/vis-user.css
@@ -2770,7 +2776,7 @@ function logout() {
 }
 
 function escapeRegExp(str) {
-    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+    return str.replace(/[\-\[\]\/{}()*+?.\\^$|]/g, '\\$&');
 }
 
 app.initialize();

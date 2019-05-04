@@ -1,78 +1,49 @@
 {
-  "_args": [
-    [
-      {
-        "raw": "cordova-plugin-fullscreen",
-        "scope": null,
-        "escapedName": "cordova-plugin-fullscreen",
-        "name": "cordova-plugin-fullscreen",
-        "rawSpec": "",
-        "spec": "latest",
-        "type": "tag"
-      },
-      "D:\\pWork\\ioBroker.vis.cordova\\node_modules"
-    ]
-  ],
-  "_from": "cordova-plugin-fullscreen@latest",
+  "_from": "cordova-plugin-fullscreen",
   "_id": "cordova-plugin-fullscreen@1.2.0",
-  "_inCache": true,
+  "_inBundle": false,
+  "_integrity": "sha512-cl8mE1MoTjv4JlwV6dw3nOc7Qj18WuNJLf2jHWUmRTYzCI/SW9ym/ghSVvonTVnaoECuHrOpmAfUoFzbb8kf2Q==",
   "_location": "/cordova-plugin-fullscreen",
-  "_nodeVersion": "6.11.2",
-  "_npmOperationalInternal": {
-    "host": "s3://npm-registry-packages",
-    "tmp": "tmp/cordova-plugin-fullscreen-1.2.0.tgz_1502480881540_0.3836044427007437"
-  },
-  "_npmUser": {
-    "name": "mesmotronic",
-    "email": "npm.support@mesmotronic.com"
-  },
-  "_npmVersion": "5.3.0",
   "_phantomChildren": {},
   "_requested": {
+    "type": "tag",
+    "registry": true,
     "raw": "cordova-plugin-fullscreen",
-    "scope": null,
-    "escapedName": "cordova-plugin-fullscreen",
     "name": "cordova-plugin-fullscreen",
+    "escapedName": "cordova-plugin-fullscreen",
     "rawSpec": "",
-    "spec": "latest",
-    "type": "tag"
+    "saveSpec": null,
+    "fetchSpec": "latest"
   },
   "_requiredBy": [
-    "#USER"
+    "#USER",
+    "/"
   ],
   "_resolved": "https://registry.npmjs.org/cordova-plugin-fullscreen/-/cordova-plugin-fullscreen-1.2.0.tgz",
   "_shasum": "482b38e881715e1fc812d6c35bea1072efb424a7",
-  "_shrinkwrap": null,
   "_spec": "cordova-plugin-fullscreen",
-  "_where": "D:\\pWork\\ioBroker.vis.cordova\\node_modules",
+  "_where": "C:\\pWork\\ioBroker.vis.cordova",
   "author": {
     "name": "Neil Rackett"
   },
   "bugs": {
     "url": "https://github.com/mesmotronic/cordova-fullscreen-plugin/issues"
   },
+  "bundleDependencies": false,
   "cordova": {
     "id": "cordova-plugin-fullscreen",
     "platforms": [
       "android"
     ]
   },
-  "dependencies": {},
+  "deprecated": false,
   "description": "Plugin for Cordova (or PhoneGap) 3.0+ to enable true full screen on Android devices using lean and immersive modes",
-  "devDependencies": {},
-  "directories": {},
-  "dist": {
-    "integrity": "sha512-cl8mE1MoTjv4JlwV6dw3nOc7Qj18WuNJLf2jHWUmRTYzCI/SW9ym/ghSVvonTVnaoECuHrOpmAfUoFzbb8kf2Q==",
-    "shasum": "482b38e881715e1fc812d6c35bea1072efb424a7",
-    "tarball": "https://registry.npmjs.org/cordova-plugin-fullscreen/-/cordova-plugin-fullscreen-1.2.0.tgz"
-  },
   "engines": [
     {
       "name": "cordova",
       "version": ">=3.0.0"
     }
   ],
-  "gitHead": "c17032965a56c59ae9d4f5fdbccd85406ebec605",
   "homepage": "https://github.com/mesmotronic/cordova-fullscreen-plugin#readme",
   "keywords": [
     "cordova",
@@ -84,15 +55,7 @@
     "cordova-android"
   ],
   "license": "BSD",
-  "maintainers": [
-    {
-      "name": "mesmotronic",
-      "email": "npm.support@mesmotronic.com"
-    }
-  ],
   "name": "cordova-plugin-fullscreen",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mesmotronic/cordova-fullscreen-plugin.git"
