@@ -1,6 +1,5 @@
 ![Logo](admin/vis.png)
-ioBroker.vis.cordova
-============
+# ioBroker.vis.cordova
 
 WEB визуализация для платформы ioBroker как приложение для мобильных устройств.
 

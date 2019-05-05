@@ -111,15 +111,19 @@ module.exports = function (grunt) {
                 options: {
                     patterns: [
                         {
+                            match: /"..\/..\/lib\/js\//g,
+                            replacement: '"../lib/js/'
+                        },
+                        {
                             match: /\.\.\/\.\.\//g,
                             replacement: ''
                         },
                         {
-                            match: /<script type="text\/javascript" src="_socket\/info\.js"><\/script>/,
+                            match: /<script type="text\/javascript" src="\/?_socket\/info\.js"><\/script>/,
                             replacement: ''
                         },
-						{
-                            match: /<script type="text\/javascript" src="\/_socket\/info\.js"><\/script>/,
+                        {
+                            match: /<script type="text\/javascript" src="..\/..\/_socket\/info.js"><\/script>/,
                             replacement: ''
                         },
                         /*{
@@ -239,6 +243,9 @@ module.exports = function (grunt) {
                         cwd: 'node_modules/iobroker.flot/www/',
                         src: [
                             '**',
+                            '!js/edit.js',
+                            '!js/edit.js.map',
+                            '!edit.html.map',
                             '!edit.html'
                         ],
                         dest: 'www/flot'
