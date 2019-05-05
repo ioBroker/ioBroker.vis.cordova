@@ -632,7 +632,7 @@ var app = {
         }.bind(this));
     },
 
-    showProLogo: function (isError) {
+    showProLogo:    function (isError) {
         var $pro = $('#iobroker_pro');
         if (!$pro.length) {
             $('body').append('<div id="iobroker_pro" style=" position: fixed; z-index: 5000; top: 5px;right: 5px; color: white; border-radius: 5px; padding: 1px 3px 1px 3px; font-family: Arial; font-size: 0.9em;">.pro</div>');
@@ -649,7 +649,7 @@ var app = {
         }
     },
 
-    setProCookies: function (cb) {
+    setProCookies:  function (cb) {
         if (this.settings.socketPro) {
             console.log('Connect via ioBroker.pro');
             // By calling of this function, the wss cookie will be set and authentication will work.
@@ -1076,7 +1076,7 @@ var app = {
         vis.conn.setState(prefix + 'isPlugged', {val: status.isPlugged, ack: true});
         vis.conn.setState(prefix + 'level', {val: status.level, ack: true});
     },
-    onLocation: function (position) {
+    onLocation:     function (position) {
         if (!position || !position.coords) return;
         var that = app;
         that.lastPosition = JSON.parse(JSON.stringify(position));
@@ -2523,7 +2523,7 @@ var app = {
         });
     },
 
-    onConnChange: function (connected) {
+    onConnChange:   function (connected) {
         this.connected = connected;
         this.startStopPollPosition(connected);
         if (connected) {
