@@ -107,13 +107,53 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            index: {
+            flot: {
                 options: {
                     patterns: [
                         {
                             match: /"..\/..\/lib\/js\//g,
                             replacement: '"../lib/js/'
                         },
+                        {
+                            match: /\.\.\/\.\.\//g,
+                            replacement: ''
+                        },
+                        {
+                            match: /<script type="text\/javascript" src="\/?_socket\/info\.js"><\/script>/,
+                            replacement: ''
+                        },
+                        {
+                            match: /<script type="text\/javascript" src="..\/..\/_socket\/info.js"><\/script>/,
+                            replacement: ''
+                        },
+                        /*{
+                            match: /<script type="text\/javascript" src="lib\/js\/quo\.standalone\.js"><\/script>/,
+                            replacement: ''
+                        },*/
+                        {
+                            match: /<link rel="stylesheet" type="text\/css" href="css\/vis-common-user\.css" \/>/,
+                            replacement: '<link rel="stylesheet" type="text/css" href="file:///data/data/net.iobroker.vis/files/vis-common-user.css" />'
+                        },
+                        {
+                            match: /<script type="text\/javascript" src="\/lib\//g,
+                            replacement: '<script type="text/javascript" src="file:///android_asset/www/lib/'
+                        }
+                    ]
+                },
+                files: [
+                    {
+                        expand:  true,
+                        flatten: true,
+                        src:     [
+                            'www/flot/index.html'
+                        ],
+                        dest:    'www/flot'
+                    }
+                ]
+            },
+            index: {
+                options: {
+                    patterns: [
                         {
                             match: /\.\.\/\.\.\//g,
                             replacement: ''
@@ -148,14 +188,6 @@ module.exports = function (grunt) {
                                 'www/index.html'
                         ],
                         dest:    'www'
-                    },
-					{
-                        expand:  true,
-                        flatten: true,
-                        src:     [
-                                'www/flot/index.html'
-                        ],
-                        dest:    'www/flot'
                     },
                     {
                         expand:  true,
