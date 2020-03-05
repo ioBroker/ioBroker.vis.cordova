@@ -50,10 +50,10 @@ $.extend(systemDictionary, {
     },
     "Actual":       {"en": "<=",                "de": "<=",                 "ru": "<="},
     "Device name":  {"en": "Device name",       "de": "Gerätname",          "ru": "Имя устройства"},
-    "Battery and location": {
-        "en": "Battery and location",
-        "de": "Batterie und Position",
-        "ru": "Зарядка и координаты"
+    "Battery, location and brightness": {
+        "en": "Battery, location and brightness",
+        "de": "Batterie, Position und Helligkeit",
+        "ru": "Зарядка, координаты и яркость"
     },
     "Report battery status": {
         "en": "Report battery status",
@@ -170,7 +170,16 @@ $.extend(systemDictionary, {
         "de": "Immer vom Server alles laden",
         "ru": "Не кешировать файлы"
     },
-    "show_policy":       {"en": "Show me User Data Policy", "de": "Datenschutz und Sicherheit Richtlinien", "ru": "Конфиденциальность и безопасность"}
+    "show_policy":       {
+        "en": "Show me User Data Policy",
+        "de": "Datenschutz und Sicherheit Richtlinien",
+        "ru": "Конфиденциальность и безопасность"
+    },
+    "Enable brightness control": {
+        "en": "Enable display brightness",
+        "de": "Displayhelligkeit aktivieren",
+        "ru": "Включить яркость дисплея"
+    }
 });
 
 var app = {
@@ -200,7 +209,8 @@ var app = {
         deviceName:      'app',
         geoInterval:     0,
         geoHighAccuracy: true,
-        readBattery:     true
+        readBattery:     true,
+        useBrightness:   true
     },
     inBackground:   false,
     connection:     '',
@@ -214,8 +224,9 @@ var app = {
     lastBatteryStatus: null,
     lastPosition:   null,
     geoTimer:       null,
-    exitApp:		false,
+    exitApp:        false,
     currentUrl:     '',
+    brightnessDPT:  null,
 
     // Application Constructor
     initialize:     function () {
@@ -490,6 +501,10 @@ var app = {
         /*if (cordova.plugins.certificates) {
             cordova.plugins.certificates.trustUnsecureCerts(true);
         }*/
+
+        if (this.settings.useBrightness) {
+            vis.registerOnChange(stateCallback);
+        }
 
         // install listener on go-back button
         document.addEventListener('backbutton', this.onBackButtonGeneral, false);
@@ -824,6 +839,50 @@ var app = {
     createStates:   function (cb) {
         var that = this;
         var count = 0;
+
+        if (this.settings.useBrightness) {
+
+            this.brightnessDPT = vis.conn.namespace + '.' + this.settings.deviceName + '.brightness.value';
+            vis.conn.subscribe(this.brightnessDPT);
+
+            count++;
+            vis.conn.getObject(this.brightnessDPT, function (err, obj) {
+                if (!obj) {
+                    vis.conn._socket.emit('setObject', that.brightnessDPT, {
+                        common: {
+                            name: 'Display brightness of ' + that.settings.deviceName,
+                            type: 'number',
+                            role: 'app.brightness',
+                            min: -100,
+                            max: 100,
+                            write: true,
+                            read:  true
+                        },
+                        type: 'state',
+                        native: {}
+                    },function (err, obj) {
+                        if (!err) {
+                            cordova.plugins.brightness.getBrightness(function (val)
+                                {
+                                    vis.conn.setState(that.brightnessDPT, {val: parseInt(val * 100), ack: true});
+                                });
+                        }
+                        if (!--count) {
+                            cb && cb();
+                        }
+                    });
+                } else {
+                    cordova.plugins.brightness.getBrightness(function (val)
+                        {
+                             vis.conn.setState(that.brightnessDPT, {val: parseInt(val * 100), ack: true});
+                        });
+                    if (!--count) {
+                        cb && cb();
+                    }
+                }
+            });
+        }
+
         if (this.settings.readBattery) {
             count++;
             vis.conn.getObject(vis.conn.namespace + '.' + this.settings.deviceName + '.battery.isPlugged', function (err, obj) {
@@ -2196,12 +2255,15 @@ var app = {
             '<tr class="cordova-setting-cell"><td><input id="allowSelfSigned" class="cordova-setting" data-name="allowSelfSigned" type="checkbox"/><label for="allowSelfSigned" class="checkbox">&#8226;</label></td></tr>' +
 
             // Battery and location
-            '<tr><td class="cordova-settings-label section-legend"><span>' + _('Battery and location')      + '</span><div class="cordova_toggle" data-group="battery">▶</div></td></tr>' +
+            '<tr><td class="cordova-settings-label section-legend"><span>' + _('Battery, location and brightness')      + '</span><div class="cordova_toggle" data-group="battery">▶</div></td></tr>' +
             '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('Device name')           + ':</td></tr>' +
             '<tr class="cordova-setting-battery"><td><input  class="cordova-setting" data-name="deviceName" style="width: 100%"/></td></tr>' +
 
             '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('Report battery status')             + ':</td></tr>' +
             '<tr class="cordova-setting-battery"><td><input id="readBattery" class="cordova-setting" data-name="readBattery" type="checkbox"/><label for="readBattery" class="checkbox">&#8226;</label></td></tr>' +
+
+            '<tr class="cordova-setting-brightness"><td class="cordova-settings-label">' + _('Enable brightness control')             + ':</td></tr>' +
+            '<tr class="cordova-setting-battery"><td><input id="useBrightness" class="cordova-setting" data-name="useBrightness" type="checkbox"/><label for="useBrightness" class="checkbox">&#8226;</label></td></tr>' +
 
             '<tr class="cordova-setting-battery"><td class="cordova-settings-label">' + _('Position poll interval (sec)')         + ':</td></tr>' +
             '<tr class="cordova-setting-battery"><td><input type="number" min="0" max="1800" class="cordova-setting" data-name="geoInterval" style="width: 100%"></td></tr>' +
@@ -2769,6 +2831,11 @@ var app = {
         return data;
     }
 };
+
+function stateCallback(arg, id, val, ack) {
+    if (id === app.brightnessDPT && cordova.plugins.brightness)
+        cordova.plugins.brightness.setBrightness(typeof val  === 'undefined' ? -1 : val / 100);
+}
 
 function logout() {
     window.close(); // workaround for blocking windows
