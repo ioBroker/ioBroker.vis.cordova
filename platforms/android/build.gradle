@@ -23,6 +23,7 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        //google()
     }
 
     // Switch the Android Gradle plugin version requirement depending on the
@@ -134,7 +135,7 @@ cdvBuildRelease.dependsOn {
     return computeBuildTargetName(false)
 }
 
-task cdvPrintProps << {
+task cdvPrintProps {
     println('cdvCompileSdkVersion=' + cdvCompileSdkVersion)
     println('cdvBuildToolsVersion=' + cdvBuildToolsVersion)
     println('cdvVersionCode=' + cdvVersionCode)

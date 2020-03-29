@@ -342,35 +342,6 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask('updateReadme', function () {
-        var readme = grunt.file.read('README.md');
-        var pos = readme.indexOf('## Changelog');
-        if (pos !== -1) {
-            var readmeStart = readme.substring(0, pos + '## Changelog\r'.length);
-            var readmeEnd   = readme.substring(pos + '## Changelog\r'.length);
-
-            if (iopackage.common && readme.indexOf(iopackage.common.version) === -1) {
-                var timestamp = new Date();
-                var date = timestamp.getFullYear() + '-' +
-                    ('0' + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
-                    ('0' + (timestamp.getDate()).toString(10)).slice(-2);
-
-                var news = "";
-                if (iopackage.common.whatsNew) {
-                    for (var i = 0; i < iopackage.common.whatsNew.length; i++) {
-                        if (typeof iopackage.common.whatsNew[i] === 'string') {
-                            news += '* ' + iopackage.common.whatsNew[i] + '\r\n';
-                        } else {
-                            news += '* ' + iopackage.common.whatsNew[i].en + '\r\n';
-                        }
-                    }
-                }
-
-                grunt.file.write('README.md', readmeStart + '### ' + iopackage.common.version + ' (' + date + ')\r\n' + (news ? news + '\r\n\r\n' : '\r\n') + readmeEnd);
-            }
-        }
-    });
-
     grunt.loadNpmTasks('grunt-replace');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-jscs');
@@ -386,7 +357,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', [
         'replace:core',
-        'updateReadme',
         'jshint',
         'jscs'
     ]);
