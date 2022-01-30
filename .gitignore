@@ -30,3 +30,4 @@
 /platforms/android/.idea
 /package-lock.json
 /platforms/android/release-signing.properties
+/gradle

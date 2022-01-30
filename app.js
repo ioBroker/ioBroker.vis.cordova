@@ -287,7 +287,9 @@ var app = {
             create = true;
         }
 
-        if (!this.directory) this.directory = cordova.file.dataDirectory;
+        if (!this.directory) {
+            this.directory = cordova.file.dataDirectory;
+        }
 
         if (!this.localDir) {
             window.resolveLocalFileSystemURL(this.directory, function (dirHandler) {
